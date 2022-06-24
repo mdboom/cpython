@@ -36,8 +36,10 @@ jobs:
         cat benchmark.conf
     # - name: Run benchmarks
     #   run: python -m pyperformance compile_all benchmark.conf
-    - name: Run benchmarks
+    - name: Run benchmark ref
       run: python -m pyperformance compile benchmark.conf $PYTHON_BENCH_REF
+    - name: Run benchmark base
+      run: python -m pyperformance compile benchmark.conf $PYTHON_BENCH_BASE_REF
     - name: Archive code coverage results
       uses: actions/upload-artifact@v3
       with:
