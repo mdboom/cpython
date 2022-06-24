@@ -1,0 +1,37 @@
+name: Benchmarks
+
+on: [push]
+
+# permissions:
+#   contents: read
+
+jobs:
+  benchmark_ubuntu:
+    name: 'Ubuntu'
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Dependencies
+      run: sudo ./.github/workflows/posix-deps-apt.sh
+    - name: Add ccache to PATH
+      run: |
+        echo "PATH=/usr/lib/ccache:$PATH" >> $GITHUB_ENV
+    - name: Configure ccache action
+      uses: hendrikmuhs/ccache-action@v1
+    - name: Install pyperformance
+      run: python -m pip install pyperformance
+    - name: Setup directory envs for builds and results
+      run: |
+        echo "PYTHON_BENCH_JSON=$(realpath -m ${GITHUB_WORKSPACE}/../bench-json)" >> $GITHUB_ENV
+        echo "PYTHON_BENCH_BUILD=$(realpath -m ${GITHUB_WORKSPACE}/../bench-build)" >> $GITHUB_ENV
+    - name: Create directories for builds and results
+      run: mkdir -p $PYTHON_BENCH_JSON $PYTHON_BENCH_BUILD
+    - name: Generate benchmark config
+      run: cat ./.github/workflows/benchmark.conf | python ./.github/workflows/make_benchmark_conf.py > benchmark.conf
+    - name: Run benchmarks
+      run: python -m pyperformance compile_all benchmark.conf
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v3
+      with:
+        name: results
+        path: ${{ env.PYTHON_BENCH_JSON }}/*
