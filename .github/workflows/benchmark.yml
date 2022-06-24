@@ -11,6 +11,13 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v3
+    - name: Setup upterm session
+      uses: lhotari/action-upterm@v1
+      with:
+        ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+        limit-access-to-actor: true
+        ## limits ssh access and adds the ssh public keys of the listed GitHub users
+        limit-access-to-users: mdboom
     - name: Install Dependencies
       run: sudo ./.github/workflows/posix-deps-apt.sh
     - name: Add ccache to PATH
@@ -27,7 +34,9 @@ jobs:
     - name: Create directories for builds and results
       run: mkdir -p $PYTHON_BENCH_JSON $PYTHON_BENCH_BUILD
     - name: Generate benchmark config
-      run: cat ./.github/workflows/benchmark.conf | python ./.github/workflows/make_benchmark_conf.py > benchmark.conf
+      run: |
+        cat ./.github/workflows/benchmark.conf | python ./.github/workflows/make_benchmark_conf.py > benchmark.conf
+        cat benchmark.conf
     - name: Run benchmarks
       run: python -m pyperformance compile_all benchmark.conf
     - name: Archive code coverage results
