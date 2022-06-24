@@ -24,7 +24,7 @@ jobs:
       run: |
         echo "PYTHON_BENCH_JSON=$(realpath -m ${GITHUB_WORKSPACE}/../bench-json)" >> $GITHUB_ENV
         echo "PYTHON_BENCH_BUILD=$(realpath -m ${GITHUB_WORKSPACE}/../bench-build)" >> $GITHUB_ENV
-        echo "PYTHON_BENCH_REF=$(git rev-parse ${GITHUB_REF})" >> $GITHUB_ENV
+        echo "PYTHON_BENCH_REF=$(git rev-parse HEAD)" >> $GITHUB_ENV
         echo "PYTHON_BENCH_BASE_REF=$(git rev-parse ${GITHUB_BASE_REF})" >> $GITHUB_ENV
     - name: Create directories for builds and results
       run: mkdir -p $PYTHON_BENCH_JSON $PYTHON_BENCH_BUILD
