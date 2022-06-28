@@ -26,25 +26,21 @@ jobs:
       run: |
         echo "PYTHON_BENCH_JSON=$(realpath -m ${GITHUB_WORKSPACE}/../bench-json)" >> $GITHUB_ENV
         echo "PYTHON_BENCH_BUILD=$(realpath -m ${GITHUB_WORKSPACE}/../bench-build)" >> $GITHUB_ENV
-        echo "PYTHON_BENCH_REF=$(git rev-parse HEAD)" >> $GITHUB_ENV
-        echo "PYTHON_BENCH_BASE_REF=$(git rev-parse ${GITHUB_BASE_REF})" >> $GITHUB_ENV
+        echo "PYTHON_BENCH_REF=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+        echo "PYTHON_BENCH_BASE_REF=${{ github.event.pull_request.base.sha }}" >> $GITHUB_ENV
     - name: Create directories for builds and results
       run: mkdir -p $PYTHON_BENCH_JSON $PYTHON_BENCH_BUILD
     - name: Generate benchmark config
       run: |
         cat ./.github/workflows/benchmark.conf | python ./.github/workflows/make_benchmark_conf.py > benchmark.conf
         cat benchmark.conf
-    # - name: Run benchmarks
-    #   run: python -m pyperformance compile_all benchmark.conf
-    - name: Setup upterm session
-      uses: lhotari/action-upterm@v1
-      with:
-        ## limits ssh access and adds the ssh public keys of the listed GitHub users
-        limit-access-to-users: mdboom
-    - name: Run benchmark ref
-      run: python -m pyperformance compile benchmark.conf $PYTHON_BENCH_REF
-    - name: Run benchmark base
-      run: python -m pyperformance compile benchmark.conf $PYTHON_BENCH_BASE_REF
+    - name: Run benchmarks
+      run: python -m pyperformance compile_all benchmark.conf
+    # - name: Setup upterm session
+    #   uses: lhotari/action-upterm@v1
+    #   with:
+    #     ## limits ssh access and adds the ssh public keys of the listed GitHub users
+    #     limit-access-to-users: mdboom
     - name: Archive code coverage results
       uses: actions/upload-artifact@v3
       with:
