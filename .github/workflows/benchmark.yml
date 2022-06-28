@@ -34,8 +34,10 @@ jobs:
       run: |
         cat ./.github/workflows/benchmark.conf | python ./.github/workflows/make_benchmark_conf.py > benchmark.conf
         cat benchmark.conf
-    - name: Run benchmarks
-      run: python -m pyperformance compile_all benchmark.conf
+    - name: Run benchmarks (merge)
+      run: python -m pyperformance compile benchmark.conf $PYTHON_BENCH_REF
+    - name: Run benchmarks (base)
+      run: python -m pyperformance compile benchmark.conf $PYTHON_BENCH_BASE_REF
     # - name: Setup upterm session
     #   uses: lhotari/action-upterm@v1
     #   with:
