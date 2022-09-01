@@ -4263,12 +4263,12 @@ dictiter_iternextitem(dictiterobject *di)
     }
     di->di_pos = i+1;
     di->len--;
-    Py_INCREF(key);
-    Py_INCREF(value);
     result = di->di_result;
     if (Py_REFCNT(result) == 1) {
         PyObject *oldkey = PyTuple_GET_ITEM(result, 0);
         PyObject *oldvalue = PyTuple_GET_ITEM(result, 1);
+        Py_INCREF(key);
+        Py_INCREF(value);
         PyTuple_SET_ITEM(result, 0, key);  /* steals reference */
         PyTuple_SET_ITEM(result, 1, value);  /* steals reference */
         Py_INCREF(result);
@@ -4281,11 +4281,7 @@ dictiter_iternextitem(dictiterobject *di)
         }
     }
     else {
-        result = PyTuple_New(2);
-        if (result == NULL)
-            return NULL;
-        PyTuple_SET_ITEM(result, 0, key);  /* steals reference */
-        PyTuple_SET_ITEM(result, 1, value);  /* steals reference */
+        result = PyTuple_Pack(2, key, value);
     }
     return result;
 
@@ -4397,10 +4393,10 @@ dictreviter_iternext(dictiterobject *di)
         return value;
     }
     else if (Py_IS_TYPE(di, &PyDictRevIterItem_Type)) {
-        Py_INCREF(key);
-        Py_INCREF(value);
         result = di->di_result;
         if (Py_REFCNT(result) == 1) {
+            Py_INCREF(key);
+            Py_INCREF(value);
             PyObject *oldkey = PyTuple_GET_ITEM(result, 0);
             PyObject *oldvalue = PyTuple_GET_ITEM(result, 1);
             PyTuple_SET_ITEM(result, 0, key);  /* steals reference */
@@ -4415,12 +4411,10 @@ dictreviter_iternext(dictiterobject *di)
             }
         }
         else {
-            result = PyTuple_New(2);
+            result = PyTuple_Pack(2, key, value);
             if (result == NULL) {
                 return NULL;
             }
-            PyTuple_SET_ITEM(result, 0, key); /* steals reference */
-            PyTuple_SET_ITEM(result, 1, value); /* steals reference */
         }
         return result;
     }
