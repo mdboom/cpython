@@ -67,6 +67,9 @@ struct _Py_tuple_state {
 extern PyObject *_PyTuple_FromArray(PyObject *const *, Py_ssize_t);
 extern PyObject *_PyTuple_FromArraySteal(PyObject *const *, Py_ssize_t);
 
+PyAPI_FUNC(PyObject *) _PyTuple_BorrowPack2(PyObject *ob1, PyObject *ob2);
+PyAPI_FUNC(PyObject *) _PyTuple_BorrowPack3(PyObject *ob1, PyObject *ob2, PyObject *ob3);
+
 #ifdef __cplusplus
 }
 #endif

@@ -4281,11 +4281,9 @@ dictiter_iternextitem(dictiterobject *di)
         }
     }
     else {
-        result = PyTuple_New(2);
+        result = _PyTuple_BorrowPack2(key, value);
         if (result == NULL)
             return NULL;
-        PyTuple_SET_ITEM(result, 0, key);  /* steals reference */
-        PyTuple_SET_ITEM(result, 1, value);  /* steals reference */
     }
     return result;
 
@@ -4415,12 +4413,10 @@ dictreviter_iternext(dictiterobject *di)
             }
         }
         else {
-            result = PyTuple_New(2);
+            result = _PyTuple_BorrowPack2(key, value);
             if (result == NULL) {
                 return NULL;
             }
-            PyTuple_SET_ITEM(result, 0, key); /* steals reference */
-            PyTuple_SET_ITEM(result, 1, value); /* steals reference */
         }
         return result;
     }

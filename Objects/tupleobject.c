@@ -179,6 +179,40 @@ PyTuple_Pack(Py_ssize_t n, ...)
     return (PyObject *)result;
 }
 
+PyObject *
+_PyTuple_BorrowPack2(PyObject *a, PyObject *b)
+{
+    PyTupleObject *result;
+    result = tuple_alloc(2);
+    if (result == NULL) {
+        return NULL;
+    }
+
+    result->ob_item[0] = a;
+    result->ob_item[1] = b;
+
+    _PyObject_GC_TRACK(result);
+    return (PyObject *)result;
+}
+
+
+PyObject *
+_PyTuple_BorrowPack3(PyObject *a, PyObject *b, PyObject *c)
+{
+    PyTupleObject *result;
+    result = tuple_alloc(3);
+    if (result == NULL) {
+        return NULL;
+    }
+
+    result->ob_item[0] = a;
+    result->ob_item[1] = b;
+    result->ob_item[2] = c;
+
+    _PyObject_GC_TRACK(result);
+    return (PyObject *)result;
+}
+
 
 /* Methods */
 

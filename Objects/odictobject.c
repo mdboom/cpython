@@ -1768,9 +1768,10 @@ odictiter_iternext(odictiterobject *di)
         if (!_PyObject_GC_IS_TRACKED(result)) {
             _PyObject_GC_TRACK(result);
         }
-    }
-    else {
-        result = PyTuple_New(2);
+        PyTuple_SET_ITEM(result, 0, key);  /* steals reference */
+        PyTuple_SET_ITEM(result, 1, value);  /* steals reference */
+    } else {
+        result = _PyTuple_BorrowPack2(key, value);
         if (result == NULL) {
             Py_DECREF(key);
             Py_DECREF(value);
@@ -1778,8 +1779,6 @@ odictiter_iternext(odictiterobject *di)
         }
     }
 
-    PyTuple_SET_ITEM(result, 0, key);  /* steals reference */
-    PyTuple_SET_ITEM(result, 1, value);  /* steals reference */
     return result;
 
 done:
