@@ -1763,6 +1763,8 @@ odictiter_iternext(odictiterobject *di)
         Py_INCREF(result);
         Py_DECREF(PyTuple_GET_ITEM(result, 0));  /* borrowed */
         Py_DECREF(PyTuple_GET_ITEM(result, 1));  /* borrowed */
+        PyTuple_SET_ITEM(result, 0, key);  /* steals reference */
+        PyTuple_SET_ITEM(result, 1, value);  /* steals reference */
         // bpo-42536: The GC may have untracked this result tuple. Since we're
         // recycling it, make sure it's tracked again:
         if (!_PyObject_GC_IS_TRACKED(result)) {
@@ -1770,16 +1772,14 @@ odictiter_iternext(odictiterobject *di)
         }
     }
     else {
-        result = _PyTuple_New_Nonzeroed(2);
+        result = PyTuple_Pack(2, key, value);
+        Py_DECREF(key);
+        Py_DECREF(value);
         if (result == NULL) {
-            Py_DECREF(key);
-            Py_DECREF(value);
             goto done;
         }
     }
 
-    PyTuple_SET_ITEM(result, 0, key);  /* steals reference */
-    PyTuple_SET_ITEM(result, 1, value);  /* steals reference */
     return result;
 
 done:

@@ -353,14 +353,9 @@ _build_rval_index_tuple(PyObject *rval, Py_ssize_t idx) {
         Py_DECREF(rval);
         return NULL;
     }
-    tpl = _PyTuple_New_Nonzeroed(2);
-    if (tpl == NULL) {
-        Py_DECREF(pyidx);
-        Py_DECREF(rval);
-        return NULL;
-    }
-    PyTuple_SET_ITEM(tpl, 0, rval);
-    PyTuple_SET_ITEM(tpl, 1, pyidx);
+    tpl = PyTuple_Pack(2, rval, pyidx);
+    Py_DECREF(pyidx);
+    Py_DECREF(rval);
     return tpl;
 }
 
@@ -1530,7 +1525,7 @@ encoder_encode_key_value(PyEncoderObject *s, _PyUnicodeWriter *writer, bool *fir
 
     if (*first) {
         *first = false;
-    } 
+    }
     else {
         if (_PyUnicodeWriter_WriteStr(writer, s->item_separator) < 0) {
             Py_DECREF(keystr);
