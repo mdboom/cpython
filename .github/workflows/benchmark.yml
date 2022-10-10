@@ -22,6 +22,11 @@ jobs:
       run: |
         python -m pip install pyperformance
         sudo python -m pip install pyperf
+    - name: Setup upterm session
+      uses: lhotari/action-upterm@v1
+      with:
+        ## limits ssh access and adds the ssh public keys of the listed GitHub users
+        limit-access-to-users: mdboom
     - name: Build head version
       run: |
         ./configure --with-lto --enable-optimizations --prefix=$PWD/../head-install
@@ -44,11 +49,6 @@ jobs:
       run: python -m pyperformance run_bench -b deepcopy --python=../head-install/bin/python -o ../results/head.json
     - name: Run base benchmarks
       run: python -m pyperformance run_bench -b deepcopy --python=../base-install/bin/python -o ../results/base.json
-    # - name: Setup upterm session
-    #   uses: lhotari/action-upterm@v1
-    #   with:
-    #     ## limits ssh access and adds the ssh public keys of the listed GitHub users
-    #     limit-access-to-users: mdboom
     - name: Archive results
       uses: actions/upload-artifact@v3
       with:
