@@ -48,9 +48,9 @@ jobs:
       run: |
         sudo python -m pyperf system tune
     - name: Run head benchmarks
-      run: python -m pyperformance run_bench -b deepcopy --python=../head-install/bin/python -o ../results/head.json
+      run: python -m pyperformance run -b deepcopy --python=../head-install/bin/python -o ../results/head.json
     - name: Run base benchmarks
-      run: python -m pyperformance run_bench -b deepcopy --python=../base-install/bin/python -o ../results/base.json
+      run: python -m pyperformance run -b deepcopy --python=../base-install/bin/python -o ../results/base.json
     - name: Archive results
       uses: actions/upload-artifact@v3
       with:
