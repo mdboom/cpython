@@ -22,27 +22,35 @@ jobs:
       run: |
         python -m pip install pyperformance
         sudo python -m pip install pyperf
-    - name: Setup directory envs for builds and results
+    - name: Build head version
       run: |
-        echo "PYTHON_BENCH_JSON=$(realpath -m ${GITHUB_WORKSPACE}/../bench-json)" >> $GITHUB_ENV
-        echo "PYTHON_BENCH_BUILD=$(realpath -m ${GITHUB_WORKSPACE}/../bench-build)" >> $GITHUB_ENV
-        echo "PYTHON_BENCH_REF=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
-        echo "PYTHON_BENCH_BASE_REF=${{ github.event.pull_request.base.sha }}" >> $GITHUB_ENV
-    - name: Create directories for builds and results
-      run: mkdir -p $PYTHON_BENCH_JSON $PYTHON_BENCH_BUILD
-    - name: Generate benchmark config
+        ./configure --with-lto --enable-optimizations --prefix=$PWD/../head-install
+        make -j4
+        make install
+    - name: Build ref version
       run: |
-        cat ./.github/workflows/benchmark.conf | python ./.github/workflows/make_benchmark_conf.py > benchmark.conf
-        cat benchmark.conf
-    - name: Setup upterm session
-      uses: lhotari/action-upterm@v1
-      with:
-        ## limits ssh access and adds the ssh public keys of the listed GitHub users
-        limit-access-to-users: mdboom
-    - name: Run benchmarks
-      run: python -m pyperformance compile_all benchmark.conf
+        git checkout $GITHUB_REF
+        git clean -fxd
+        ./configure --with-lto --enable-optimizations --prefix=$PWD/../base-install
+        make -j4
+        make install
+    - name: Make directories
+      run: |
+        mkdir ../results
+    - name: Tune system
+      run: |
+        sudo python -m pyperf system tune
+    - name: Run head benchmarks
+      run: python -m pyperformance run_bench -b deepcopy --python=../head-install/bin/python -o ../results/head.json
+    - name: Run base benchmarks
+      run: python -m pyperformance run_bench -b deepcopy --python=../base-install/bin/python -o ../results/base.json
+    # - name: Setup upterm session
+    #   uses: lhotari/action-upterm@v1
+    #   with:
+    #     ## limits ssh access and adds the ssh public keys of the listed GitHub users
+    #     limit-access-to-users: mdboom
     - name: Archive results
       uses: actions/upload-artifact@v3
       with:
         name: results
-        path: ${{ env.PYTHON_BENCH_JSON }}/*
+        path: ../results/*.json
