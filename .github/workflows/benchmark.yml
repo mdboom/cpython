@@ -51,8 +51,10 @@ jobs:
       run: python -m pyperformance run -b deltablue --python=../head-install/bin/python3 -o ../results/head.json
     - name: Run base benchmarks
       run: python -m pyperformance run -b deltablue --python=../base-install/bin/python3 -o ../results/base.json
+    - name: Move results dir
+      run: mv ../results .
     - name: Archive results
       uses: actions/upload-artifact@v3
       with:
         name: results
-        path: ../results/*.json
+        path: results
