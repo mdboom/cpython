@@ -34,16 +34,14 @@ jobs:
       run: |
         cat ./.github/workflows/benchmark.conf | python ./.github/workflows/make_benchmark_conf.py > benchmark.conf
         cat benchmark.conf
-    - name: Run benchmarks (merge)
-      run: python -m pyperformance compile benchmark.conf $PYTHON_BENCH_REF
-    - name: Run benchmarks (base)
-      run: python -m pyperformance compile benchmark.conf $PYTHON_BENCH_BASE_REF
+    - name: Run benchmarks
+      run: python -m pyperformance compile_all benchmark.conf
     # - name: Setup upterm session
     #   uses: lhotari/action-upterm@v1
     #   with:
     #     ## limits ssh access and adds the ssh public keys of the listed GitHub users
     #     limit-access-to-users: mdboom
-    - name: Archive code coverage results
+    - name: Archive results
       uses: actions/upload-artifact@v3
       with:
         name: results
