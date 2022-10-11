@@ -2,9 +2,6 @@ name: Benchmarks
 
 on: [pull_request]
 
-# permissions:
-#   contents: read
-
 jobs:
   compile_head:
     name: 'Compiling merge branch of PR'
@@ -29,6 +26,7 @@ jobs:
         path: head
   compile_base:
     name: 'Compiline base branch of PR'
+    steps:
     - uses: actions/checkout@v3
     - name: Install Dependencies
       run: sudo ./.github/workflows/posix-deps-apt.sh
