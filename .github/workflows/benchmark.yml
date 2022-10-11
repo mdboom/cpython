@@ -6,9 +6,8 @@ on: [pull_request]
 #   contents: read
 
 jobs:
-  benchmark_ubuntu:
-    name: 'Ubuntu'
-    runs-on: ubuntu-20.04
+  compile_head:
+    name: 'Compiling merge branch of PR'
     steps:
     - uses: actions/checkout@v3
     - name: Install Dependencies
@@ -18,41 +17,59 @@ jobs:
         echo "PATH=/usr/lib/ccache:$PATH" >> $GITHUB_ENV
     - name: Configure ccache action
       uses: hendrikmuhs/ccache-action@v1
-    - name: Install pyperformance
-      run: |
-        python -m pip install pyperformance
-        sudo python -m pip install pyperf
-    # - name: Setup upterm session
-    #   uses: lhotari/action-upterm@v1
-    #   with:
-    #     ## limits ssh access and adds the ssh public keys of the listed GitHub users
-    #     limit-access-to-users: mdboom
     - name: Build head version
       run: |
-        ./configure --with-lto --enable-optimizations --prefix=$PWD/../head-install
+        ./configure --with-lto --enable-optimizations --prefix=$PWD/head
         make -j4
         make install
-    - name: Build ref version
+    - name: Save build
+      uses: actions/upload-artifact@v3
+      with:
+        name: head
+        path: head
+  compile_base:
+    name: 'Compiline base branch of PR'
+    - uses: actions/checkout@v3
+    - name: Install Dependencies
+      run: sudo ./.github/workflows/posix-deps-apt.sh
+    - name: Add ccache to PATH
+      run: |
+        echo "PATH=/usr/lib/ccache:$PATH" >> $GITHUB_ENV
+    - name: Configure ccache action
+      uses: hendrikmuhs/ccache-action@v1
+    - name: Build base version
       run: |
         # Github doesn't do full checkouts so we need to explicitly fetch the base commit
         git fetch --depth=1 origin ${{ github.event.pull_request.base.sha }}
         git checkout ${{ github.event.pull_request.base.sha }}
         git clean -fxd
-        ./configure --with-lto --enable-optimizations --prefix=$PWD/../base-install
+        ./configure --with-lto --enable-optimizations --prefix=$PWD/../base
         make -j4
         make install
+    - name: Save build
+      uses: actions/upload-artifact@v3
+      with:
+        name: head
+        path: head
+  run_benchmarks:
+    name: 'Running benchmarks'
+    needs: [compile_head, compile_base]
+    steps:
+    - uses: actions/download-artifact@v3
+    - name: Install pyperformance
+      run: |
+        python -m pip install pyperformance
+        sudo python -m pip install pyperf
     - name: Make directories
       run: |
-        mkdir ../results
+        mkdir results
     - name: Tune system
       run: |
         sudo python -m pyperf system tune
     - name: Run head benchmarks
-      run: python -m pyperformance run -b deltablue --python=../head-install/bin/python3 -o ../results/head.json
+      run: python -m pyperformance run -b deltablue --python=head-install/bin/python3 -o results/head.json
     - name: Run base benchmarks
-      run: python -m pyperformance run -b deltablue --python=../base-install/bin/python3 -o ../results/base.json
-    - name: Move results dir
-      run: mv ../results .
+      run: python -m pyperformance run -b deltablue --python=base-install/bin/python3 -o results/base.json
     - name: Archive results
       uses: actions/upload-artifact@v3
       with:
