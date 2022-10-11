@@ -84,6 +84,10 @@ jobs:
       run: python -m pyperformance run -b ${{ matrix.benchmark }} --python=head/bin/python3 --append head-${{ matrix.benchmark }}.json
     - name: Run base benchmarks
       run: python -m pyperformance run -b ${{ matrix.benchmark }} --python=base/bin/python3 --append base-${{ matrix.benchmark }}.json
+    - name: Run head benchmarks
+      run: python -m pyperformance run -b ${{ matrix.benchmark }} --python=head/bin/python3 --append head-${{ matrix.benchmark }}.json
+    - name: Run base benchmarks
+      run: python -m pyperformance run -b ${{ matrix.benchmark }} --python=base/bin/python3 --append base-${{ matrix.benchmark }}.json
     - name: Archive results
       uses: actions/upload-artifact@v3
       with:
@@ -104,6 +108,9 @@ jobs:
     - name: Combine benchmarks
       run: |
         python .github/workflows/combine-benchmarks.py
+    - name: Compare
+      run: |
+        pyperf compare_to --table --table-format=md base-combined.json head-combined.json > compare.md
     - name: Archive results
       uses: actions/upload-artifact@v3
       with:
@@ -111,3 +118,4 @@ jobs:
         path: |
           head-combined.json
           base-combined.json
+          compare.md
