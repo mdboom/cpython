@@ -7,6 +7,11 @@ jobs:
     name: 'Compiling merge branch of PR'
     runs-on: ubuntu-latest
     steps:
+    - name: Save build
+      uses: actions/cache@v3
+      with:
+        path: head
+        key: head-${{ github.event.pull_request.head.sha }}
     - uses: actions/checkout@v3
     - name: Install Dependencies
       run: sudo ./.github/workflows/posix-deps-apt.sh
@@ -20,16 +25,16 @@ jobs:
         ./configure --with-lto --enable-optimizations --prefix=$PWD/head
         make -j4
         make install
-    - name: Save build
-      uses: actions/upload-artifact@v3
-      with:
-        name: head
-        path: head
 
   compile_base:
     name: 'Compiling base branch of PR'
     runs-on: ubuntu-latest
     steps:
+    - name: Save build
+      uses: actions/cache@v3
+      with:
+        path: base
+        key: base-${{ github.event.pull_request.base.sha }}
     - uses: actions/checkout@v3
     - name: Install Dependencies
       run: sudo ./.github/workflows/posix-deps-apt.sh
@@ -47,11 +52,6 @@ jobs:
         ./configure --with-lto --enable-optimizations --prefix=$PWD/base
         make -j4
         make install
-    - name: Save build
-      uses: actions/upload-artifact@v3
-      with:
-        name: base
-        path: base
 
   run_benchmarks:
     name: 'Running benchmarks'
@@ -61,6 +61,16 @@ jobs:
       matrix:
         benchmark: ['xml_etree_process', 'xml_etree_parse', 'xml_etree_iterparse', 'xml_etree_generate', 'unpickle_pure_python', 'unpickle_list', 'unpickle', 'unpack_sequence', 'tornado_http', 'thrift', 'telco', 'sympy_sum', 'sympy_str', 'sympy_integrate', 'sympy_expand', 'sqlite_synth', 'spectral_norm', 'scimark_sparse_mat_mult', 'scimark_sor', 'scimark_monte_carlo', 'scimark_lu', 'scimark_fft', 'richards', 'regex_v8', 'regex_effbot', 'regex_dna', 'regex_compile', 'raytrace', 'python_startup_no_site', 'python_startup', 'pyflate', 'pycparser', 'pidigits', 'pickle_pure_python', 'pickle_list', 'pickle_dict', 'pickle', 'pathlib', 'nqueens', 'nbody', 'meteor_contest', 'mako', 'logging_simple', 'logging_silent', 'logging_format', 'json_loads', 'json_dumps', 'json', 'html5lib', 'hexiom', 'go', 'float', 'fannkuch', 'dulwich_log', 'django_template', 'deltablue', 'crypto_pyaes', 'chaos', 'chameleon', '2to3']
     steps:
+    - name: Restore base build
+      uses: actions/cache@v3
+      with:
+        path: base
+        key: base-${{ github.event.pull_request.base.sha }}
+    - name: Restore head build
+      uses: actions/cache@v3
+      with:
+        path: head
+        key: head-${{ github.event.pull_request.head.sha }}
     - uses: actions/download-artifact@v3
     - name: Install pyperformance
       run: |
