@@ -80,14 +80,12 @@ jobs:
     - name: Tune system
       run: |
         sudo python -m pyperf system tune
-    - name: Run head benchmarks
-      run: python -m pyperformance run -b ${{ matrix.benchmark }} --python=head/bin/python3 --append head-${{ matrix.benchmark }}.json
-    - name: Run base benchmarks
-      run: python -m pyperformance run -b ${{ matrix.benchmark }} --python=base/bin/python3 --append base-${{ matrix.benchmark }}.json
-    - name: Run head benchmarks
-      run: python -m pyperformance run -b ${{ matrix.benchmark }} --python=head/bin/python3 --append head-${{ matrix.benchmark }}.json
-    - name: Run base benchmarks
-      run: python -m pyperformance run -b ${{ matrix.benchmark }} --python=base/bin/python3 --append base-${{ matrix.benchmark }}.json
+    - name: Run benchmarks
+      run: |
+        python -m pyperformance run -b ${{ matrix.benchmark }} --python=head/bin/python3 --append head-${{ matrix.benchmark }}.json
+        python -m pyperformance run -b ${{ matrix.benchmark }} --python=base/bin/python3 --append base-${{ matrix.benchmark }}.json
+        python -m pyperformance run -b ${{ matrix.benchmark }} --python=head/bin/python3 --append head-${{ matrix.benchmark }}.json
+        python -m pyperformance run -b ${{ matrix.benchmark }} --python=base/bin/python3 --append base-${{ matrix.benchmark }}.json
     - name: Archive results
       uses: actions/upload-artifact@v3
       with:
@@ -102,6 +100,7 @@ jobs:
     needs: [run_benchmarks]
     steps:
     - uses: actions/download-artifact@v3
+    - uses: actions/checkout@v3
     - name: Install pyperf
       run: |
         sudo python -m pip install pyperf
