@@ -5,6 +5,7 @@ on: [pull_request]
 jobs:
   compile_head:
     name: 'Compiling merge branch of PR'
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Install Dependencies
@@ -24,8 +25,10 @@ jobs:
       with:
         name: head
         path: head
+
   compile_base:
     name: 'Compiline base branch of PR'
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Install Dependencies
@@ -49,8 +52,10 @@ jobs:
       with:
         name: head
         path: head
+
   run_benchmarks:
     name: 'Running benchmarks'
+    runs-on: ubuntu-latest
     needs: [compile_head, compile_base]
     steps:
     - uses: actions/download-artifact@v3
