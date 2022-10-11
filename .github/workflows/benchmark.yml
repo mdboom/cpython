@@ -44,14 +44,14 @@ jobs:
         git fetch --depth=1 origin ${{ github.event.pull_request.base.sha }}
         git checkout ${{ github.event.pull_request.base.sha }}
         git clean -fxd
-        ./configure --with-lto --enable-optimizations --prefix=$PWD/../base
+        ./configure --with-lto --enable-optimizations --prefix=$PWD/base
         make -j4
         make install
     - name: Save build
       uses: actions/upload-artifact@v3
       with:
-        name: head
-        path: head
+        name: base
+        path: base
 
   run_benchmarks:
     name: 'Running benchmarks'
