@@ -106,6 +106,8 @@ jobs:
         sudo python -m pip install pyperf
     - name: Combine benchmarks
       run: |
+        sudo apt install -y tree
+        tree
         python .github/workflows/combine-benchmarks.py
     - name: Compare
       run: |
