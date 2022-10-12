@@ -39,6 +39,7 @@ jobs:
         path: base
         key: base-${{ github.event.pull_request.base.sha }}
     - uses: actions/checkout@v3
+      ref: ${{ github.event.pull_request.base.sha }}
     - name: Install Dependencies
       run: sudo ./.github/workflows/posix-deps-apt.sh
     - name: Add ccache to PATH
@@ -49,10 +50,6 @@ jobs:
     - name: Build base version
       if: steps.cache.outputs.cache-hit != 'true'
       run: |
-        # Github doesn't do full checkouts so we need to explicitly fetch the base commit
-        git fetch --depth=1 origin ${{ github.event.pull_request.base.sha }}
-        git checkout ${{ github.event.pull_request.base.sha }}
-        git clean -fxd
         ./configure --with-lto --enable-optimizations --prefix=$PWD/base
         make -j4
         make install
@@ -67,7 +64,7 @@ jobs:
     - name: Get benchmarks
       id: get_benchmarks
       run: |
-        python -m pyperformance list | python -c "import sys, json; print('BENCHMARKS=' + json.dumps([x[2:].strip() for x in sys.stdin.readlines() if x.startswith('- ')]))" >> $GITHUB_OUTPUT
+        python -m pyperformance list | python -c "import sys, json; print('::set-output name=benchmark_matrix::' + json.dumps([x[2:].strip() for x in sys.stdin.readlines() if x.startswith('- ')]))"
 
   run_benchmarks:
     name: 'Running benchmarks'
@@ -76,7 +73,7 @@ jobs:
     continue-on-error: true
     strategy:
       matrix:
-        benchmark: ${{ fromJson(needs.list_benchmarks.outputs.BENCHMARKS) }}
+        benchmark: ${{ fromJson(needs.list_benchmarks.outputs.benchmark_matrix) }}
     steps:
     - name: Restore base build
       uses: actions/cache@v3
