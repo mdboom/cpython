@@ -63,14 +63,11 @@ jobs:
     steps:
     - name: Install pyperformance
       run: |
-        pip install pyperformance
+        python -m pip install pyperformance
     - name: Get benchmarks
       id: get_benchmarks
       run: |
-        python -m pyperformance list | python -c "import sys; print('::set-output name=benchmark_matrix::' + repr([x[2:] for x in sys.stdin.readlines() if x.startswith('- ')]))"
-    outputs:
-      benchmark_matrix:
-        ${{ steps.get_benchmarks.outputs.benchmark_matrix }}
+        python -m pyperformance list | python -c "import sys, json; print('BENCHMARKS=' + json.dumps([x[2:].strip() for x in sys.stdin.readlines() if x.startswith('- ')]))" >> $GITHUB_OUTPUT
 
   run_benchmarks:
     name: 'Running benchmarks'
@@ -79,7 +76,7 @@ jobs:
     continue-on-error: true
     strategy:
       matrix:
-        benchmark: ${{ fromJson(needs.list_benchmarks.outputs.benchmark_matrix) }}
+        benchmark: ${{ fromJson(needs.list_benchmarks.outputs.BENCHMARKS) }}
     steps:
     - name: Restore base build
       uses: actions/cache@v3
@@ -91,7 +88,6 @@ jobs:
       with:
         path: head
         key: head-${{ github.event.pull_request.head.sha }}
-    - uses: actions/download-artifact@v3
     - name: Install pyperformance
       run: |
         python -m pip install pyperformance
