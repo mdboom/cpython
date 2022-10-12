@@ -39,7 +39,8 @@ jobs:
         path: base
         key: base-${{ github.event.pull_request.base.sha }}
     - uses: actions/checkout@v3
-      ref: ${{ github.event.pull_request.base.sha }}
+      with:
+        ref: ${{ github.event.pull_request.base.sha }}
     - name: Install Dependencies
       run: sudo ./.github/workflows/posix-deps-apt.sh
     - name: Add ccache to PATH
