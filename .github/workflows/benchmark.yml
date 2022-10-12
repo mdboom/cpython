@@ -60,7 +60,7 @@ jobs:
     continue-on-error: true
     strategy:
       matrix:
-        benchmark: ['unpickle_pure_python', 'unpickle_list', 'unpickle', 'unpack_sequence', 'tornado_http', 'telco', 'sympy_sum', 'sympy_str', 'sympy_integrate', 'sympy_expand', 'sqlite_synth', 'spectral_norm', 'richards', 'regex_v8', 'regex_effbot', 'regex_dna', 'regex_compile', 'raytrace', 'python_startup_no_site', 'python_startup', 'pyflate', 'pycparser', 'pidigits', 'pickle_pure_python', 'pickle_list', 'pickle_dict', 'pickle', 'pathlib', 'nqueens', 'nbody', 'meteor_contest', 'mako', 'json_loads', 'json_dumps', 'html5lib', 'hexiom', 'go', 'float', 'fannkuch', 'dulwich_log', 'django_template', 'deltablue', 'crypto_pyaes', 'chaos', 'chameleon', '2to3']
+        benchmark: ['unpickle_pure_python', 'unpickle_list', 'unpickle', 'unpack_sequence', 'tornado_http', 'telco', 'sqlite_synth', 'spectral_norm', 'richards', 'regex_v8', 'regex_effbot', 'regex_dna', 'regex_compile', 'raytrace', 'python_startup_no_site', 'python_startup', 'pyflate', 'pidigits', 'pickle_pure_python', 'pickle_list', 'pickle_dict', 'pickle', 'pathlib', 'nqueens', 'nbody', 'meteor_contest', 'mako', 'json_loads', 'json_dumps', 'html5lib', 'hexiom', 'go', 'float', 'fannkuch', 'dulwich_log', 'django_template', 'deltablue', 'crypto_pyaes', 'chaos', 'chameleon', '2to3']
     steps:
     - name: Restore base build
       uses: actions/cache@v3
