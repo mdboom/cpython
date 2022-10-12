@@ -66,7 +66,9 @@ jobs:
       id: get_benchmarks
       run: |
         python -m pyperformance list | python -c "import sys, json; print('::set-output name=benchmark_matrix::' + json.dumps([x[2:].strip() for x in sys.stdin.readlines() if x.startswith('- ')]))"
-
+    outputs:
+      benchmark_matrix:
+        ${{ steps.get_benchmarks.outputs.benchmark_matrix }}
   run_benchmarks:
     name: 'Running benchmarks'
     runs-on: ubuntu-latest
