@@ -7,7 +7,8 @@ jobs:
     name: 'Compiling merge branch of PR'
     runs-on: ubuntu-latest
     steps:
-    - name: Save build
+    - name: Cache
+      id: cache
       uses: actions/cache@v3
       with:
         path: head
@@ -21,6 +22,7 @@ jobs:
     - name: Configure ccache action
       uses: hendrikmuhs/ccache-action@v1
     - name: Build head version
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
         ./configure --with-lto --enable-optimizations --prefix=$PWD/head
         make -j4
@@ -30,7 +32,8 @@ jobs:
     name: 'Compiling base branch of PR'
     runs-on: ubuntu-latest
     steps:
-    - name: Save build
+    - name: Cache
+      id: cache
       uses: actions/cache@v3
       with:
         path: base
@@ -44,6 +47,7 @@ jobs:
     - name: Configure ccache action
       uses: hendrikmuhs/ccache-action@v1
     - name: Build base version
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
         # Github doesn't do full checkouts so we need to explicitly fetch the base commit
         git fetch --depth=1 origin ${{ github.event.pull_request.base.sha }}
@@ -53,14 +57,29 @@ jobs:
         make -j4
         make install
 
+  list_benchmarks:
+    name: 'Determine list of all benchmarks'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install pyperformance
+      run: |
+        pip install pyperformance
+    - name: Get benchmarks
+      id: get_benchmarks
+      run: |
+        python -m pyperformance list | python -c "import sys; print('::set-output name=benchmark_matrix::' + repr([x[2:] for x in sys.stdin.readlines() if x.startswith('- ')]))"
+    outputs:
+      benchmark_matrix:
+        ${{ steps.get_benchmarks.outputs.benchmark_matrix }}
+
   run_benchmarks:
     name: 'Running benchmarks'
     runs-on: ubuntu-latest
-    needs: [compile_head, compile_base]
+    needs: [compile_head, compile_base, list_benchmarks]
     continue-on-error: true
     strategy:
       matrix:
-        benchmark: ['unpickle_pure_python', 'unpickle_list', 'unpickle', 'unpack_sequence', 'tornado_http', 'telco', 'sqlite_synth', 'spectral_norm', 'richards', 'regex_v8', 'regex_effbot', 'regex_dna', 'regex_compile', 'raytrace', 'python_startup_no_site', 'python_startup', 'pyflate', 'pidigits', 'pickle_pure_python', 'pickle_list', 'pickle_dict', 'pickle', 'pathlib', 'nqueens', 'nbody', 'meteor_contest', 'mako', 'json_loads', 'json_dumps', 'html5lib', 'hexiom', 'go', 'float', 'fannkuch', 'dulwich_log', 'django_template', 'deltablue', 'crypto_pyaes', 'chaos', 'chameleon', '2to3']
+        benchmark: ${{ fromJson(needs.list_benchmarks.outputs.benchmark_matrix) }}
     steps:
     - name: Restore base build
       uses: actions/cache@v3
