@@ -28,6 +28,9 @@ jobs:
         echo "PATH=/usr/lib/ccache:$PATH" >> $GITHUB_ENV
     - name: Configure ccache action
       uses: hendrikmuhs/ccache-action@v1
+    - name: Create pystats directory
+      run: |
+        mkdir /tmp/py_stats
     - name: Compile
       if: steps.cache.outputs.cache-hit != 'true'
       run: |
