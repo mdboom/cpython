@@ -1,6 +1,6 @@
 name: pystats
 
-on: [pull_request]
+"on": [pull_request]
 
 jobs:
   collect-stats:
@@ -8,8 +8,8 @@ jobs:
     strategy:
       matrix:
         sha: [
-          ${{ github.event.pull_request.head.sha }},
-          ${{ github.event.pull_request.base.sha }}
+          "${{ github.event.pull_request.head.sha }}",
+          "${{ github.event.pull_request.base.sha }}"
         ]
     steps:
     - name: Cache
