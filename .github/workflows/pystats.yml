@@ -36,17 +36,36 @@ jobs:
         make install
     - name: Install pyperformance
       run: |
-        ./install/bin/python -m venv venv
+        ./install/bin/python3 -m venv venv
         source venv/bin/activate
         python -m pip install git+https://github.com/python/pyperformance@c457e5b
     - name: Collect stats
       run: |
+        source venv/bin/activate
+        # Delete any stats collected during pip install etc.
+        rm /tmp/py_stats/*
         pyperformance run
     - name: Summarize stats
       run: |
-        python Tools/scripts/summarize_stats.py &> pystats-${{ matrix.sha }}.md
-    - name: Save artifact
+        # Using the system python here to avoid collecting more stats
+        python Tools/scripts/summarize_stats.py --json-output pystats-${{ matrix.sha }}.json
+    - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
         name: pystats-${{ matrix.sha }}
-        path: pystats-${{ matrix.sha }}.md
+        path: pystats-${{ matrix.sha }}.json
+
+  summarize_stats:
+    needs: [collect-stats]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+    - name: Summarize results
+      run: |
+        python Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}.json pystats-${{ github.event.pull_request.head.sha }}.json &> pystats-results.md
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: pystats
+        path: pystats-results.md
