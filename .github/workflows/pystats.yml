@@ -1,0 +1,52 @@
+name: pystats
+
+on: [pull_request]
+
+jobs:
+  collect-stats:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sha: [
+          ${{ github.event.pull_request.head.sha }},
+          ${{ github.event.pull_request.base.sha }}
+        ]
+    steps:
+    - name: Cache
+      id: cache
+      uses: actions/cache@v3
+      with:
+        path: install
+        key: install-${{ matrix.sha }}
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ matrix.sha }}
+    - name: Install Dependencies
+      run: sudo ./.github/workflows/posix-deps-apt.sh
+    - name: Add ccache to PATH
+      run: |
+        echo "PATH=/usr/lib/ccache:$PATH" >> $GITHUB_ENV
+    - name: Configure ccache action
+      uses: hendrikmuhs/ccache-action@v1
+    - name: Compile
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: |
+        ./configure --enable-pystats --prefix=$PWD/install
+        make -j4
+        make install
+    - name: Install pyperformance
+      run: |
+        ./install/bin/python -m venv venv
+        source venv/bin/activate
+        python -m pip install git+https://github.com/python/pyperformance@c457e5b
+    - name: Collect stats
+      run: |
+        pyperformance run
+    - name: Summarize stats
+      run: |
+        python Tools/scripts/summarize_stats.py &> pystats-${{ matrix.sha }}.md
+    - name: Save artifact
+      uses: actions/upload-artifacts@v3
+      with:
+        name: pystats-${{ matrix.sha }}
+        path: pystats-${{ matrix.sha }}.md
