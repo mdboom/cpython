@@ -47,7 +47,7 @@ jobs:
         source venv/bin/activate
         # Delete any stats collected during pip install etc.
         rm /tmp/py_stats/*
-        pyperformance run --benchmarks deltablue || echo "done"
+        pyperformance run || echo "done"
     - name: Summarize stats
       run: |
         source venv/bin/activate
@@ -77,7 +77,6 @@ jobs:
     - name: Summarize results
       run: |
         mkdir /tmp/py_stats
-        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}/pystats-${{ github.event.pull_request.base.sha }}.json pystats-${{ github.event.pull_request.head.sha }}/pystats-${{ github.event.pull_request.head.sha }}.json
         ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}/pystats-${{ github.event.pull_request.base.sha }}.json pystats-${{ github.event.pull_request.head.sha }}/pystats-${{ github.event.pull_request.head.sha }}.json &> pystats-results.md
     - name: Upload artifact
       uses: actions/upload-artifact@v3
