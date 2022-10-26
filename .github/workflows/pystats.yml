@@ -12,15 +12,15 @@ jobs:
           "${{ github.event.pull_request.base.sha }}"
         ]
     steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ matrix.sha }}
     - name: Cache
       id: cache
       uses: actions/cache@v3
       with:
         path: install
         key: install-${{ matrix.sha }}
-    - uses: actions/checkout@v3
-      with:
-        ref: ${{ matrix.sha }}
     - name: Install Dependencies
       run: sudo ./.github/workflows/posix-deps-apt.sh
     - name: Add ccache to PATH
