@@ -66,7 +66,7 @@ def join_rows(a_rows, b_rows):
     b_data = dict((x[0], x[1:]) for x in b_rows)
     # To preserve ordering, use A's keys as is and then add any in B that aren't
     # in A
-    keys = a_data.keys() + [k for k in b_data.keys() if k not in a_data]
+    keys = list(a_data.keys()) + [k for k in b_data.keys() if k not in a_data]
     return [(k, *a_data.get(k, default), *b_data.get(k, default)) for k in keys]
 
 def calculate_specialization_stats(family_stats, total):
