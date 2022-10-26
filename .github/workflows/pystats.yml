@@ -54,7 +54,7 @@ jobs:
         # Needs to run in same version of Python as build
         git fetch origin
         git checkout ${{ github.event.pull_request.head.sha }} Tools/scripts/summarize_stats.py  # REMOVE ME
-        python Tools/scripts/summarize_stats.py --json-output pystats-${{ matrix.sha }}.json
+        python Tools/scripts/summarize_stats.py --json-output pystats-${{ matrix.sha }}.json &> /dev/null
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
@@ -76,8 +76,9 @@ jobs:
       uses: actions/download-artifact@v3
     - name: Summarize results
       run: |
-        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}.json pystats-${{ github.event.pull_request.head.sha }}.json
-        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}.json pystats-${{ github.event.pull_request.head.sha }}.json &> pystats-results.md
+        mkdir /tmp/py_stats
+        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}/pystats-${{ github.event.pull_request.base.sha }}.json pystats-${{ github.event.pull_request.head.sha }}/pystats-${{ github.event.pull_request.head.sha }}.json
+        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}/pystats-${{ github.event.pull_request.base.sha }}.json pystats-${{ github.event.pull_request.head.sha }}/pystats-${{ github.event.pull_request.head.sha }}.json &> pystats-results.md
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
