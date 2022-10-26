@@ -47,11 +47,12 @@ jobs:
         source venv/bin/activate
         # Delete any stats collected during pip install etc.
         rm /tmp/py_stats/*
-        pyperformance run || echo "done"
+        pyperformance run --benchmarks deltablue || echo "done"
     - name: Summarize stats
       run: |
         source venv/bin/activate
         # Needs to run in same version of Python as build
+        git fetch origin
         git checkout ${{ github.event.pull_request.head.sha }} Tools/scripts/summarize_stats.py  # REMOVE ME
         python Tools/scripts/summarize_stats.py --json-output pystats-${{ matrix.sha }}.json
     - name: Upload artifact

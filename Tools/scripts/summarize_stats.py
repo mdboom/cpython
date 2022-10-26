@@ -371,7 +371,6 @@ def emit_specialization_stats(opcode_stats):
 
 def emit_comparative_specialization_stats(base_opcode_stats, head_opcode_stats):
     defines = get_defines()
-    print(defines)
     with Section("Specialization stats", summary="specialization stats by family"):
         for i, (base_opcode_stat, head_opcode_stat) in enumerate(zip(base_opcode_stats, head_opcode_stats)):
             name = opname[i]
@@ -406,7 +405,10 @@ def emit_comparative_specialization_overview(base_opcode_stats, base_total, head
     with Section("Specialization effectiveness"):
         base_rows = calculate_specialization_effectiveness(base_opcode_stats, base_total)
         head_rows = calculate_specialization_effectiveness(head_opcode_stats, head_total)
-        emit_table(("Instructions", "A Count:", "A Ratio:", "B Count:",  "B Ratio:"), join_rows(base_rows, head_rows))
+        emit_table(
+            ("Instructions", "A Count:", "A Ratio:", "B Count:", "B Ratio:"),
+            join_rows(base_rows, head_rows)
+        )
 
 @functools.lru_cache
 def get_stats_defines():
@@ -591,10 +593,8 @@ def output_stats(inputs, json_output=None):
 
         print("# Comparative stats")
         output_comparative_stats(base_stats, head_stats)
-
         print("# Base stats")
         output_single_stats(base_stats)
-
         print("# Head stats")
         output_single_stats(head_stats)
 
@@ -610,7 +610,7 @@ def main():
         type=str,
         default=[DEFAULT_DIR],
         help="Input source."
-        "If a .json file, it's the output of --json-output of a previous run. "
+        "If a .json file, the output of --json-output of a previous run. "
         "If a directory, a directory containing raw pystats .txt files. "
         "If one source is provided, its stats are printed. "
         "If two sources are provided, comparative stats are printed, followed by the stats for each individually. "
