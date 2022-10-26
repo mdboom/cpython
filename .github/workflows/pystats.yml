@@ -47,7 +47,7 @@ jobs:
         source venv/bin/activate
         # Delete any stats collected during pip install etc.
         rm /tmp/py_stats/*
-        pyperformance run
+        pyperformance run || echo "done"
     - name: Summarize stats
       run: |
         # Using the system python here to avoid collecting more stats
