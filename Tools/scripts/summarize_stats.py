@@ -61,7 +61,7 @@ def join_rows(a_rows, b_rows):
     else:
         ncols = b_ncols[0]
 
-    default = "" * (ncols - 1)
+    default = [""] * (ncols - 1)
     a_data = dict((x[0], x[1:]) for x in a_rows)
     b_data = dict((x[0], x[1:]) for x in b_rows)
     # To preserve ordering, use A's keys as is and then add any in B that aren't
