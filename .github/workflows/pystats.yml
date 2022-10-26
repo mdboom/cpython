@@ -52,6 +52,7 @@ jobs:
       run: |
         source venv/bin/activate
         # Needs to run in same version of Python as build
+        git checkout ${{ github.event.pull_request.head.sha }} Tools/scripts/summarize_stats.py  # REMOVE ME
         python Tools/scripts/summarize_stats.py --json-output pystats-${{ matrix.sha }}.json
     - name: Upload artifact
       uses: actions/upload-artifact@v3
