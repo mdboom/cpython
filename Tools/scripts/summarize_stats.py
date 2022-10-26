@@ -349,7 +349,7 @@ def emit_comparative_execution_counts(
                 (opcode, base_entry[0], head_entry[0],
                  f"{100*change:0.1f}%"))
 
-        rows.sort(key=lambda x: float(x[-1][:-1]))
+        rows.sort(key=lambda x: -abs(float(x[-1][:-1])))
 
         emit_table(
             ("Name", "A Count:", "B Count:", "Change:"),
