@@ -74,6 +74,7 @@ jobs:
       uses: actions/download-artifact@v3
     - name: Summarize results
       run: |
+        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}.json pystats-${{ github.event.pull_request.head.sha }}.json
         ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}.json pystats-${{ github.event.pull_request.head.sha }}.json &> pystats-results.md
     - name: Upload artifact
       uses: actions/upload-artifact@v3
