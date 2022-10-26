@@ -163,6 +163,8 @@ def print_comparative_specialization_stats(name, base_family_stats, head_family_
             )
 
 def gather_stats(input):
+    # Note the output of this function must be JSON-serializable
+
     if os.path.isfile(input):
         with open(input, "r") as fd:
             return json.load(fd)
