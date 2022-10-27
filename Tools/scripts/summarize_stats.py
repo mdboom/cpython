@@ -344,7 +344,10 @@ def emit_comparative_execution_counts(
         for opcode in opcodes:
             base_entry = base_data.get(opcode, default)
             head_entry = head_data.get(opcode, default)
-            change = (head_entry[0] - base_entry[0]) / base_entry[0]
+            if base_entry[0] == 0:
+                change = 1
+            else:
+                change = (head_entry[0] - base_entry[0]) / base_entry[0]
             rows.append(
                 (opcode, base_entry[0], head_entry[0],
                  f"{100*change:0.1f}%"))

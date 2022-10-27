@@ -76,17 +76,12 @@ jobs:
       run: |
         # If we don't do this, stats are printed to the console
         mkdir /tmp/py_stats
-        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}/pystats-${{ github.event.pull_request.base.sha }}.json pystats-${{ github.event.pull_request.head.sha }}/pystats-${{ github.event.pull_request.head.sha }}.json
-        # Base stats
-        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}/pystats-${{ github.event.pull_request.base.sha }}.json
-        # Head stats
-        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.head.sha }}/pystats-${{ github.event.pull_request.head.sha }}.json
         # Comparative stats
-        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}/pystats-${{ github.event.pull_request.base.sha }}.json pystats-${{ github.event.pull_request.head.sha }}/pystats-${{ github.event.pull_request.head.sha }}.json &> pystats-comparative.md
+        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}/pystats-${{ github.event.pull_request.base.sha }}.json pystats-${{ github.event.pull_request.head.sha }}/pystats-${{ github.event.pull_request.head.sha }}.json > pystats-comparative.md
         # Base stats
-        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}/pystats-${{ github.event.pull_request.base.sha }}.json &> pystats-${{ github.event.pull_request.base.sha }}.md
+        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}/pystats-${{ github.event.pull_request.base.sha }}.json > pystats-${{ github.event.pull_request.base.sha }}.md
         # Head stats
-        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.head.sha }}/pystats-${{ github.event.pull_request.head.sha }}.json &> pystats-${{ github.event.pull_request.head.sha }}.md
+        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.head.sha }}/pystats-${{ github.event.pull_request.head.sha }}.json > pystats-${{ github.event.pull_request.head.sha }}.md
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
