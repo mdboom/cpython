@@ -146,7 +146,7 @@ def print_comparative_specialization_stats(name, base_family_stats, head_family_
         base_rows = calculate_specialization_stats(base_family_stats, base_total)
         head_rows = calculate_specialization_stats(head_family_stats, head_total)
         emit_table(
-            ("Kind", "A Count", "A Ratio", "B Count", "B Ratio"),
+            ("Kind", "Base Count", "Base Ratio", "Head Count", "Head Ratio"),
             join_rows(base_rows, head_rows)
         )
         base_rows = calculate_specialization_success_failure(base_family_stats)
@@ -154,11 +154,11 @@ def print_comparative_specialization_stats(name, base_family_stats, head_family_
         rows = join_rows(base_rows, head_rows)
         if rows:
             print_title("Specialization attempts", 4)
-            emit_table(("", "A Count:", "A Ratio:", "B Count:", "B Ratio:"), rows)
+            emit_table(("", "Base Count:", "Base Ratio:", "Head Count:", "Head Ratio:"), rows)
             base_rows = calculate_specialization_failure_kinds(name, base_family_stats, defines)
             head_rows = calculate_specialization_failure_kinds(name, head_family_stats, defines)
             emit_table(
-                ("Failure kind", "A Count:", "A Ratio:", "B Count:", "B Ratio:"),
+                ("Failure kind", "Base Count:", "Base Ratio:", "Head Count:", "Head Ratio:"),
                 join_rows(base_rows, head_rows)
             )
 
@@ -352,7 +352,7 @@ def emit_comparative_execution_counts(
         rows.sort(key=lambda x: -abs(float(x[-1][:-1])))
 
         emit_table(
-            ("Name", "A Count:", "B Count:", "Change:"),
+            ("Name", "Base Count:", "Head Count:", "Change:"),
             rows
         )
 
@@ -407,7 +407,7 @@ def emit_comparative_specialization_overview(base_opcode_stats, base_total, head
         base_rows = calculate_specialization_effectiveness(base_opcode_stats, base_total)
         head_rows = calculate_specialization_effectiveness(head_opcode_stats, head_total)
         emit_table(
-            ("Instructions", "A Count:", "A Ratio:", "B Count:", "B Ratio:"),
+            ("Instructions", "Base Count:", "Base Ratio:", "Head Count:", "Head Ratio:"),
             join_rows(base_rows, head_rows)
         )
 
@@ -450,7 +450,7 @@ def emit_comparative_call_stats(base_stats, head_stats):
         rows = join_rows(base_rows, head_rows)
         rows.sort(key=lambda x: -float(x[-1][:-1]))
         emit_table(
-            ("", "A Count:", "A Ratio:", "B Count:", "B Ratio:"),
+            ("", "Base Count:", "Base Ratio:", "Head Count:", "Head Ratio:"),
             rows
         )
 
@@ -486,7 +486,7 @@ def emit_comparative_object_stats(base_stats, head_stats):
     with Section("Object stats", summary="allocations, frees and dict materializatons"):
         base_rows = calculate_object_stats(base_stats)
         head_rows = calculate_object_stats(head_stats)
-        emit_table(("",  "A Count:", "A Ratio:", "B Count:", "B Ratio:"), join_rows(base_rows, head_rows))
+        emit_table(("",  "Base Count:", "Base Ratio:", "Head Count:", "Head Ratio:"), join_rows(base_rows, head_rows))
 
 def get_total(opcode_stats):
     total = 0
