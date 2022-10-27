@@ -44,6 +44,8 @@ jobs:
         python -m pip install git+https://github.com/mdboom/pyperformance@d728bbf
     - name: Collect stats
       run: |
+        # Delete py_stats -- the Python build (deepfreeze etc.) itself creates stats
+        rm -rf /tmp/py_stats/*
         # Run pyperformance itself on the system python, so it doesn't collect stats.
         # The benchmarks themselves are run using the python we built here.
         pyperformance run --output results-${{ matrix.sha }}.json --python ./install/bin/python3 || echo "done"
