@@ -39,12 +39,10 @@ jobs:
         make install
     - name: Install pyperformance into the system python
       run: |
-        python -m pip install git+https://github.com/mdboom/pyperf@925f07b
+        python -m pip install git+https://github.com/mdboom/pyperf@925f07b  # REMOVE ME
         python -m pip install git+https://github.com/python/pyperformance@c457e5b
     - name: Collect stats
       run: |
-        # Delete any stats collected during pip install etc.
-        rm /tmp/py_stats/*
         pyperformance run --output results-${{ matrix.sha }}.json --python ./install/bin/python3 || echo "done"
     - name: Summarize stats
       run: |
