@@ -77,15 +77,29 @@ jobs:
     - name: Summarize results
       run: |
         mkdir /tmp/py_stats
-        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}/pystats-${{ github.event.pull_request.base.sha }}.json pystats-${{ github.event.pull_request.head.sha }}/pystats-${{ github.event.pull_request.head.sha }}.json &> pystats-results.md
+        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}/pystats-${{ github.event.pull_request.base.sha }}.json pystats-${{ github.event.pull_request.head.sha }}/pystats-${{ github.event.pull_request.head.sha }}.json &> pystats-comparative.md
+        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}/pystats-${{ github.event.pull_request.base.sha }}.json &> pystats-${{ github.event.pull_request.base.sha }}.md
+        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.head.sha }}/pystats-${{ github.event.pull_request.head.sha }}.json &> pystats-${{ github.event.pull_request.head.sha }}.md
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
         name: pystats
-        path: pystats-results.md
-    - name: Add comment
+        path: *.md
+    - name: Add comment comparative
       uses: peter-evans/create-or-update-comment@v2
       with:
         issue-number: ${{ github.event.pull_request.number }}
-        body-file: pystats-results.md
+        body-file: pystats-comparative.md
+        token: ${{ secrets.COMMENT_TOKEN }}
+    - name: Add comment base
+      uses: peter-evans/create-or-update-comment@v2
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        body-file: pystats-${{ github.event.pull_request.base.sha }}.md
+        token: ${{ secrets.COMMENT_TOKEN }}
+    - name: Add comment head
+      uses: peter-evans/create-or-update-comment@v2
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        body-file: pystats-${{ github.event.pull_request.head.sha }}.md
         token: ${{ secrets.COMMENT_TOKEN }}

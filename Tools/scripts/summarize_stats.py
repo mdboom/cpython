@@ -592,12 +592,7 @@ def output_stats(inputs, json_output=None):
         base_stats = gather_stats(inputs[0])
         head_stats = gather_stats(inputs[1])
 
-        print("# Comparative stats")
         output_comparative_stats(base_stats, head_stats)
-        print("# Base stats")
-        output_single_stats(base_stats)
-        print("# Head stats")
-        output_single_stats(head_stats)
 
     print("---")
     print("Stats gathered on:", date.today())
@@ -614,7 +609,7 @@ def main():
         "If a .json file, the output of --json-output of a previous run. "
         "If a directory, a directory containing raw pystats .txt files. "
         "If one source is provided, its stats are printed. "
-        "If two sources are provided, comparative stats are printed, followed by the stats for each individually. "
+        "If two sources are provided, comparative stats are printed. "
         f"Default is {DEFAULT_DIR}."
     )
 
