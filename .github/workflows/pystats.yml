@@ -30,6 +30,7 @@ jobs:
       uses: hendrikmuhs/ccache-action@v1.2
     - name: Create pystats directory
       run: |
+        # If we don't do this, stats are printed to the console
         mkdir /tmp/py_stats
     - name: Compile
       if: steps.cache.outputs.cache-hit != 'true'
@@ -43,14 +44,16 @@ jobs:
         python -m pip install git+https://github.com/python/pyperformance@c457e5b
     - name: Collect stats
       run: |
+        # Run pyperformance itself on the system python, so it doesn't collect stats.
+        # The benchmarks themselves are run using the python we built here.
         pyperformance run --output results-${{ matrix.sha }}.json --python ./install/bin/python3 || echo "done"
     - name: Summarize stats
       run: |
-        # Needs to run in same version of Python as build
-        git fetch origin
+        git fetch origin  # REMOVE ME
         git checkout ${{ github.event.pull_request.head.sha }} Tools/scripts/summarize_stats.py  # REMOVE ME
+        # Needs to run in same version of Python as build so the opcodes and source files match
         ./install/bin/python3 Tools/scripts/summarize_stats.py --json-output pystats-${{ matrix.sha }}.json &> /dev/null
-    - name: Upload artifact
+    - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
         name: pystats-${{ matrix.sha }}
@@ -71,11 +74,20 @@ jobs:
       uses: actions/download-artifact@v3
     - name: Summarize results
       run: |
+        # If we don't do this, stats are printed to the console
         mkdir /tmp/py_stats
+        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}/pystats-${{ github.event.pull_request.base.sha }}.json pystats-${{ github.event.pull_request.head.sha }}/pystats-${{ github.event.pull_request.head.sha }}.json
+        # Base stats
+        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}/pystats-${{ github.event.pull_request.base.sha }}.json
+        # Head stats
+        ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.head.sha }}/pystats-${{ github.event.pull_request.head.sha }}.json
+        # Comparative stats
         ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}/pystats-${{ github.event.pull_request.base.sha }}.json pystats-${{ github.event.pull_request.head.sha }}/pystats-${{ github.event.pull_request.head.sha }}.json &> pystats-comparative.md
+        # Base stats
         ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.base.sha }}/pystats-${{ github.event.pull_request.base.sha }}.json &> pystats-${{ github.event.pull_request.base.sha }}.md
+        # Head stats
         ./install/bin/python3 Tools/scripts/summarize_stats.py pystats-${{ github.event.pull_request.head.sha }}/pystats-${{ github.event.pull_request.head.sha }}.json &> pystats-${{ github.event.pull_request.head.sha }}.md
-    - name: Upload artifact
+    - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
         name: pystats
