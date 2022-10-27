@@ -41,7 +41,7 @@ jobs:
     - name: Install pyperformance into the system python
       run: |
         python -m pip install git+https://github.com/mdboom/pyperf@925f07b  # REMOVE ME
-        python -m pip install git+https://github.com/mdboom/pyperformance@a3463dc
+        python -m pip install git+https://github.com/mdboom/pyperformance@d728bbf
     - name: Collect stats
       run: |
         # Run pyperformance itself on the system python, so it doesn't collect stats.
