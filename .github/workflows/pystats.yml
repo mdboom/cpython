@@ -47,7 +47,7 @@ jobs:
         source venv/bin/activate
         # Delete any stats collected during pip install etc.
         rm /tmp/py_stats/*
-        pyperformance run || echo "done"
+        pyperformance run --output results-${{ matrix.sha }}.json || echo "done"
     - name: Summarize stats
       run: |
         source venv/bin/activate
@@ -59,7 +59,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: pystats-${{ matrix.sha }}
-        path: pystats-${{ matrix.sha }}.json
+        path: "*.json"
 
   summarize_stats:
     runs-on: ubuntu-latest
