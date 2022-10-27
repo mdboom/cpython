@@ -84,7 +84,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: pystats
-        path: *.md
+        path: "*.md"
     - name: Add comment comparative
       uses: peter-evans/create-or-update-comment@v2
       with:
