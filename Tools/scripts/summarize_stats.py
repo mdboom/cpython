@@ -605,19 +605,21 @@ def main():
         nargs="*",
         type=str,
         default=[DEFAULT_DIR],
-        help="Input source."
-        "If a .json file, the output of --json-output of a previous run. "
-        "If a directory, a directory containing raw pystats .txt files. "
-        "If one source is provided, its stats are printed. "
-        "If two sources are provided, comparative stats are printed. "
-        f"Default is {DEFAULT_DIR}."
+        help=f"""
+        Input source(s).
+        For each entry, if a .json file, the output provided by --json-output from a previous run;
+        if a directory, a directory containing raw pystats .txt files.
+        If one source is provided, its stats are printed.
+        If two sources are provided, comparative stats are printed.
+        Default is {DEFAULT_DIR}.
+        """
     )
 
     parser.add_argument(
         "--json-output",
         nargs="?",
         type=argparse.FileType("w"),
-        help="Output complete raw results to the given JSON file"
+        help="Output complete raw results to the given JSON file."
     )
 
     args = parser.parse_args()
