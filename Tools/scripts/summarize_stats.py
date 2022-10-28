@@ -37,8 +37,8 @@ TOTAL = "specialization.deferred", "specialization.hit", "specialization.miss", 
 
 def join_rows(a_rows, b_rows):
     """
-    Joins two sets of table rows together, side-by-side, where the first column
-    is a common key.
+    Joins two tables together, side-by-side, where the first column in each is a
+    common key.
     """
     if len(a_rows) == 0 and len(b_rows) == 0:
         return []
@@ -594,7 +594,6 @@ def output_stats(inputs, json_output=None):
 
         base_stats = gather_stats(inputs[0])
         head_stats = gather_stats(inputs[1])
-
         output_comparative_stats(base_stats, head_stats)
 
     print("---")
