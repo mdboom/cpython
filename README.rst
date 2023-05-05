@@ -16,6 +16,8 @@ This is Python version 3.12.0 alpha 7
 
 Copyright © 2001-2023 Python Software Foundation.  All rights reserved.
 
+A TRIVIAL CHANGE THAT SHOULDN'T AFFECT RUNTIME
+
 See the end of this file for further copyright and license information.
 
 .. contents::
