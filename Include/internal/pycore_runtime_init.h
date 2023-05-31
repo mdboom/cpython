@@ -120,10 +120,7 @@ extern "C" {
         .gc = { \
             .enabled = 1, \
             .generations = { \
-                /* .head is set in _PyGC_InitState(). */ \
-                { .threshold = 700, }, \
-                { .threshold = 10, }, \
-                { .threshold = 10, }, \
+                { .threshold = 7000, }, \
             }, \
         }, \
         .static_objects = { \
