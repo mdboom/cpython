@@ -95,7 +95,7 @@ static inline void _PyGC_SET_FINALIZED(PyObject *op) {
 
 /* If we change this, we need to change the default value in the
    signature of gc.collect. */
-#define NUM_GENERATIONS 3
+#define NUM_GENERATIONS 1
 /*
    NOTE: about untracking of mutable objects.
 
