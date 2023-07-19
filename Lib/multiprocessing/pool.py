@@ -7,7 +7,7 @@
 # Licensed to PSF under a Contributor Agreement.
 #
 
-__all__ = ['Pool', 'ThreadPool']
+__all__ = ["Pool", "ThreadPool", "SubinterpreterPool"]
 
 #
 # Imports
@@ -16,12 +16,17 @@ __all__ = ['Pool', 'ThreadPool']
 import collections
 import itertools
 import os
+import pickle
 import queue
 import threading
 import time
 import traceback
 import types
 import warnings
+import weakref
+
+from test.support import interpreters
+from extrainterpreters.memoryboard import LockableBoard
 
 # If threading is available then ThreadPool should be provided.  Therefore
 # we avoid top-level imports which are liable to fail on some systems.
@@ -953,5 +958,123 @@ class ThreadPool(Pool):
         for i in range(size):
             inqueue.put(None)
 
-    def _wait_for_updates(self, sentinels, change_notifier, timeout):
-        time.sleep(timeout)
+    @classmethod
+    def _wait_for_updates(cls, sentinels, change_notifier, timeout=None):
+        time.sleep(timeout or 0)
+
+
+template = """
+import sys
+sys.path.insert(0, '.')
+
+import pickle
+
+target = pickle.loads({target!r})
+args = pickle.loads({args!r})
+kwargs = pickle.loads({kwargs!r})
+
+target(*args, **kwargs)
+"""
+
+
+class EmptyQueue(Exception):
+    pass
+
+
+class BoardQueue:
+    def __init__(self):
+        self._board = LockableBoard()
+        self._r, self._w = os.pipe()
+
+    def get(self, block=True):
+        if block:
+            os.read(self._r, 1)
+        result = self._board.fetch_item()
+        if result is None:
+            raise EmptyQueue()
+        return result[1]
+
+    def put(self, obj, block=True):
+        assert block is True
+        self._board.new_item(obj)
+        self._board.collect()
+        os.write(self._w, b"x")
+
+    def close(self):
+        os.close(self._r)
+        os.close(self._w)
+        self._board.close()
+
+
+class SubinterpreterProcess(threading.Thread):
+    def __init__(self, group=None, target=None, name=None, args=(), kwargs={}):
+        def spawn_subinterpreter():
+            code = template.format(
+                target=pickle.dumps(target),
+                args=pickle.dumps(args),
+                kwargs=pickle.dumps(kwargs),
+            )
+            interpreter = interpreters.create()
+            interpreter.run(code)
+            interpreter.close()
+
+        threading.Thread.__init__(self, group, spawn_subinterpreter, name, (), {})
+        self._pid = None
+        self._children = weakref.WeakKeyDictionary()
+        self._start_called = False
+        self._parent = threading.current_thread()
+
+    def start(self):
+        if self._parent != threading.current_thread():
+            raise RuntimeError(
+                "Parent is {0!r} but current_process is {1!r}".format(
+                    self._parent, threading.current_thread()
+                )
+            )
+        self._start_called = True
+        threading.Thread.start(self)
+
+    @property
+    def exitcode(self):
+        if self._start_called and not self.is_alive():
+            return 0
+        else:
+            return None
+
+
+class SubinterpreterPool(Pool):
+    @staticmethod
+    def Process(ctx, *args, **kwds):
+        return SubinterpreterProcess(*args, **kwds)
+
+    def __del__(self):
+        self._inqueue.close()
+        self._outqueue.close()
+
+    def _setup_queues(self):
+        self._inqueue = BoardQueue()
+        self._outqueue = BoardQueue()
+        self._quick_put = self._inqueue.put
+        self._quick_get = self._outqueue.get
+
+    def _get_sentinels(self):
+        return [self._change_notifier._reader]
+
+    @staticmethod
+    def _get_worker_sentinels(workers):
+        return []
+
+    @staticmethod
+    def _help_stuff_finish(inqueue, task_handler, size):
+        # drain inqueue, and put sentinels at its head to make workers finish
+        while True:
+            try:
+                inqueue.get(block=False)
+            except EmptyQueue:
+                break
+        for i in range(size):
+            inqueue.put(None)
+
+    @classmethod
+    def _wait_for_updates(cls, sentinels, change_notifier, timeout=None):
+        time.sleep(timeout or 0)
