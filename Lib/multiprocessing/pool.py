@@ -7,7 +7,7 @@
 # Licensed to PSF under a Contributor Agreement.
 #
 
-__all__ = ["Pool", "ThreadPool", "SubinterpreterPool", "SubinterpreterPool2"]
+__all__ = ["Pool", "ThreadPool", "SubinterpreterPool", "SubinterpreterPool2", "SubinterpreterPool3"]
 
 #
 # Imports
@@ -18,6 +18,7 @@ import itertools
 import os
 import pickle
 import queue
+import textwrap
 import threading
 import time
 import traceback
@@ -1078,87 +1079,94 @@ class SubinterpreterPool(Pool):
         time.sleep(timeout or 0)
 
 
-subinterpreter2_setup_code = """
-import sys
-sys.path.insert(0, '.')
+def get_subinterpreter_worker(setup_interpreter, run_in_interpreter, close_interpreter):
+    def worker(inqueue, outqueue, initializer=None, initargs=(), maxtasks=None,
+                            wrap_exception=False):
+        if (maxtasks is not None) and not (isinstance(maxtasks, int)
+                                        and maxtasks >= 1):
+            raise AssertionError("Maxtasks {!r} is not valid".format(maxtasks))
+        put = outqueue.put
+        get = inqueue.get
+        if hasattr(inqueue, '_writer'):
+            inqueue._writer.close()
+            outqueue._reader.close()
 
-import pickle
+        interpreter = interpreters.create()
+        setup_interpreter(interpreter)
 
-def _f(p):
-    func, args, kwargs = pickle.loads(p)
-    return pickle.dumps(func(*args, **kwargs))
-"""
+        try:
+            if initializer is not None:
+                # TODO
+                initializer(*initargs)
 
+            completed = 0
+            while maxtasks is None or (maxtasks and completed < maxtasks):
+                try:
+                    task = get()
+                except (EOFError, OSError):
+                    util.debug('worker got EOFError or OSError -- exiting')
+                    break
 
-subinterpreter2_template = """
-_f({pickle!r})
-"""
+                if task is None:
+                    util.debug('worker got sentinel -- exiting')
+                    break
 
+                job, i, func, args, kwds = task
+                try:
+                    result = (True, run_in_interpreter(interpreter, func, args, kwds))
+                except Exception as e:
+                    print("MY EXCEPTION", e)
+                    if wrap_exception and func is not _helper_reraises_exception:
+                        e = ExceptionWithTraceback(e, e.__traceback__)
+                        result = (False, e)
+                try:
+                    put((job, i, result))
+                except Exception as e:
+                    wrapped = MaybeEncodingError(e, result[1])
+                    util.debug("Possible encoding error while sending result: %s" % (
+                        wrapped))
+                    put((job, i, (False, wrapped)))
 
-def run_in_interpreter(inter, func, args, kwargs):
-    code = subinterpreter2_template.format(pickle=pickle.dumps((func, args, kwargs)))
-    result = pickle.loads(inter.run(code, eval=True))
-    return result
+                task = job = result = func = args = kwds = None
+                completed += 1
+        finally:
+            close_interpreter(interpreter)
+        util.debug('worker exiting after %d tasks' % completed)
 
-
-def subinterpreter_worker(inqueue, outqueue, initializer=None, initargs=(), maxtasks=None,
-                          wrap_exception=False):
-    if (maxtasks is not None) and not (isinstance(maxtasks, int)
-                                       and maxtasks >= 1):
-        raise AssertionError("Maxtasks {!r} is not valid".format(maxtasks))
-    put = outqueue.put
-    get = inqueue.get
-    if hasattr(inqueue, '_writer'):
-        inqueue._writer.close()
-        outqueue._reader.close()
-
-    interpreter = interpreters.create()
-    interpreter.run(subinterpreter2_setup_code)
-
-    try:
-        if initializer is not None:
-            # TODO
-            initializer(*initargs)
-
-        completed = 0
-        while maxtasks is None or (maxtasks and completed < maxtasks):
-            try:
-                task = get()
-            except (EOFError, OSError):
-                util.debug('worker got EOFError or OSError -- exiting')
-                break
-
-            if task is None:
-                util.debug('worker got sentinel -- exiting')
-                break
-
-            job, i, func, args, kwds = task
-            try:
-                result = (True, run_in_interpreter(interpreter, func, args, kwds))
-            except Exception as e:
-                if wrap_exception and func is not _helper_reraises_exception:
-                    e = ExceptionWithTraceback(e, e.__traceback__)
-                    result = (False, e)
-            try:
-                put((job, i, result))
-            except Exception as e:
-                wrapped = MaybeEncodingError(e, result[1])
-                util.debug("Possible encoding error while sending result: %s" % (
-                    wrapped))
-                put((job, i, (False, wrapped)))
-
-            task = job = result = func = args = kwds = None
-            completed += 1
-    finally:
-        interpreter.close()
-    util.debug('worker exiting after %d tasks' % completed)
+    return worker
 
 
 class SubinterpreterProcess2(threading.Thread):
+    def get_worker(self):
+        setup_code = textwrap.dedent("""
+            import sys
+            sys.path.insert(0, '.')
+
+            import pickle
+
+            def _f(p):
+                func, args, kwargs = pickle.loads(p)
+                return pickle.dumps(func(*args, **kwargs))
+            """)
+
+        template = "_f({pickle!r})"
+
+        def setup(interpreter):
+            interpreter.run(setup_code)
+
+        def run(interpreter, func, args, kwargs):
+            code = template.format(pickle=pickle.dumps((func, args, kwargs)))
+            result = pickle.loads(interpreter.run(code, eval=True))
+            return result
+
+        def close(interpreter):
+            interpreter.close()
+
+        return get_subinterpreter_worker(setup, run, close)
+
     def __init__(self, group=None, target=None, name=None, args=(), kwargs={}):
         assert target is worker
-        target = subinterpreter_worker
-        threading.Thread.__init__(self, group, subinterpreter_worker, name, args, kwargs)
+        threading.Thread.__init__(self, group, self.get_worker(), name, args, kwargs)
         self._pid = None
         self._children = weakref.WeakKeyDictionary()
         self._start_called = False
@@ -1189,3 +1197,42 @@ class SubinterpreterPool2(ThreadPool):
     @staticmethod
     def Process(ctx, *args, **kwds):
         return SubinterpreterProcess2(*args, **kwds)
+
+
+class SubinterpreterProcess3(SubinterpreterProcess2):
+    def get_worker(self):
+        setup_code = textwrap.dedent("""
+            import os
+            import sys
+            sys.path.insert(0, '.')
+
+            import pickle
+
+            def _f(p):
+                func, args, kwargs = pickle.loads(p)
+                os.write({w}, pickle.dumps(func(*args, **kwargs)))
+            """)
+
+        template = "_f({pickle!r})"
+        r, w = os.pipe()
+
+        def setup(interpreter):
+            interpreter.run(setup_code.format(w=w))
+
+        def run(interpreter, func, args, kwargs):
+            code = template.format(pickle=pickle.dumps((func, args, kwargs)))
+            interpreter.run(code)
+            return pickle.loads(os.read(r, 1024))
+
+        def close(interpreter):
+            os.close(r)
+            os.close(w)
+            interpreter.close()
+
+        return get_subinterpreter_worker(setup, run, close)
+
+
+class SubinterpreterPool3(ThreadPool):
+    @staticmethod
+    def Process(ctx, *args, **kwds):
+        return SubinterpreterProcess3(*args, **kwds)
