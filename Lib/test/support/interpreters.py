@@ -90,12 +90,16 @@ class Interpreter:
         """
         return _interpreters.destroy(self._id)
 
-    def run(self, src_str, /, *, channels=None):
+    def run(self, src_str, /, *, channels=None, eval=False):
         """Run the given source code in the interpreter.
 
         This blocks the current Python thread until done.
+
+        If `eval` is True, the code is evaluated as an expression, and the
+        result is returned.  The return type must be a shareable object.
+
         """
-        _interpreters.run_string(self._id, src_str, channels)
+        return _interpreters.run_string(self._id, src_str, channels, eval)
 
 
 def create_channel():

@@ -7,7 +7,7 @@
 # Licensed to PSF under a Contributor Agreement.
 #
 
-__all__ = ["Pool", "ThreadPool", "SubinterpreterPool"]
+__all__ = ["Pool", "ThreadPool", "SubinterpreterPool", "SubinterpreterPool2"]
 
 #
 # Imports
@@ -969,9 +969,7 @@ sys.path.insert(0, '.')
 
 import pickle
 
-target = pickle.loads({target!r})
-args = pickle.loads({args!r})
-kwargs = pickle.loads({kwargs!r})
+target, args, kwargs = pickle.loads({pickle!r})
 
 target(*args, **kwargs)
 """
@@ -1009,9 +1007,7 @@ class SubinterpreterProcess(threading.Thread):
     def __init__(self, group=None, target=None, name=None, args=(), kwargs={}):
         def spawn_subinterpreter():
             code = template.format(
-                target=pickle.dumps(target),
-                args=pickle.dumps(args),
-                kwargs=pickle.dumps(kwargs),
+                pickle=pickle.dumps((target, args, kwargs))
             )
             interpreter = interpreters.create()
             interpreter.run(code)
@@ -1080,3 +1076,116 @@ class SubinterpreterPool(Pool):
     @classmethod
     def _wait_for_updates(cls, sentinels, change_notifier, timeout=None):
         time.sleep(timeout or 0)
+
+
+subinterpreter2_setup_code = """
+import sys
+sys.path.insert(0, '.')
+
+import pickle
+
+def _f(p):
+    func, args, kwargs = pickle.loads(p)
+    return pickle.dumps(func(*args, **kwargs))
+"""
+
+
+subinterpreter2_template = """
+_f({pickle!r})
+"""
+
+
+def run_in_interpreter(inter, func, args, kwargs):
+    code = subinterpreter2_template.format(pickle=pickle.dumps((func, args, kwargs)))
+    result = pickle.loads(inter.run(code, eval=True))
+    return result
+
+
+def subinterpreter_worker(inqueue, outqueue, initializer=None, initargs=(), maxtasks=None,
+                          wrap_exception=False):
+    if (maxtasks is not None) and not (isinstance(maxtasks, int)
+                                       and maxtasks >= 1):
+        raise AssertionError("Maxtasks {!r} is not valid".format(maxtasks))
+    put = outqueue.put
+    get = inqueue.get
+    if hasattr(inqueue, '_writer'):
+        inqueue._writer.close()
+        outqueue._reader.close()
+
+    interpreter = interpreters.create()
+    interpreter.run(subinterpreter2_setup_code)
+
+    try:
+        if initializer is not None:
+            # TODO
+            initializer(*initargs)
+
+        completed = 0
+        while maxtasks is None or (maxtasks and completed < maxtasks):
+            try:
+                task = get()
+            except (EOFError, OSError):
+                util.debug('worker got EOFError or OSError -- exiting')
+                break
+
+            if task is None:
+                util.debug('worker got sentinel -- exiting')
+                break
+
+            job, i, func, args, kwds = task
+            try:
+                result = (True, run_in_interpreter(interpreter, func, args, kwds))
+            except Exception as e:
+                if wrap_exception and func is not _helper_reraises_exception:
+                    e = ExceptionWithTraceback(e, e.__traceback__)
+                    result = (False, e)
+            try:
+                put((job, i, result))
+            except Exception as e:
+                wrapped = MaybeEncodingError(e, result[1])
+                util.debug("Possible encoding error while sending result: %s" % (
+                    wrapped))
+                put((job, i, (False, wrapped)))
+
+            task = job = result = func = args = kwds = None
+            completed += 1
+    finally:
+        interpreter.close()
+    util.debug('worker exiting after %d tasks' % completed)
+
+
+class SubinterpreterProcess2(threading.Thread):
+    def __init__(self, group=None, target=None, name=None, args=(), kwargs={}):
+        assert target is worker
+        target = subinterpreter_worker
+        threading.Thread.__init__(self, group, subinterpreter_worker, name, args, kwargs)
+        self._pid = None
+        self._children = weakref.WeakKeyDictionary()
+        self._start_called = False
+        self._parent = threading.current_thread()
+
+    def terminate(self):
+        self.join()
+
+    def start(self):
+        if self._parent != threading.current_thread():
+            raise RuntimeError(
+                "Parent is {0!r} but current_process is {1!r}".format(
+                    self._parent, threading.current_thread()
+                )
+            )
+        self._start_called = True
+        threading.Thread.start(self)
+
+    @property
+    def exitcode(self):
+        if self._start_called and not self.is_alive():
+            return 0
+        else:
+            return None
+
+
+class SubinterpreterPool2(ThreadPool):
+    @staticmethod
+    def Process(ctx, *args, **kwds):
+        return SubinterpreterProcess2(*args, **kwds)

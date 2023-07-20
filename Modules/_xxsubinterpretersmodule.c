@@ -397,7 +397,7 @@ _ensure_not_running(PyInterpreterState *interp)
 
 static int
 _run_script(PyInterpreterState *interp, const char *codestr,
-            _sharedns *shared, _sharedexception *sharedexc)
+            _sharedns *shared, _sharedexception *sharedexc, int eval, PyObject **result)
 {
     PyObject *excval = NULL;
     PyObject *main_mod = _PyInterpreterState_GetMainModule(interp);
@@ -420,15 +420,25 @@ _run_script(PyInterpreterState *interp, const char *codestr,
     }
 
     // Run the string (see PyRun_SimpleStringFlags).
-    PyObject *result = PyRun_StringFlags(codestr, Py_file_input, ns, ns, NULL);
-    Py_DECREF(ns);
-    if (result == NULL) {
-        goto error;
+    if (eval == 0) {
+        *result = PyRun_StringFlags(codestr, Py_file_input, ns, ns, NULL);
+        Py_DECREF(ns);
+        if (*result == NULL) {
+            goto error;
+        }
+    } else {
+        *result = PyRun_StringFlags(codestr, Py_eval_input, ns, ns, NULL);
+        Py_DECREF(ns);
+        if (*result == NULL) {
+            goto error;
+        }
+        if (_PyObject_CheckCrossInterpreterData(*result) != 0) {
+            Py_DECREF(*result);
+            *result = NULL;
+            PyErr_SetString(PyExc_TypeError, "Result is not shareable between interpreters");
+            goto error;
+        }
     }
-    else {
-        Py_DECREF(result);  // We throw away the result.
-    }
-
     *sharedexc = no_exception;
     return 0;
 
@@ -446,18 +456,20 @@ error:
     return -1;
 }
 
-static int
+static PyObject*
 _run_script_in_interpreter(PyObject *mod, PyInterpreterState *interp,
-                           const char *codestr, PyObject *shareables)
+                           const char *codestr, PyObject *shareables, int eval)
 {
+    PyObject* result = NULL;
+
     if (_ensure_not_running(interp) < 0) {
-        return -1;
+        return result;
     }
     module_state *state = get_module_state(mod);
 
     _sharedns *shared = _get_shared_ns(shareables);
     if (shared == NULL && PyErr_Occurred()) {
-        return -1;
+        return result;
     }
 
     // Switch to interpreter.
@@ -471,7 +483,7 @@ _run_script_in_interpreter(PyObject *mod, PyInterpreterState *interp,
 
     // Run the script.
     _sharedexception exc = {NULL, NULL};
-    int result = _run_script(interp, codestr, shared, &exc);
+    int result_code = _run_script(interp, codestr, shared, &exc, eval, &result);
 
     // Switch back.
     if (save_tstate != NULL) {
@@ -483,7 +495,7 @@ _run_script_in_interpreter(PyObject *mod, PyInterpreterState *interp,
         assert(state != NULL);
         _sharedexception_apply(&exc, state->RunFailedError);
     }
-    else if (result != 0) {
+    else if (result_code != 0) {
         // We were unable to allocate a shared exception.
         PyErr_NoMemory();
     }
@@ -674,12 +686,13 @@ Return the ID of main interpreter.");
 static PyObject *
 interp_run_string(PyObject *self, PyObject *args, PyObject *kwds)
 {
-    static char *kwlist[] = {"id", "script", "shared", NULL};
+    static char *kwlist[] = {"id", "script", "shared", "eval", NULL};
     PyObject *id, *code;
     PyObject *shared = NULL;
+    int eval = 0;
     if (!PyArg_ParseTupleAndKeywords(args, kwds,
-                                     "OU|O:run_string", kwlist,
-                                     &id, &code, &shared)) {
+                                     "OU|Op:run_string", kwlist,
+                                     &id, &code, &shared, &eval)) {
         return NULL;
     }
 
@@ -702,10 +715,7 @@ interp_run_string(PyObject *self, PyObject *args, PyObject *kwds)
     }
 
     // Run the code in the interpreter.
-    if (_run_script_in_interpreter(self, interp, codestr, shared) != 0) {
-        return NULL;
-    }
-    Py_RETURN_NONE;
+    return _run_script_in_interpreter(self, interp, codestr, shared, eval);
 }
 
 PyDoc_STRVAR(run_string_doc,
