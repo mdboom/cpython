@@ -989,8 +989,7 @@ class BoardQueue:
     def get(self, block=True):
         if block:
             os.read(self._r, 1)
-        result = self._board.fetch_item()
-        if result is None:
+        if (result := self._board.fetch_item()) is None:
             raise EmptyQueue()
         return result[1]
 
@@ -1046,6 +1045,9 @@ class SubinterpreterPool(Pool):
     @staticmethod
     def Process(ctx, *args, **kwds):
         return SubinterpreterProcess(*args, **kwds)
+
+    def __init__(self, processes=None, initializer=None, initargs=()):
+        Pool.__init__(self, processes, initializer, initargs)
 
     def __del__(self):
         self._inqueue.close()
