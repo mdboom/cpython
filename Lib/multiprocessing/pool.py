@@ -18,6 +18,7 @@ import itertools
 import os
 import pickle
 import queue
+import sys
 import textwrap
 import threading
 import time
@@ -1020,6 +1021,9 @@ class SubinterpreterProcess(threading.Thread):
         self._start_called = False
         self._parent = threading.current_thread()
 
+    def terminate(self):
+        self.join()
+
     def start(self):
         if self._parent != threading.current_thread():
             raise RuntimeError(
@@ -1115,7 +1119,6 @@ def get_subinterpreter_worker(setup_interpreter, run_in_interpreter, close_inter
                 try:
                     result = (True, run_in_interpreter(interpreter, func, args, kwds))
                 except Exception as e:
-                    print("MY EXCEPTION", e)
                     if wrap_exception and func is not _helper_reraises_exception:
                         e = ExceptionWithTraceback(e, e.__traceback__)
                         result = (False, e)
@@ -1210,7 +1213,10 @@ class SubinterpreterProcess3(SubinterpreterProcess2):
 
             def _f(p):
                 func, args, kwargs = pickle.loads(p)
-                os.write({w}, pickle.dumps(func(*args, **kwargs)))
+                data = pickle.dumps(func(*args, **kwargs))
+                if len(data) > (1 << 16):
+                    raise ValueError("result payload too large to send over a pipe")
+                os.write({w}, data)
             """)
 
         template = "_f({pickle!r})"
@@ -1222,7 +1228,7 @@ class SubinterpreterProcess3(SubinterpreterProcess2):
         def run(interpreter, func, args, kwargs):
             code = template.format(pickle=pickle.dumps((func, args, kwargs)))
             interpreter.run(code)
-            return pickle.loads(os.read(r, 1024))
+            return pickle.loads(os.read(r, 1 << 16))
 
         def close(interpreter):
             os.close(r)
