@@ -432,7 +432,7 @@ _run_script(PyInterpreterState *interp, const char *codestr,
         if (*result == NULL) {
             goto error;
         }
-        if (_PyObject_CheckCrossInterpreterData(*result) != 0) {
+        if ((*result)->ob_refcnt != 1 || _PyObject_CheckCrossInterpreterData(*result) != 0) {
             Py_DECREF(*result);
             *result = NULL;
             PyErr_SetString(PyExc_TypeError, "Result is not shareable between interpreters");
