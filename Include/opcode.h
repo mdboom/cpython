@@ -257,7 +257,7 @@ extern "C" {
 #define NB_INPLACE_XOR                          25
 
 /* Defined in Lib/opcode.py */
-#define ENABLE_SPECIALIZATION 1
+#define ENABLE_SPECIALIZATION 0
 
 #ifdef __cplusplus
 }
