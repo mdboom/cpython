@@ -958,12 +958,6 @@ GETITEM(PyObject *v, Py_ssize_t i) {
 static _Py_ALWAYS_INLINE int
 DECREMENT_ADAPTIVE_COUNTER(uint16_t *ptr)
 {
-    uint16_t counter = _Py_atomic_load_uint16_relaxed(ptr);
-    if (ADAPTIVE_COUNTER_IS_ZERO(counter)) {
-        return 1;
-    }
-    counter -= (1 << ADAPTIVE_BACKOFF_BITS);
-    _Py_atomic_store_uint16_relaxed(ptr, counter);
     return 0;
 }
 
