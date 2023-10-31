@@ -1796,7 +1796,7 @@ Optional Features:
   --enable-profiling      enable C-level code profiling with gprof (default is
                           no)
   --disable-gil           enable experimental support for running without the
-                          GIL (default is no)
+                          GIL (default is yes)
   --enable-pystats        enable internal statistics gathering (default is no)
   --enable-optimizations  enable expensive, stable optimizations (PGO, etc.)
                           (default is no)
@@ -7880,14 +7880,11 @@ fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $disable_gil" >&5
 printf "%s\n" "$disable_gil" >&6; }
 
-if test "$disable_gil" = "yes"
-then
 
 printf "%s\n" "#define Py_NOGIL 1" >>confdefs.h
 
-  # Add "t" for "threaded"
-  ABIFLAGS="${ABIFLAGS}t"
-fi
+# Add "t" for "threaded"
+ABIFLAGS="${ABIFLAGS}t"
 
 # Check for --with-pydebug
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for --with-pydebug" >&5
