@@ -654,6 +654,8 @@ extern const struct _PyCode_DEF(8) _Py_InitCleanup;
 #if defined(__GNUC__)
 #  pragma GCC diagnostic push
 #  pragma GCC diagnostic ignored "-Wunused-label"
+#  pragma GCC push_options
+#  pragma GCC optimize ("Os")
 #elif defined(_MSC_VER) /* MS_WINDOWS */
 #  pragma warning(push)
 #  pragma warning(disable:4102)
@@ -1078,6 +1080,7 @@ exit_trace:
 }
 #if defined(__GNUC__)
 #  pragma GCC diagnostic pop
+#  pragma GCC pop_options
 #elif defined(_MSC_VER) /* MS_WINDOWS */
 #  pragma warning(pop)
 #endif
