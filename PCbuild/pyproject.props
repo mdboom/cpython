@@ -43,7 +43,8 @@
       <PreprocessorDefinitions Condition="'$(DisableGil)' == 'true'">Py_NOGIL=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(SupportPGO)' and ($(Configuration) == 'PGInstrument' or $(Configuration) == 'PGUpdate')">_Py_USING_PGO=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization Condition="$(Configuration) == 'PGInstrument'">MinSpace</Optimization>
+      <Optimization Condition="$(Configuration) != 'PGInstrument'">MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling></ExceptionHandling>
