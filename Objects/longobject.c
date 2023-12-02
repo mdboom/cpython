@@ -134,7 +134,7 @@ long_normalize(PyLongObject *v)
    Return NULL and set exception if we run out of memory. */
 
 #define MAX_LONG_DIGITS \
-    ((PY_SSIZE_T_MAX - offsetof(PyLongObject, long_value.ob_digit))/sizeof(digit))
+    ((INT_MAX - offsetof(PyLongObject, long_value.ob_digit))/sizeof(digit))
 
 PyLongObject *
 _PyLong_New(Py_ssize_t size)
@@ -553,6 +553,7 @@ PyLong_AsInt(PyObject *obj)
     int overflow;
     long result = PyLong_AsLongAndOverflow(obj, &overflow);
     if (overflow || result > INT_MAX || result < INT_MIN) {
+    // if (overflow || (int)result > INT_MAX || (int)result < INT_MIN) {
         /* XXX: could be cute and give a different
            message for overflow == -1 */
         PyErr_SetString(PyExc_OverflowError,
