@@ -117,6 +117,8 @@ long_normalize(PyLongObject *v)
     Py_ssize_t j = _PyLong_DigitCount(v);
     Py_ssize_t i = j;
 
+    // MGDTODO: Assert this works with compact
+
     while (i > 0 && v->long_value.ob_digit[i-1] == 0)
         --i;
     if (i != j) {
@@ -132,6 +134,8 @@ long_normalize(PyLongObject *v)
 
 /* Allocate a new int object with size digits.
    Return NULL and set exception if we run out of memory. */
+
+// MGDTODO: I think this is wrong
 
 #define MAX_LONG_DIGITS \
     ((PY_SSIZE_T_MAX - offsetof(PyLongObject, long_value.ob_digit))/sizeof(digit))
@@ -149,13 +153,14 @@ _PyLong_New(Py_ssize_t size)
     /* Fast operations for single digit integers (including zero)
      * assume that there is always at least one digit present. */
     Py_ssize_t ndigits = size ? size : 1;
+    Py_ssize_t ndigits_memory = ndigits <= 1 ? 0 : ndigits;
     /* Number of bytes needed is: offsetof(PyLongObject, ob_digit) +
        sizeof(digit)*size.  Previous incarnations of this code used
        sizeof() instead of the offsetof, but this risks being
        incorrect in the presence of padding between the header
        and the digits. */
     result = PyObject_Malloc(offsetof(PyLongObject, long_value.ob_digit) +
-                             ndigits*sizeof(digit));
+                             ndigits_memory*sizeof(digit));
     if (!result) {
         PyErr_NoMemory();
         return NULL;
@@ -164,14 +169,16 @@ _PyLong_New(Py_ssize_t size)
     _PyObject_Init((PyObject*)result, &PyLong_Type);
     /* The digit has to be initialized explicitly to avoid
      * use-of-uninitialized-value. */
-    result->long_value.ob_digit[0] = 0;
+    if (ndigits > 1) {
+        result->long_value.ob_digit[0] = 0;
+    }
     return result;
 }
 
 PyLongObject *
 _PyLong_FromDigits(int negative, Py_ssize_t digit_count, digit *digits)
 {
-    assert(digit_count >= 0);
+    assert(digit_count > 0);
     if (digit_count == 0) {
         return (PyLongObject *)_PyLong_GetZero();
     }
@@ -194,6 +201,14 @@ _PyLong_Copy(PyLongObject *src)
         stwodigits ival = medium_value(src);
         if (IS_SMALL_INT(ival)) {
             return get_small_int((sdigit)ival);
+        } else {
+            PyLongObject *result = _PyLong_New(1);
+            if (result == NULL) {
+                PyErr_NoMemory();
+                return NULL;
+            }
+            result->long_value.lv_tag = src->long_value.lv_tag;
+            return (PyObject *)result;
         }
     }
     Py_ssize_t size = _PyLong_DigitCount(src);
@@ -206,7 +221,8 @@ _PyLong_FromMedium(sdigit x)
     assert(!IS_SMALL_INT(x));
     assert(is_medium_int(x));
     /* We could use a freelist here */
-    PyLongObject *v = PyObject_Malloc(sizeof(PyLongObject));
+    // MGDTODO: This is weird
+    PyLongObject *v = PyObject_Malloc(sizeof(PyLongObject) - sizeof(digit));
     if (v == NULL) {
         PyErr_NoMemory();
         return NULL;
@@ -214,7 +230,7 @@ _PyLong_FromMedium(sdigit x)
     digit abs_x = x < 0 ? -x : x;
     _PyLong_SetSignAndDigitCount(v, x<0?-1:1, 1);
     _PyObject_Init((PyObject*)v, &PyLong_Type);
-    v->long_value.ob_digit[0] = abs_x;
+    v->long_value.lv_tag |= ((Py_ssize_t)abs_x << 32);
     return (PyObject*)v;
 }
 
@@ -791,8 +807,13 @@ _PyLong_NumBits(PyObject *vv)
     assert(v != NULL);
     assert(PyLong_Check(v));
     ndigits = _PyLong_DigitCount(v);
-    assert(ndigits == 0 || v->long_value.ob_digit[ndigits - 1] != 0);
-    if (ndigits > 0) {
+    // MGDTODO: Constants
+    assert(ndigits == 0 || v->long_value.lv_tag & 8 || v->long_value.ob_digit[ndigits - 1] != 0);
+    if (ndigits == 1) {
+        digit msd = v->long_value.ob_digit[ndigits - 1];
+        result = bit_length_digit(msd);
+    }
+    else if (ndigits > 1) {
         digit msd = v->long_value.ob_digit[ndigits - 1];
         if ((size_t)(ndigits - 1) > SIZE_MAX / (size_t)PyLong_SHIFT)
             goto Overflow;
@@ -974,7 +995,14 @@ _PyLong_AsByteArray(PyLongObject* v,
     accumbits = 0;
     carry = do_twos_comp ? 1 : 0;
     for (i = 0; i < ndigits; ++i) {
-        digit thisdigit = v->long_value.ob_digit[i];
+        digit thisdigit;
+        // MGDTODO: Performance
+        if (ndigits <= 1) {
+            thisdigit = (digit)(v->long_value.lv_tag >> 32);
+        }
+        else {
+            digit thisdigit = v->long_value.ob_digit[i];
+        }
         if (do_twos_comp) {
             thisdigit = (thisdigit ^ PyLong_MASK) + carry;
             carry = thisdigit >> PyLong_SHIFT;
@@ -5608,8 +5636,9 @@ long_subtype_new(PyTypeObject *type, PyObject *x, PyObject *obase)
     n = _PyLong_DigitCount(tmp);
     /* Fast operations for single digit integers (including zero)
      * assume that there is always at least one digit present. */
-    if (n == 0) {
-        n = 1;
+    // MGDTODO: Comment
+    if (n <= 2) {
+        n = 0;
     }
     newobj = (PyLongObject *)type->tp_alloc(type, n);
     if (newobj == NULL) {
