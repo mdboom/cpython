@@ -134,7 +134,7 @@ long_normalize(PyLongObject *v)
    Return NULL and set exception if we run out of memory. */
 
 #define MAX_LONG_DIGITS \
-    ((INT_MAX - offsetof(PyLongObject, long_value.ob_digit))/sizeof(digit))
+    ((PY_SSIZE_T_MAX - offsetof(PyLongObject, long_value.ob_digit))/sizeof(digit))
 
 PyLongObject *
 _PyLong_New(Py_ssize_t size)
