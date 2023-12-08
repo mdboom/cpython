@@ -2299,17 +2299,17 @@ dec_from_long(PyTypeObject *type, PyObject *v,
     uint8_t sign = _PyLong_IsNegative(l) ? MPD_NEG :  MPD_POS;
 
     if (_PyLong_IsCompact(l)) {
-        _dec_settriple(dec, sign, l->long_value.ob_digit[0], 0);
+        _dec_settriple(dec, sign, l->ob_digit[0] & PyLong_MASK, 0);
         mpd_qfinalize(MPD(dec), ctx, status);
         return dec;
     }
     size_t len = _PyLong_DigitCount(l);
 
 #if PYLONG_BITS_IN_DIGIT == 30
-    mpd_qimport_u32(MPD(dec), l->long_value.ob_digit, len, sign, PyLong_BASE,
+    mpd_qimport_u32(MPD(dec), l->ob_digit + 2, len, sign, PyLong_BASE,
                     ctx, status);
 #elif PYLONG_BITS_IN_DIGIT == 15
-    mpd_qimport_u16(MPD(dec), l->long_value.ob_digit, len, sign, PyLong_BASE,
+    mpd_qimport_u16(MPD(dec), l->ob_digit + 2, len, sign, PyLong_BASE,
                     ctx, status);
 #else
   #error "PYLONG_BITS_IN_DIGIT should be 15 or 30"
