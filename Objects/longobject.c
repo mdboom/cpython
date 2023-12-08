@@ -4577,8 +4577,10 @@ long_true_divide(PyObject *v, PyObject *w)
         dx = get_digit(x, --x_size);
         while (x_size > 1)
             dx = dx * PyLong_BASE + get_digit(x, --x_size);
+        dx = dx * PyLong_BASE + low;
+    } else {
+        dx = low;
     }
-    dx = dx * PyLong_BASE + low;
     Py_DECREF(x);
 
     /* Check whether ldexp result will overflow a double. */
