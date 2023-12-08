@@ -4767,6 +4767,10 @@ _PyType_Lookup(PyTypeObject *type, PyObject *name)
     OBJECT_STAT_INC_COND(type_cache_misses, !is_dunder_name(name));
     OBJECT_STAT_INC_COND(type_cache_dunder_misses, is_dunder_name(name));
 
+    if (PyErr_Occurred()) {
+        PyErr_Print();
+    }
+
     /* We may end up clearing live exceptions below, so make sure it's ours. */
     assert(!PyErr_Occurred());
 
