@@ -16,7 +16,7 @@ extern "C" {
 #define PyLong_IS_LONG_MASK ((digit)1 << 31)
 #define PyLong_IS_NEGATIVE_MASK ((digit)1 << 30)
 #define PyLong_FLAGS_MASK (PyLong_IS_LONG_MASK | PyLong_IS_NEGATIVE_MASK)
-#define PyLong_LONG_HEADER_DIGITS (2)
+#define PyLong_LONG_HEADER_DIGITS (1)
 
 /*
  * Default int base conversion size limitation: Denial of Service prevention.
@@ -240,7 +240,7 @@ _PyLong_DigitCount(const PyLongObject *op)
     if (_PyLong_IsCompact(op)) {
         return _PyLong_IsZero(op) ? 0 : 1;
     } else {
-        return (Py_ssize_t)op->ob_digit[1] | (Py_ssize_t)(op->ob_digit[0] & PyLong_MASK) << 32;
+        return (Py_ssize_t)(op->ob_digit[0] & PyLong_MASK);
     }
 }
 
@@ -296,7 +296,7 @@ _PyLong_SetSign(PyLongObject *op, int sign)
             op->ob_digit[0] = 0;
             break;
         case 1:
-            op->ob_digit[0] |= ~PyLong_IS_NEGATIVE_MASK;
+            op->ob_digit[0] &= ~PyLong_IS_NEGATIVE_MASK;
             break;
         case -1:
             op->ob_digit[0] |= PyLong_IS_NEGATIVE_MASK;
@@ -333,9 +333,8 @@ _PyLong_SetSignAndDigitCount(PyLongObject *op, int sign, Py_ssize_t size)
         op->ob_digit[0] = (
             PyLong_IS_LONG_MASK |
             ((sign == -1) ? PyLong_IS_NEGATIVE_MASK : 0) |
-            (size >> 32)
+            (size & PyLong_MASK)
         );
-        op->ob_digit[1] = (size & 0xffffffff);
     }
 }
 
@@ -358,9 +357,8 @@ _PyLong_SetDigitCount(PyLongObject *op, Py_ssize_t size)
         assert(_PyLong_DigitCount(op) >= size);
         op->ob_digit[0] = (
             (op->ob_digit[0] & PyLong_FLAGS_MASK) |
-            size >> 32
+            (size & PyLong_MASK)
         );
-        op->ob_digit[1] = (size & 0xffffffff);
     }
 }
 

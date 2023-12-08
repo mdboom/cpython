@@ -26,7 +26,7 @@ module marshal
 static inline digit*
 get_digit_offset(PyLongObject *v)
 {
-    return v->ob_digit + ((v->ob_digit[0] & PyLong_IS_LONG_MASK) >> 30);
+    return v->ob_digit + ((v->ob_digit[0] & PyLong_IS_LONG_MASK) >> 31);
 }
 
 static inline digit
@@ -275,6 +275,9 @@ w_PyLong(const PyLongObject *ob, char flag, WFILE *p)
     n = _PyLong_DigitCount(ob);
     l = (n-1) * PyLong_MARSHAL_RATIO;
     d = get_digit(ob, n-1);
+    if (d == 0) {
+        d = get_digit(ob, n-1);
+    }
     assert(d != 0); /* a PyLong is always normalized */
     do {
         d >>= PyLong_MARSHAL_SHIFT;

@@ -47,7 +47,7 @@ print_long( PyLongObject *a) {
 static inline  digit*
 get_digit_offset( PyLongObject *v)
 {
-    return v->ob_digit + ((v->ob_digit[0] & PyLong_IS_LONG_MASK) >> 30);
+    return v->ob_digit + ((v->ob_digit[0] & PyLong_IS_LONG_MASK) >> 31);
 }
 
 static inline digit
@@ -197,7 +197,7 @@ long_normalize(PyLongObject *v)
         Py_ssize_t j = _PyLong_DigitCount(v);
         Py_ssize_t i = j;
 
-        while (i > 0 && (v->ob_digit[i+1] & PyLong_MASK) == 0)
+        while (i > 0 && (v->ob_digit[i] & PyLong_MASK) == 0)
             --i;
         if (i != j) {
             if (i == 0) {
@@ -329,7 +329,7 @@ _PyLong_Copy(PyLongObject *src)
 
     Py_ssize_t size = _PyLong_DigitCount(src);
     // MGDTODO: Maybe just memcpy in all cases?
-    return (PyObject *)_PyLong_FromDigits(_PyLong_IsNegative(src), size, &src->ob_digit[2]);
+    return (PyObject *)_PyLong_FromDigits(_PyLong_IsNegative(src), size, &src->ob_digit[1]);
 }
 
 static PyObject *

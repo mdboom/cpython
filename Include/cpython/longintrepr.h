@@ -64,7 +64,7 @@ typedef long stwodigits; /* signed variant of twodigits */
 #define PyLong_IS_LONG_MASK ((digit)1 << 31)
 #define PyLong_IS_NEGATIVE_MASK ((digit)1 << 30)
 #define PyLong_FLAGS_MASK (PyLong_IS_LONG_MASK | PyLong_IS_NEGATIVE_MASK)
-#define PyLong_LONG_HEADER_DIGITS (2)
+#define PyLong_LONG_HEADER_DIGITS (1)
 
 // MGDTODO: Update this docstring
 /* Long integer representation.
