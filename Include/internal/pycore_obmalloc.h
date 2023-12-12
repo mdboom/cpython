@@ -129,8 +129,8 @@ typedef unsigned int pymem_uint;  /* assuming >= 16 bits */
  */
 
 #if SIZEOF_VOID_P > 4
-#define ALIGNMENT              16               /* must be 2^N */
-#define ALIGNMENT_SHIFT         4
+#define ALIGNMENT               8               /* must be 2^N */
+#define ALIGNMENT_SHIFT         3
 #else
 #define ALIGNMENT               8               /* must be 2^N */
 #define ALIGNMENT_SHIFT         3
