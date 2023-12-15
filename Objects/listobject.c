@@ -2208,6 +2208,8 @@ unsafe_long_compare(PyObject *v, PyObject *w, MergeState *ms)
     intptr_t v0, w0;
     int res;
 
+    // MGDTODO: Optimize
+
     /* Modified from Objects/longobject.c:long_compare, assuming: */
     assert(Py_IS_TYPE(v, &PyLong_Type));
     assert(Py_IS_TYPE(w, &PyLong_Type));
