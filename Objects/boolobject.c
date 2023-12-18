@@ -171,7 +171,7 @@ bool_dealloc(PyObject *boolean)
 PyTypeObject PyBool_Type = {
     PyVarObject_HEAD_INIT(&PyType_Type, 0)
     "bool",
-    offsetof(struct _longobject, long_value.ob_digit),  /* tp_basicsize */
+    offsetof(struct _longobject, ob_digit) + sizeof(digit),  /* tp_basicsize */ // MGDTODO: Too big?
     sizeof(digit),                              /* tp_itemsize */
     bool_dealloc,                               /* tp_dealloc */
     0,                                          /* tp_vectorcall_offset */
@@ -214,14 +214,10 @@ PyTypeObject PyBool_Type = {
 
 struct _longobject _Py_FalseStruct = {
     PyObject_HEAD_INIT(&PyBool_Type)
-    { .lv_tag = _PyLong_FALSE_TAG,
-        { 0 }
-    }
+        .ob_digit = { 0 },
 };
 
 struct _longobject _Py_TrueStruct = {
     PyObject_HEAD_INIT(&PyBool_Type)
-    { .lv_tag = _PyLong_TRUE_TAG,
-        { 1 }
-    }
+        .ob_digit = { 1 },
 };
