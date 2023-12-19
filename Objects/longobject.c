@@ -893,7 +893,8 @@ _PyLong_Sign(PyObject *vv)
     if (v->ob_digit[0] == 0) {
         return 0;
     }
-    return (v->ob_digit[0] & PyLong_IS_NEGATIVE_MASK) ? -1 : 1;
+    Py_ssize_t negate = (v->ob_digit[0] & PyLong_IS_NEGATIVE_MASK) != 0;
+    return ((Py_ssize_t)1 ^ -negate) + negate;
 }
 
 static int
@@ -2128,6 +2129,7 @@ long_format_binary(PyObject *aa, int base, int alternate,
                    _PyBytesWriter *bytes_writer, char **bytes_str)
 {
     PyLongObject *a = (PyLongObject *)aa;
+    digit *ap;
     PyObject *v = NULL;
     Py_ssize_t sz;
     Py_ssize_t size_a;
@@ -2197,6 +2199,8 @@ long_format_binary(PyObject *aa, int base, int alternate,
         kind = PyUnicode_KIND(v);
     }
 
+    ap = get_digit_offset(a);
+
 #define WRITE_DIGITS(p)                                                 \
     do {                                                                \
         if (size_a == 0) {                                              \
@@ -2208,7 +2212,7 @@ long_format_binary(PyObject *aa, int base, int alternate,
             int accumbits = 0;   /* # of bits in accum */               \
             Py_ssize_t i;                                               \
             for (i = 0; i < size_a; ++i) {                              \
-                accum |= (twodigits)get_digit(a, i) << accumbits;   \
+                accum |= (twodigits)extract_digit(ap + i) << accumbits;   \
                 accumbits += PyLong_SHIFT;                              \
                 assert(accumbits >= bits);                              \
                 do {                                                    \
@@ -3013,7 +3017,7 @@ long_divrem(PyLongObject *a, PyLongObject *b,
     }
     if (size_b == 1) {
         digit rem = 0;
-        z = divrem1(a, get_digit(b, 0), &rem);
+        z = divrem1(a, b->ob_digit[0] & PyLong_MASK, &rem);
         if (z == NULL)
             return -1;
         *prem = (PyLongObject *) PyLong_FromLong((long)rem);
@@ -3073,7 +3077,7 @@ long_rem(PyLongObject *a, PyLongObject *b, PyLongObject **prem)
         return -(*prem == NULL);
     }
     if (size_b == 1) {
-        *prem = rem1(a, get_digit(b, 0));
+        *prem = rem1(a, b->ob_digit[0] & PyLong_MASK);
         if (*prem == NULL)
             return -1;
     }
@@ -3133,14 +3137,17 @@ x_divrem(PyLongObject *v1, PyLongObject *w1, PyLongObject **prem)
     }
     _PyLong_memset(w); // MGDTODO: Validated as needed
 
+    v0 = get_digit_offset(v);
+    w0 = get_digit_offset(w);
+
     /* normalize: shift w1 left so that its top digit is >= PyLong_BASE/2.
        shift v1 left by the same amount.  Results go into w and v. */
     d = PyLong_SHIFT - bit_length_digit(get_digit(w1, size_w-1));
-    carry = v_lshift(get_digit_offset(w), get_digit_offset(w1), size_w, d);
+    carry = v_lshift(w0, get_digit_offset(w1), size_w, d);
     assert(carry == 0);
-    carry = v_lshift(get_digit_offset(v), get_digit_offset(v1), size_v, d);
-    if (carry != 0 || get_digit(v, size_v - 1) >= get_digit(w, size_w - 1)) {
-        set_digit(v, size_v, carry);
+    carry = v_lshift(v0, get_digit_offset(v1), size_v, d);
+    if (carry != 0 || extract_digit(v0 + size_v - 1) >= extract_digit(w0 + size_w - 1)) {
+        store_digit(v0 + size_v, carry);
         size_v++;
     }
 
@@ -3155,9 +3162,7 @@ x_divrem(PyLongObject *v1, PyLongObject *w1, PyLongObject **prem)
         *prem = NULL;
         return NULL;
     }
-    _PyLong_memset(a); // MGDTODO: Validated as needed
-    v0 = get_digit_offset(v);
-    w0 = get_digit_offset(w);
+
     wm1 = extract_digit(w0+size_w-1);
     wm2 = extract_digit(w0+size_w-2);
     for (vk = v0+k, ak = get_digit_offset(a) + k; vk-- > v0;) {
@@ -3399,6 +3404,8 @@ PyLong_AsDouble(PyObject *v)
 static Py_ssize_t
 long_compare(PyLongObject *a, PyLongObject *b)
 {
+    digit *ap, *bp;
+
     if (_PyLong_BothAreCompact(a, b)) {
         return _PyLong_CompactValue(a) - _PyLong_CompactValue(b);
     }
@@ -3407,13 +3414,15 @@ long_compare(PyLongObject *a, PyLongObject *b)
         Py_ssize_t i = _PyLong_DigitCount(a);
         sdigit diff = 0;
         // MGDTODO: Optimize loop
+        ap = get_digit_offset(a);
+        bp = get_digit_offset(b);
         while (--i >= 0) {
-            diff = (sdigit)get_digit(a, i) - (sdigit)get_digit(b, i);
+            diff = (sdigit)extract_digit(ap + i) - (sdigit)extract_digit(bp + i);
             if (diff) {
                 break;
             }
         }
-        sign = _PyLong_IsNegative(a) ? -diff : diff;
+        sign = _PyLong_Sign((PyObject *)a) * diff;
     }
     return sign;
 }
@@ -3514,6 +3523,7 @@ x_add(PyLongObject *a, PyLongObject *b)
 {
     Py_ssize_t size_a = _PyLong_DigitCount(a), size_b = _PyLong_DigitCount(b);
     PyLongObject *z;
+    digit *pz, *pa, *pb;
     Py_ssize_t i;
     digit carry = 0;
 
@@ -3527,14 +3537,16 @@ x_add(PyLongObject *a, PyLongObject *b)
     z = _PyLong_New(size_a+1);
     if (z == NULL)
         return NULL;
-    digit *pz = get_digit_offset(z);
+    pz = get_digit_offset(z);
+    pa = get_digit_offset(a);
+    pb = get_digit_offset(b);
     for (i = 0; i < size_b; ++i) {
-        carry += get_digit(a, i) + get_digit(b, i);
+        carry += extract_digit(pa + i) + extract_digit(pb + i);
         pz[i] = carry & PyLong_MASK;
         carry >>= PyLong_SHIFT;
     }
     for (; i < size_a; ++i) {
-        carry += get_digit(a, i);
+        carry += extract_digit(pa + i);
         pz[i] = carry & PyLong_MASK;
         carry >>= PyLong_SHIFT;
     }
@@ -3702,7 +3714,7 @@ x_mul(PyLongObject *a, PyLongObject *b)
         return NULL;
     assert(!_PyLong_IsCompact(z));
 
-    memset(z->ob_digit + PyLong_HEADER_SIZE, 0, _PyLong_NonCompactDigitCount(z) * sizeof(digit));
+    memset(z->ob_digit + PyLong_HEADER_SIZE, 0, (size_a + size_b) * sizeof(digit));
     if (a == b) {
         /* Efficient squaring per HAC, Algorithm 14.16:
          * http://www.cacr.math.uwaterloo.ca/hac/about/chap14.pdf
@@ -3774,13 +3786,13 @@ x_mul(PyLongObject *a, PyLongObject *b)
 
             // MGDTODO: Optimize loop -- z is always long
             for (j = 0; j < size_b; ++j) {
-                carry += get_digit(z, i + j) + get_digit(b, j) * f;
-                set_digit(z, i + j, (digit)(carry & PyLong_MASK));
+                carry += z->ob_digit[i + j + PyLong_HEADER_SIZE] + get_digit(b, j) * f;
+                z->ob_digit[i + j + PyLong_HEADER_SIZE] = (digit)(carry & PyLong_MASK);
                 carry >>= PyLong_SHIFT;
                 assert(carry <= PyLong_MASK);
             }
             if (carry)
-                set_digit(z, i+j, (digit)carry);
+                z->ob_digit[i + j + PyLong_HEADER_SIZE] = (digit)carry;
             assert((carry >> PyLong_SHIFT) == 0);
         }
     }
@@ -3813,9 +3825,6 @@ kmul_split(PyLongObject *n,
         Py_DECREF(hi);
         return -1;
     }
-
-    // _PyLong_memset(hi);
-    // _PyLong_memset(lo);
 
     copy_digits(lo, 0, n, 0, size_lo);
     copy_digits(hi, 0, n, size_lo, size_hi);
@@ -4380,6 +4389,7 @@ long_true_divide(PyObject *v, PyObject *w)
     digit mask, low;
     int inexact, negate, a_is_small, b_is_small;
     double dx, result;
+    digit *pa, *pb;
 
     CHECK_BINOP(v, w);
     a = (PyLongObject *)v;
@@ -4484,6 +4494,9 @@ long_true_divide(PyObject *v, PyObject *w)
     if (a_size == 0)
         goto underflow_or_zero;
 
+    pa = get_digit_offset(a);
+    pb = get_digit_offset(b);
+
     /* Fast path for a and b small (exactly representable in a double).
        Relies on floating-point division being correctly rounded; results
        may be subject to double rounding on x86 machines that operate with
@@ -4496,14 +4509,14 @@ long_true_divide(PyObject *v, PyObject *w)
          get_digit(b, MANT_DIG_DIGITS) >> MANT_DIG_BITS == 0);
     if (a_is_small && b_is_small) {
         double da, db;
-        da = get_digit(a, --a_size);
+        da = extract_digit(pa + --a_size);
         // MGDTODO: Optimize loop
         while (a_size > 0)
-            da = da * PyLong_BASE + get_digit(a, --a_size);
-        db = get_digit(b, --b_size);
+            da = da * PyLong_BASE + extract_digit(pa + --a_size);
+        db = extract_digit(pb + --b_size);
         // MGDTODO: Optimize loop
         while (b_size > 0)
-            db = db * PyLong_BASE + get_digit(b, --b_size);
+            db = db * PyLong_BASE + extract_digit(pb + --b_size);
         result = da / db;
         goto success;
     }
@@ -4517,8 +4530,8 @@ long_true_divide(PyObject *v, PyObject *w)
         /* Extreme underflow */
         goto underflow_or_zero;
     /* Next line is now safe from overflowing a Py_ssize_t */
-    diff = diff * PyLong_SHIFT + bit_length_digit(get_digit(a, a_size - 1)) -
-        bit_length_digit(get_digit(b, b_size - 1));
+    diff = diff * PyLong_SHIFT + bit_length_digit(extract_digit(pa + a_size - 1)) -
+        bit_length_digit(extract_digit(pb + b_size - 1));
     /* Now diff = a_bits - b_bits. */
     if (diff > DBL_MAX_EXP)
         goto overflow;
@@ -4550,7 +4563,7 @@ long_true_divide(PyObject *v, PyObject *w)
         // MGDTODO: Optimize loop
         for (i = 0; i < shift_digits; i++)
             x->ob_digit[i + PyLong_HEADER_SIZE] = 0;
-        rem = v_lshift(get_digit_offset(x) + shift_digits, get_digit_offset(a),
+        rem = v_lshift(get_digit_offset(x) + shift_digits, pa,
                        a_size, -shift % PyLong_SHIFT);
         x->ob_digit[a_size + shift_digits + PyLong_HEADER_SIZE] = rem;
     }
@@ -4563,13 +4576,13 @@ long_true_divide(PyObject *v, PyObject *w)
         if (x == NULL)
             goto error;
         assert(!_PyLong_IsCompact(x));
-        rem = v_rshift(get_digit_offset(x), get_digit_offset(a) + shift_digits,
+        rem = v_rshift(get_digit_offset(x), pa + shift_digits,
                        a_size - shift_digits, shift % PyLong_SHIFT);
         /* set inexact if any of the bits shifted out is nonzero */
         if (rem)
             inexact = 1;
         while (!inexact && shift_digits > 0)
-            if (get_digit(a, --shift_digits))
+            if (extract_digit(pa + --shift_digits))
                 inexact = 1;
     }
     long_normalize(x);
@@ -4579,7 +4592,7 @@ long_true_divide(PyObject *v, PyObject *w)
        reference to x, so it's safe to modify it in-place. */
     if (b_size == 1) {
         digit rem = inplace_divrem1(get_digit_offset(x), get_digit_offset(x), x_size,
-                              get_digit(b, 0));
+                              extract_digit(pb));
         long_normalize(x);
         if (rem)
             inexact = 1;
@@ -4611,9 +4624,10 @@ long_true_divide(PyObject *v, PyObject *w)
 
     /* Convert x to a double dx; the conversion is exact. */
     if (x_size > 1) {
-        dx = get_digit(x, --x_size);
+        digit *px = get_digit_offset(x);
+        dx = extract_digit(px + --x_size);
         while (x_size > 1)
-            dx = dx * PyLong_BASE + get_digit(x, --x_size);
+            dx = dx * PyLong_BASE + extract_digit(px + --x_size);
         dx = dx * PyLong_BASE + low;
     } else {
         dx = low;
@@ -5178,7 +5192,9 @@ long_rshift1(PyLongObject *a, Py_ssize_t wordshift, digit remshift)
     }
     hishift = PyLong_SHIFT - remshift;
 
-    accum = get_digit(a, wordshift);
+    digit *pa = get_digit_offset(a);
+
+    accum = extract_digit(pa + wordshift);
     if (a_negative) {
         /*
             For a positive integer a and nonnegative shift, we have:
@@ -5194,7 +5210,7 @@ long_rshift1(PyLongObject *a, Py_ssize_t wordshift, digit remshift)
 
         digit sticky = 0;
         for (Py_ssize_t j = 0; j < wordshift; j++) {
-            sticky |= get_digit(a, j);
+            sticky |= extract_digit(pa + j);
         }
         accum += (PyLong_MASK >> hishift) + (digit)(sticky != 0);
     }
@@ -5203,7 +5219,7 @@ long_rshift1(PyLongObject *a, Py_ssize_t wordshift, digit remshift)
 
     accum >>= remshift;
     for (Py_ssize_t i = 0, j = wordshift + 1; j < size_a; i++, j++) {
-        accum += (twodigits)get_digit(a, j) << hishift;
+        accum += (twodigits)extract_digit(pa + j) << hishift;
         pz[i] = (digit)(accum & PyLong_MASK);
         accum >>= PyLong_SHIFT;
     }
@@ -5279,9 +5295,10 @@ long_lshift1(PyLongObject *a, Py_ssize_t wordshift, digit remshift)
     digit *pz = get_digit_offset(z);
     for (i = 0; i < wordshift; i++)
         pz[i] = 0;
+    digit *pa = get_digit_offset(a);
     accum = 0;
     for (j = 0; j < oldsize; i++, j++) {
-        accum |= (twodigits)get_digit(a, j) << remshift;
+        accum |= (twodigits)extract_digit(pa + j) << remshift;
         pz[i] = (digit)(accum & PyLong_MASK);
         accum >>= PyLong_SHIFT;
     }
@@ -5436,20 +5453,22 @@ long_bitwise(PyLongObject *a,
     }
 
     digit *pz = get_digit_offset(z);
+    digit *pa = get_digit_offset(a);
+    digit *pb = get_digit_offset(b);
 
     /* Compute digits for overlap of a and b. */
     switch(op) {
     case '&':
         for (i = 0; i < size_b; ++i)
-            pz[i] = get_digit(a, i) & get_digit(b, i);
+            pz[i] = pa[i] & pb[i] & PyLong_MASK;
         break;
     case '|':
         for (i = 0; i < size_b; ++i)
-            pz[i] = get_digit(a, i) | get_digit(b, i);
+            pz[i] = (pa[i] | pb[i]) & PyLong_MASK;
         break;
     case '^':
         for (i = 0; i < size_b; ++i)
-            pz[i] = get_digit(a, i) ^ get_digit(b, i);
+            pz[i] = (pa[i] ^ pb[i]) & PyLong_MASK;
         break;
     default:
         Py_UNREACHABLE();
@@ -5458,7 +5477,7 @@ long_bitwise(PyLongObject *a,
     /* Copy any remaining digits of a, inverting if necessary. */
     if (op == '^' && negb) {
         for (; i < size_z; ++i)
-            pz[i] = get_digit(a, i) ^ PyLong_MASK;
+            pz[i] = (pa[i] & PyLong_MASK) ^ PyLong_MASK;
     }
     else if (i < size_z) {
         copy_digits(z, i, a, i, size_z - i);
@@ -5467,7 +5486,7 @@ long_bitwise(PyLongObject *a,
     /* Complement result if negative. */
     if (negz) {
         pz[size_z] = PyLong_MASK;
-        v_complement(get_digit_offset(z), get_digit_offset(z), size_z+1);
+        v_complement(pz, pz, size_z+1);
         _PyLong_SetNegative(z);
     }
 
