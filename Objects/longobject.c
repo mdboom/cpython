@@ -208,7 +208,7 @@ long_normalize(PyLongObject *v)
 static inline void
 _PyLong_memset(PyLongObject *ob) {
     if (!_PyLong_IsCompact(ob)) {
-        Py_ssize_t size = _PyLong_DigitCount(ob);
+        Py_ssize_t size = _PyLong_NonCompactDigitCount(ob);
         memset(ob->ob_digit + 1, 0, size * sizeof(digit));
     }
 }
@@ -2900,7 +2900,7 @@ PyLong_FromString(const char *str, char **pend, int base)
 
     /* Set sign and normalize */
     if (!_PyLong_IsZero(z) && sign < 0) {
-        _PyLong_FlipSign(z);
+        _PyLong_SetNegative(z);
     }
     long_normalize(z);
     z = maybe_small_long(z);
@@ -3628,7 +3628,7 @@ _PyLong_Add(PyLongObject *a, PyLongObject *b)
                    That also means z is not an element of
                    small_ints, so negating it in-place is safe. */
                 assert(Py_REFCNT(z) == 1);
-                _PyLong_FlipSign(z);
+                _PyLong_SetNegative(z);
             }
         }
         else
@@ -3666,7 +3666,7 @@ _PyLong_Subtract(PyLongObject *a, PyLongObject *b)
             z = x_add(a, b);
             if (z != NULL) {
                 assert(_PyLong_IsZero(z) || Py_REFCNT(z) == 1);
-                _PyLong_FlipSign(z);
+                _PyLong_SetNegative(z);
             }
         }
     }

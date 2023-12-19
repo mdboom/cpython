@@ -255,8 +255,9 @@ static inline int
 _PyLong_NonCompactSign(const PyLongObject *op)
 {
     assert(PyLong_Check(op));
-    // assert(!_PyLong_IsCompact(op));
-    return (op->ob_digit[0] & PyLong_IS_NEGATIVE_MASK) ? -1 : 1;
+    assert(!_PyLong_IsCompact(op));
+    Py_ssize_t negate = (op->ob_digit[0] & PyLong_IS_NEGATIVE_MASK) != 0;
+    return ((Py_ssize_t)1 ^ -negate) + negate;
 }
 
 /* Equivalent to _PyLong_DigitCount(op) * _PyLong_NonCompactSign(op) */
@@ -267,9 +268,11 @@ _PyLong_SignedDigitCount(const PyLongObject *op)
     if (op->ob_digit[0] == 0) {
         return 0;
     } else if (_PyLong_IsCompact(op)) {
-        return (op->ob_digit[0] & PyLong_IS_NEGATIVE_MASK) ? -1 : 1;
+        Py_ssize_t negate = (op->ob_digit[0] & PyLong_IS_NEGATIVE_MASK) != 0;
+        return ((Py_ssize_t)1 ^ -negate) + negate;
     } else {
-        return _PyLong_NonCompactDigitCount(op) * _PyLong_NonCompactSign(op);
+        Py_ssize_t negate = (op->ob_digit[0] & PyLong_IS_NEGATIVE_MASK) != 0;
+        return (((Py_ssize_t)op->ob_digit[0] & PyLong_MASK) ^ -negate) + negate;
     }
 }
 
@@ -282,6 +285,7 @@ _PyLong_SetNegative(PyLongObject *op)
 static inline void
 _PyLong_SetSignAndDigitCount(PyLongObject *op, int sign, Py_ssize_t size)
 {
+    // MGDTODO: Make versions of this that can only shrink, or shrink and grow
     assert(size >= 0);
     assert(-1 <= sign && sign <= 1);
     assert(sign != 0 || size == 0);

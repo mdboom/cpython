@@ -112,9 +112,14 @@ _PyLong_IsCompact(const PyLongObject* op) {
 static inline Py_ssize_t
 _PyLong_CompactValue(const PyLongObject *op)
 {
+    // Conditionally negate without a branch trick from bit-twiddling hacks.
+    // Avraham Plotnitzky, Alfonso De Gregorio, Sean Eron Anderson.
+    // https://graphics.stanford.edu/~seander/bithacks.html#ConditionalNegate
+
     assert(PyType_HasFeature((op)->ob_base.ob_type, Py_TPFLAGS_LONG_SUBCLASS));
     assert(PyUnstable_Long_IsCompact(op));
-    return ((op->ob_digit[0] & PyLong_IS_NEGATIVE_MASK) ? -1 : 1) * ((Py_ssize_t)op->ob_digit[0] & PyLong_MASK);
+    Py_ssize_t negate = (op->ob_digit[0] & PyLong_IS_NEGATIVE_MASK) != 0;
+    return (((Py_ssize_t)op->ob_digit[0] & PyLong_MASK) ^ -negate) + negate;
 }
 
 #define PyUnstable_Long_CompactValue _PyLong_CompactValue
