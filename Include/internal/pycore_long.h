@@ -256,7 +256,7 @@ _PyLong_NonCompactSign(const PyLongObject *op)
 {
     assert(PyLong_Check(op));
     assert(!_PyLong_IsCompact(op));
-    Py_ssize_t negate = (op->ob_digit[0] & PyLong_IS_NEGATIVE_MASK) != 0;
+    Py_ssize_t negate = (op->ob_digit[0] >> 30) & 1;
     return ((Py_ssize_t)1 ^ -negate) + negate;
 }
 
@@ -268,10 +268,10 @@ _PyLong_SignedDigitCount(const PyLongObject *op)
     if (op->ob_digit[0] == 0) {
         return 0;
     } else if (_PyLong_IsCompact(op)) {
-        Py_ssize_t negate = (op->ob_digit[0] & PyLong_IS_NEGATIVE_MASK) != 0;
+        Py_ssize_t negate = (op->ob_digit[0] >> 30) & 1;
         return ((Py_ssize_t)1 ^ -negate) + negate;
     } else {
-        Py_ssize_t negate = (op->ob_digit[0] & PyLong_IS_NEGATIVE_MASK) != 0;
+        Py_ssize_t negate = (op->ob_digit[0] >> 30) & 1;
         return (((Py_ssize_t)op->ob_digit[0] & PyLong_MASK) ^ -negate) + negate;
     }
 }
