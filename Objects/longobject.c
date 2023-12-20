@@ -34,7 +34,7 @@ class int "PyObject *" "&PyLong_Type"
 static inline digit*
 get_digit_offset(PyLongObject *v)
 {
-    return v->ob_digit + ((v->ob_digit[0] & PyLong_IS_LONG_MASK) >> 31);
+    return v->ob_digit + (v->ob_digit[0] >> 31);
 }
 
 static inline digit
@@ -1049,7 +1049,7 @@ _PyLong_FromByteArray(const unsigned char* bytes, size_t n,
     if (idigit == 0) {
         sign = 0;
     }
-    _PyLong_SetSignAndDigitCount(v, sign, idigit);
+    _PyLong_ModifySignAndDigitCount(v, sign, idigit);
     return (PyObject *)maybe_small_long(long_normalize(v));
 }
 
@@ -2706,7 +2706,6 @@ long_from_non_binary_base(const char *start, const char *end, Py_ssize_t digits,
             }
         }
     }
-    // MGDTODO: Should we normalize here?
     assert(digits_written <= buffer_size);
     _PyLong_SetDigitCount(z, digits_written);
     *res = z;
@@ -4098,7 +4097,7 @@ k_lopsided_mul(PyLongObject *a, PyLongObject *b)
         memcpy(bslice->ob_digit + PyLong_HEADER_SIZE, b->ob_digit + nbdone + PyLong_HEADER_SIZE,
                nbtouse * sizeof(digit));
         assert(nbtouse >= 0);
-        _PyLong_SetSignAndDigitCount(bslice, 1, nbtouse);
+        _PyLong_ModifySignAndDigitCount(bslice, 1, nbtouse);
         product = k_mul(a, bslice);
         if (product == NULL)
             goto fail;
@@ -5641,7 +5640,7 @@ _PyLong_GCD(PyObject *aarg, PyObject *barg)
         }
         if (c != NULL) {
             assert(size_a >= 0);
-            _PyLong_SetSignAndDigitCount(c, 1, size_a);
+            _PyLong_ModifySignAndDigitCount(c, 1, size_a);
         }
         else if (Py_REFCNT(a) == 1) {
             c = (PyLongObject*)Py_NewRef(a);
@@ -5656,12 +5655,12 @@ _PyLong_GCD(PyObject *aarg, PyObject *barg)
 
         if (d != NULL) {
             assert(size_a >= 0);
-            _PyLong_SetSignAndDigitCount(d, 1, size_a);
+            _PyLong_ModifySignAndDigitCount(d, 1, size_a);
         }
         else if (Py_REFCNT(b) == 1 && size_a <= alloc_b) {
             d = (PyLongObject*)Py_NewRef(b);
             assert(size_a >= 0);
-            _PyLong_SetSignAndDigitCount(d, 1, size_a);
+            _PyLong_ModifySignAndDigitCount(d, 1, size_a);
         }
         else {
             alloc_b = size_a;

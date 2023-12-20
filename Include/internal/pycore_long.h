@@ -293,6 +293,30 @@ _PyLong_SetSignAndDigitCount(PyLongObject *op, int sign, Py_ssize_t size)
         assert(sign == 0);
         op->ob_digit[0] = 0;
     } else if (size == 1) {
+        op->ob_digit[0] = (
+            ((sign == -1) ? PyLong_IS_NEGATIVE_MASK : 0) |
+            (op->ob_digit[PyLong_HEADER_SIZE] & PyLong_MASK)
+        );
+    } else {
+        op->ob_digit[0] = (
+            PyLong_IS_LONG_MASK |
+            ((sign == -1) ? PyLong_IS_NEGATIVE_MASK : 0) |
+            (size & PyLong_MASK)
+        );
+    }
+}
+
+static inline void
+_PyLong_ModifySignAndDigitCount(PyLongObject *op, int sign, Py_ssize_t size)
+{
+    // MGDTODO: Make versions of this that can only shrink, or shrink and grow
+    assert(size >= 0);
+    assert(-1 <= sign && sign <= 1);
+    assert(sign != 0 || size == 0);
+    if (size == 0) {
+        assert(sign == 0);
+        op->ob_digit[0] = 0;
+    } else if (size == 1) {
         if (_PyLong_IsCompact(op)) {
             op->ob_digit[0] = (
                 ((sign == -1) ? PyLong_IS_NEGATIVE_MASK : 0) |

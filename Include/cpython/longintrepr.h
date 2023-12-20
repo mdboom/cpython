@@ -112,7 +112,7 @@ _PyLong_IsCompact(const PyLongObject* op) {
 static inline Py_ssize_t
 _PyLong_CompactValue(const PyLongObject *op)
 {
-    // Conditionally negate without a branch trick from bit-twiddling hacks.
+    // Conditionally negate without a branch trick from "bit-twiddling hacks".
     // Avraham Plotnitzky, Alfonso De Gregorio, Sean Eron Anderson.
     // https://graphics.stanford.edu/~seander/bithacks.html#ConditionalNegate
 
