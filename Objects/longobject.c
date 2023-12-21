@@ -65,34 +65,7 @@ set_digit(PyLongObject *v, size_t i, digit val)
 static inline void
 copy_digits(PyLongObject *a, size_t a_offset, const PyLongObject *b, size_t b_offset, int ndigits)
 {
-    // assert(ndigits >= 1);
-    if (ndigits == 0) {
-        return;
-    }
-
-    if (_PyLong_IsCompact(a)) {
-        assert(a_offset == 0);
-        assert(ndigits == 1);
-        if (_PyLong_IsCompact(b)) {
-            assert(b_offset == 0);
-            store_digit(a->ob_digit, b->ob_digit[0]);
-        } else {
-            store_digit(a->ob_digit, b->ob_digit[PyLong_HEADER_SIZE + b_offset] & PyLong_MASK);
-        }
-    } else {
-        if (_PyLong_IsCompact(b)) {
-            assert(b_offset == 0);
-            assert(ndigits == 1);
-            a->ob_digit[PyLong_HEADER_SIZE + a_offset] = b->ob_digit[0];
-        } else {
-            // MGDTODO: Asserts
-            memcpy(
-                &a->ob_digit[PyLong_HEADER_SIZE + a_offset],
-                &b->ob_digit[PyLong_HEADER_SIZE + b_offset],
-                sizeof(digit) * ndigits
-            );
-        }
-    }
+    memcpy(get_digit_offset(a) + a_offset, get_digit_offset(b) + b_offset, sizeof(digit) * ndigits);
 }
 
 static inline void
@@ -248,8 +221,7 @@ _PyLong_New(Py_ssize_t size)
             return NULL;
         }
         _PyObject_Init((PyObject*)result, &PyLong_Type);
-        _PyLong_SetSignAndDigitCount(result, size != 0, size);
-        // memset(result->ob_digit + 1, 0, size * sizeof(digit));
+        result->ob_digit[0] = PyLong_IS_LONG_MASK | size;
         result->ob_digit[1] = 0;
         return result;
     }
