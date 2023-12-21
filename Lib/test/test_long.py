@@ -1608,11 +1608,11 @@ class LongTest(unittest.TestCase):
         test_values = [
             # We always allocate space for at least one digit, even for
             # a value of zero; sys.getsizeof should reflect that.
-            (0, 1),
-            (1, 1),
-            (-1, 1),
-            (BASE-1, 1),
-            (1-BASE, 1),
+            (0, 0),
+            (1, 0),
+            (-1, 0),
+            (BASE-1, 0),
+            (1-BASE, 0),
             (BASE, 2),
             (-BASE, 2),
             (BASE*BASE - 1, 2),

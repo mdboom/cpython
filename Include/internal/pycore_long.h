@@ -167,42 +167,15 @@ PyAPI_FUNC(int) _PyLong_UnsignedLongLong_Converter(PyObject *, void *);
 // Export for '_testclinic' shared extension (Argument Clinic code)
 PyAPI_FUNC(int) _PyLong_Size_t_Converter(PyObject *, void *);
 
-/* Long value tag bits:
- * 0-1: Sign bits value = (1-sign), ie. negative=2, positive=0, zero=1.
- * 2: Reserved for immortality bit
- * 3+ Unsigned digit count
- */
-#define SIGN_MASK 3
-#define SIGN_ZERO 1
-#define SIGN_NEGATIVE 2
-#define NON_SIZE_BITS 3
-
 /* The functions _PyLong_IsCompact and _PyLong_CompactValue are defined
- * in Include/cpython/longobject.h, since they need to be inline.
- *
- * "Compact" values have at least one bit to spare,
- * so that addition and subtraction can be performed on the values
- * without risk of overflow.
- *
- * The inline functions need tag bits.
- * For readability, rather than do `#define SIGN_MASK _PyLong_SIGN_MASK`
- * we define them to the numbers in both places and then assert that
- * they're the same.
- */
-static_assert(SIGN_MASK == _PyLong_SIGN_MASK, "SIGN_MASK does not match _PyLong_SIGN_MASK");
-static_assert(NON_SIZE_BITS == _PyLong_NON_SIZE_BITS, "NON_SIZE_BITS does not match _PyLong_NON_SIZE_BITS");
-
-/* All *compact" values are guaranteed to fit into
- * a Py_ssize_t with at least one bit to spare.
- * In other words, for 64 bit machines, compact
- * will be signed 63 (or fewer) bit values
+ * in Include/cpython/longintrepr.h, since they need to be inline.
  */
 
 /* Return 1 if the argument is compact int */
 static inline int
 _PyLong_IsNonNegativeCompact(const PyLongObject* op) {
     assert(PyLong_Check(op));
-    return op->long_value.lv_tag <= (1 << NON_SIZE_BITS);
+    return (op->ob_digit[0] & PyLong_FLAGS_MASK) == (digit)0;
 }
 
 
@@ -210,67 +183,85 @@ static inline int
 _PyLong_BothAreCompact(const PyLongObject* a, const PyLongObject* b) {
     assert(PyLong_Check(a));
     assert(PyLong_Check(b));
-    return (a->long_value.lv_tag | b->long_value.lv_tag) < (2 << NON_SIZE_BITS);
+    return ((a->ob_digit[0] | b->ob_digit[0]) & PyLong_LONG_FLAG) == 0;
 }
 
 static inline bool
 _PyLong_IsZero(const PyLongObject *op)
 {
-    return (op->long_value.lv_tag & SIGN_MASK) == SIGN_ZERO;
+    return op->ob_digit[0] == 0;
 }
 
 static inline bool
 _PyLong_IsNegative(const PyLongObject *op)
 {
-    return (op->long_value.lv_tag & SIGN_MASK) == SIGN_NEGATIVE;
+    return op->ob_digit[0] & PyLong_NEGATIVE_FLAG;
 }
 
 static inline bool
 _PyLong_IsPositive(const PyLongObject *op)
 {
-    return (op->long_value.lv_tag & SIGN_MASK) == 0;
+    assert(PyLong_Check(op));
+
+    return op->ob_digit[0] != 0 && ((op->ob_digit[0] & PyLong_NEGATIVE_FLAG) == 0);
 }
 
 static inline Py_ssize_t
 _PyLong_DigitCount(const PyLongObject *op)
 {
     assert(PyLong_Check(op));
-    return op->long_value.lv_tag >> NON_SIZE_BITS;
+    if (_PyLong_IsCompact(op)) {
+        return !(op->ob_digit[0] == 0);
+    }
+    else {
+        return (Py_ssize_t)(op->ob_digit[0] & PyLong_MASK);
+    }
 }
 
-/* Equivalent to _PyLong_DigitCount(op) * _PyLong_NonCompactSign(op) */
 static inline Py_ssize_t
-_PyLong_SignedDigitCount(const PyLongObject *op)
+_PyLong_NonCompactDigitCount(const PyLongObject *op)
 {
     assert(PyLong_Check(op));
-    Py_ssize_t sign = 1 - (op->long_value.lv_tag & SIGN_MASK);
-    return sign * (Py_ssize_t)(op->long_value.lv_tag >> NON_SIZE_BITS);
-}
-
-static inline int
-_PyLong_CompactSign(const PyLongObject *op)
-{
-    assert(PyLong_Check(op));
-    assert(_PyLong_IsCompact(op));
-    return 1 - (op->long_value.lv_tag & SIGN_MASK);
+    assert(!_PyLong_IsCompact(op));
+    return (Py_ssize_t)(op->ob_digit[0] & PyLong_MASK);
 }
 
 static inline int
 _PyLong_NonCompactSign(const PyLongObject *op)
 {
+    // Conditionally negate without a branch trick from "bit-twiddling hacks".
+    // Avraham Plotnitzky, Alfonso De Gregorio, Sean Eron Anderson.
+    // https://graphics.stanford.edu/~seander/bithacks.html#ConditionalNegate
+
     assert(PyLong_Check(op));
     assert(!_PyLong_IsCompact(op));
-    return 1 - (op->long_value.lv_tag & SIGN_MASK);
+    Py_ssize_t negate = (op->ob_digit[0] >> PyLong_NEGATIVE_FLAG_SHIFT) & 1;
+    return ((Py_ssize_t)1 ^ -negate) + negate;
 }
 
-/* Do a and b have the same sign? */
-static inline int
-_PyLong_SameSign(const PyLongObject *a, const PyLongObject *b)
+/* Equivalent to _PyLong_DigitCount(op) * _PyLong_Sign(op) */
+static inline Py_ssize_t
+_PyLong_SignedDigitCount(const PyLongObject *op)
 {
-    return (a->long_value.lv_tag & SIGN_MASK) == (b->long_value.lv_tag & SIGN_MASK);
+    assert(PyLong_Check(op));
+    if (op->ob_digit[0] == 0) {
+        return 0;
+    }
+    else if (_PyLong_IsCompact(op)) {
+        Py_ssize_t negate = (op->ob_digit[0] >> 30);
+        return ((Py_ssize_t)1 ^ -negate) + negate;
+    }
+    else {
+        Py_ssize_t negate = (op->ob_digit[0] >> 30) & 1;
+        return (((Py_ssize_t)op->ob_digit[0] & PyLong_MASK) ^ -negate) + negate;
+    }
 }
 
-#define TAG_FROM_SIGN_AND_SIZE(sign, size) ((1 - (sign)) | ((size) << NON_SIZE_BITS))
+static inline void
+_PyLong_SetNegative(PyLongObject *op)
+{
+    op->ob_digit[0] |= PyLong_NEGATIVE_FLAG;
+}
 
 static inline void
 _PyLong_SetSignAndDigitCount(PyLongObject *op, int sign, Py_ssize_t size)
@@ -278,38 +269,103 @@ _PyLong_SetSignAndDigitCount(PyLongObject *op, int sign, Py_ssize_t size)
     assert(size >= 0);
     assert(-1 <= sign && sign <= 1);
     assert(sign != 0 || size == 0);
-    op->long_value.lv_tag = TAG_FROM_SIGN_AND_SIZE(sign, (size_t)size);
+    if (size == 0) {
+        assert(sign == 0);
+        op->ob_digit[0] = 0;
+    }
+    else if (size == 1) {
+        op->ob_digit[0] = (
+            ((sign == -1) ? PyLong_NEGATIVE_FLAG : 0) |
+            (op->ob_digit[PyLong_HEADER_SIZE] & PyLong_MASK)
+        );
+    }
+    else {
+        op->ob_digit[0] = (
+            PyLong_LONG_FLAG |
+            ((sign == -1) ? PyLong_NEGATIVE_FLAG : 0) |
+            (size & PyLong_MASK)
+        );
+    }
 }
 
 static inline void
-_PyLong_SetDigitCount(PyLongObject *op, Py_ssize_t size)
+_PyLong_ModifySignAndDigitCount(PyLongObject *op, int sign, Py_ssize_t size)
 {
     assert(size >= 0);
-    op->long_value.lv_tag = (((size_t)size) << NON_SIZE_BITS) | (op->long_value.lv_tag & SIGN_MASK);
+    assert(-1 <= sign && sign <= 1);
+    assert(sign != 0 || size == 0);
+    if (size == 0) {
+        assert(sign == 0);
+        op->ob_digit[0] = 0;
+    }
+    else if (size == 1) {
+        if (_PyLong_IsCompact(op)) {
+            op->ob_digit[0] = (
+                ((sign == -1) ? PyLong_NEGATIVE_FLAG : 0) |
+                (op->ob_digit[0] & PyLong_MASK)
+            );
+        }
+        else {
+            op->ob_digit[0] = (
+                ((sign == -1) ? PyLong_NEGATIVE_FLAG : 0) |
+                (op->ob_digit[PyLong_HEADER_SIZE] & PyLong_MASK)
+            );
+        }
+    }
+    else {
+        if (_PyLong_IsCompact(op)) {
+            op->ob_digit[1] = op->ob_digit[0];
+        }
+        op->ob_digit[0] = (
+            PyLong_LONG_FLAG |
+            ((sign == -1) ? PyLong_NEGATIVE_FLAG : 0) |
+            (size & PyLong_MASK)
+        );
+    }
 }
 
-#define NON_SIZE_MASK ~((1 << NON_SIZE_BITS) - 1)
+static inline void
+_PyLong_ModifyDigitCount(PyLongObject *op, Py_ssize_t size)
+{
+    // MGDTODO: Make versions of this that can only shrink, or shrink and grow
+    assert(size >= 0);
+    if (size == 0) {
+        op->ob_digit[0] = 0;
+    }
+    else if (size == 1) {
+        if (!_PyLong_IsCompact(op)) {
+            op->ob_digit[0] = (
+                (op->ob_digit[0] & PyLong_NEGATIVE_FLAG) |
+                (op->ob_digit[PyLong_HEADER_SIZE] & PyLong_MASK)
+            );
+        }
+    }
+    else {
+        if (_PyLong_IsCompact(op)) {
+            op->ob_digit[1] = op->ob_digit[0];
+        }
+        op->ob_digit[0] = (
+            PyLong_LONG_FLAG |
+            (op->ob_digit[0] & PyLong_NEGATIVE_FLAG) |
+            (size & PyLong_MASK)
+        );
+    }
+}
 
 static inline void
 _PyLong_FlipSign(PyLongObject *op) {
-    unsigned int flipped_sign = 2 - (op->long_value.lv_tag & SIGN_MASK);
-    op->long_value.lv_tag &= NON_SIZE_MASK;
-    op->long_value.lv_tag |= flipped_sign;
+    assert(op->ob_digit[0] != 0);
+    op->ob_digit[0] ^= PyLong_NEGATIVE_FLAG;
 }
 
 #define _PyLong_DIGIT_INIT(val) \
     { \
         .ob_base = _PyObject_HEAD_INIT(&PyLong_Type), \
-        .long_value  = { \
-            .lv_tag = TAG_FROM_SIGN_AND_SIZE( \
-                (val) == 0 ? 0 : ((val) < 0 ? -1 : 1), \
-                (val) == 0 ? 0 : 1), \
-            { ((val) >= 0 ? (val) : -(val)) }, \
+        .ob_digit = { \
+            (((val) < 0) ? PyLong_NEGATIVE_FLAG : 0) | \
+            (((val) < 0) ? -(val) : (val)) \
         } \
     }
-
-#define _PyLong_FALSE_TAG TAG_FROM_SIGN_AND_SIZE(0, 0)
-#define _PyLong_TRUE_TAG TAG_FROM_SIGN_AND_SIZE(1, 1)
 
 #ifdef __cplusplus
 }

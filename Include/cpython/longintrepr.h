@@ -61,32 +61,54 @@ typedef long stwodigits; /* signed variant of twodigits */
 #define PyLong_BASE     ((digit)1 << PyLong_SHIFT)
 #define PyLong_MASK     ((digit)(PyLong_BASE - 1))
 
+// MGDTODO: This is broken on 32-bit platforms
+#define PyLong_LONG_FLAG_SHIFT (PyLong_SHIFT + 1)
+#define PyLong_LONG_FLAG ((digit)1 << PyLong_LONG_FLAG_SHIFT)
+#define PyLong_NEGATIVE_FLAG_SHIFT (PyLong_SHIFT)
+#define PyLong_NEGATIVE_FLAG ((digit)1 << (PyLong_NEGATIVE_FLAG_SHIFT))
+#define PyLong_FLAGS_MASK (PyLong_LONG_FLAG | PyLong_NEGATIVE_FLAG)
+#define PyLong_HEADER_SIZE (1)
+
 /* Long integer representation.
-   The absolute value of a number is equal to
-        SUM(for i=0 through abs(ob_size)-1) ob_digit[i] * 2**(SHIFT*i)
-   Negative numbers are represented with ob_size < 0;
-   zero is represented by ob_size == 0.
-   In a normalized number, ob_digit[abs(ob_size)-1] (the most significant
-   digit) is never zero.  Also, in all cases, for all valid i,
-        0 <= ob_digit[i] <= MASK.
-   The allocation function takes care of allocating extra memory
-   so that ob_digit[0] ... ob_digit[abs(ob_size)-1] are actually available.
-   We always allocate memory for at least one digit, so accessing ob_digit[0]
-   is always safe. However, in the case ob_size == 0, the contents of
-   ob_digit[0] may be undefined.
 
-   CAUTION:  Generic code manipulating subtypes of PyVarObject has to
-   aware that ints abuse  ob_size's sign bit.
+   Longs are represented by a variable number of "digits".
+
+   The absolute value of a number is equal to SUM(for i=0 through
+        abs(ob_size)-1) digit[i] * 2**(SHIFT*i)
+
+   The number of digit array elements used depends on whether there is a single
+   digit (compact form) or more than one digit (long form). The form in use is
+   indicated by the PyLong_LONG_FLAG bit in the first element.
+
+   Compact form uses a single array element:
+
+      0sxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+
+   Long form uses the first array element to store the number of digits (n),
+   followed by n elements to store the digits:
+
+      1snn nnnn nnnn nnnn nnnn nnnn nnnn nnnn
+      --xx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+      ...
+
+   Negative numbers are indicated with the PyLong_NEGATIVE_FLAG bit in the first element.
+
+   Zero is represented by ob_digit[0] == 0.
+
+   In a normalized number, ob_digit[abs(ob_size)-1 + 1] (the most significant digit)
+   is never zero.
+
+   Also, in all cases, for all valid i, 0 <= ob_digit[i] <= MASK.
+
+   The allocation function takes care of allocating extra memory so that
+   ob_digit[0] ... ob_digit[abs(ob_size)-1] are actually available. We always
+   allocate memory for at least one digit, so accessing ob_digit[0] is always
+   safe.
 */
-
-typedef struct _PyLongValue {
-    uintptr_t lv_tag; /* Number of digits, sign and flags */
-    digit ob_digit[1];
-} _PyLongValue;
 
 struct _longobject {
     PyObject_HEAD
-    _PyLongValue long_value;
+    digit ob_digit[1];
 };
 
 PyAPI_FUNC(PyLongObject*) _PyLong_New(Py_ssize_t);
@@ -99,18 +121,10 @@ PyAPI_FUNC(PyLongObject*) _PyLong_FromDigits(
     Py_ssize_t digit_count,
     digit *digits);
 
-
-/* Inline some internals for speed. These should be in pycore_long.h
- * if user code didn't need them inlined. */
-
-#define _PyLong_SIGN_MASK 3
-#define _PyLong_NON_SIZE_BITS 3
-
-
 static inline int
 _PyLong_IsCompact(const PyLongObject* op) {
     assert(PyType_HasFeature((op)->ob_base.ob_type, Py_TPFLAGS_LONG_SUBCLASS));
-    return op->long_value.lv_tag < (2 << _PyLong_NON_SIZE_BITS);
+    return !(op->ob_digit[0] & PyLong_LONG_FLAG);
 }
 
 #define PyUnstable_Long_IsCompact _PyLong_IsCompact
@@ -118,10 +132,16 @@ _PyLong_IsCompact(const PyLongObject* op) {
 static inline Py_ssize_t
 _PyLong_CompactValue(const PyLongObject *op)
 {
+    // Conditionally negate without a branch trick from "bit-twiddling hacks".
+    // Avraham Plotnitzky, Alfonso De Gregorio, Sean Eron Anderson.
+    // https://graphics.stanford.edu/~seander/bithacks.html#ConditionalNegate
+
     assert(PyType_HasFeature((op)->ob_base.ob_type, Py_TPFLAGS_LONG_SUBCLASS));
     assert(PyUnstable_Long_IsCompact(op));
-    Py_ssize_t sign = 1 - (op->long_value.lv_tag & _PyLong_SIGN_MASK);
-    return sign * (Py_ssize_t)op->long_value.ob_digit[0];
+    // Don't need to fully mask this flag since PyLong_LONG_FLAG is always 0 in
+    // this case.
+    Py_ssize_t negate = (op->ob_digit[0] >> PyLong_NEGATIVE_FLAG_SHIFT);
+    return (((Py_ssize_t)op->ob_digit[0] & PyLong_MASK) ^ -negate) + negate;
 }
 
 #define PyUnstable_Long_CompactValue _PyLong_CompactValue

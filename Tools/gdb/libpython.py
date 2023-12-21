@@ -856,45 +856,59 @@ class PyLongObjectPtr(PyObjectPtr):
 
     def proxyval(self, visited):
         '''
-        Python's Include/longobjrep.h has this declaration:
-
-            typedef struct _PyLongValue {
-                uintptr_t lv_tag; /* Number of digits, sign and flags */
-                digit ob_digit[1];
-            } _PyLongValue;
+        Python's Include/longintrep.h has this declaration:
 
             struct _longobject {
                 PyObject_HEAD
-               _PyLongValue long_value;
+                digit ob_digit[1];
             };
 
         with this description:
-            The absolute value of a number is equal to
-                 SUM(for i=0 through abs(ob_size)-1) ob_digit[i] * 2**(SHIFT*i)
-            Negative numbers are represented with ob_size < 0;
-            zero is represented by ob_size == 0.
+            The absolute value of a number is equal to SUM(for i=0 through
+                    abs(ob_size)-1) digit[i] * 2**(SHIFT*i)
+
+            The number of digit array elements used depends on whether there is a single
+            digit (compact form) or more than one digit (long form). The form in use is
+            indicated by the PyLong_LONG_FLAG bit in the first element.
+
+            Compact form uses a single array element:
+
+                0sxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+
+            Long form uses the first array element to store the number of digits (n),
+            followed by n elements to store the digits:
+
+                1snn nnnn nnnn nnnn nnnn nnnn nnnn nnnn
+                --xx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+                ...
+
+            Negative numbers are indicated with the PyLong_NEGATIVE_FLAG bit in the first element.            The absolute value of a number is equal to
 
         where SHIFT can be either:
             #define PyLong_SHIFT        30
             #define PyLong_SHIFT        15
         '''
-        long_value = self.field('long_value')
-        lv_tag = int(long_value['lv_tag'])
-        size = lv_tag >> 3
-        if size == 0:
-            return 0
-
-        ob_digit = long_value['ob_digit']
-
         if gdb.lookup_type('digit').sizeof == 2:
             SHIFT = 15
         else:
             SHIFT = 30
+        IS_LONG = 1 << (SHIFT + 1)
+        IS_NEGATIVE = 1 << SHIFT
+        MASK = (1 << SHIFT) - 1
 
-        digits = [int(ob_digit[i]) * 2**(SHIFT*i)
-                  for i in safe_range(size)]
-        result = sum(digits)
-        if (lv_tag & 3) == 2:
+        ob_digit = self.field('ob_digit')
+        first_digit = int(ob_digit)
+
+        if first_digit == 0:
+            return 0
+        elif first_digit & IS_LONG == 0:
+            result = first_digit & MASK
+        else:
+            size = first_digit & MASK
+            result = sum(int(ob_digit[i + 1]) & MASK * 2 ** (SHIFT * i)
+                         for i in safe_range(size))
+
+        if first_digit & IS_NEGATIVE:
             result = -result
         return result
 

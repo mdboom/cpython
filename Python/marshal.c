@@ -21,6 +21,26 @@ module marshal
 
 #include "clinic/marshal.c.h"
 
+// MGDTODO: Reduce duplication with longobject.c
+
+static inline digit*
+get_digit_offset(PyLongObject *v)
+{
+    return v->ob_digit + ((v->ob_digit[0] & PyLong_LONG_FLAG) >> 31);
+}
+
+static inline digit
+extract_digit(digit *d)
+{
+    return *d & PyLong_MASK;
+}
+
+static inline digit
+get_digit(PyLongObject *v, size_t i)
+{
+    return extract_digit(get_digit_offset(v) + i);
+}
+
 /* High water mark to determine when the marshalled object is dangerously deep
  * and risks coring the interpreter.  When the object stack gets this deep,
  * raise an exception instead of continuing.
@@ -240,7 +260,10 @@ w_PyLong(const PyLongObject *ob, char flag, WFILE *p)
     /* set l to number of base PyLong_MARSHAL_BASE digits */
     n = _PyLong_DigitCount(ob);
     l = (n-1) * PyLong_MARSHAL_RATIO;
-    d = ob->long_value.ob_digit[n-1];
+    d = get_digit(ob, n-1);
+    if (d == 0) {
+        d = get_digit(ob, n-1);
+    }
     assert(d != 0); /* a PyLong is always normalized */
     do {
         d >>= PyLong_MARSHAL_SHIFT;
@@ -254,14 +277,14 @@ w_PyLong(const PyLongObject *ob, char flag, WFILE *p)
     w_long((long)(_PyLong_IsNegative(ob) ? -l : l), p);
 
     for (i=0; i < n-1; i++) {
-        d = ob->long_value.ob_digit[i];
+        d = get_digit(ob, i);
         for (j=0; j < PyLong_MARSHAL_RATIO; j++) {
             w_short(d & PyLong_MARSHAL_MASK, p);
             d >>= PyLong_MARSHAL_SHIFT;
         }
         assert (d == 0);
     }
-    d = ob->long_value.ob_digit[n-1];
+    d = get_digit(ob, n-1);
     do {
         w_short(d & PyLong_MARSHAL_MASK, p);
         d >>= PyLong_MARSHAL_SHIFT;
@@ -849,7 +872,7 @@ r_PyLong(RFILE *p)
     if (ob == NULL)
         return NULL;
 
-    _PyLong_SetSignAndDigitCount(ob, n < 0 ? -1 : 1, size);
+    digit *ob_p = get_digit_offset(ob);
 
     for (i = 0; i < size-1; i++) {
         d = 0;
@@ -859,7 +882,7 @@ r_PyLong(RFILE *p)
                 goto bad_digit;
             d += (digit)md << j*PyLong_MARSHAL_SHIFT;
         }
-        ob->long_value.ob_digit[i] = d;
+        ob_p[i] = d;
     }
 
     d = 0;
@@ -879,7 +902,12 @@ r_PyLong(RFILE *p)
     assert(!PyErr_Occurred());
     /* top digit should be nonzero, else the resulting PyLong won't be
        normalized */
-    ob->long_value.ob_digit[size-1] = d;
+    ob_p[size-1] = d;
+
+    if (n < 0) {
+        _PyLong_SetNegative(ob);
+    }
+
     return (PyObject *)ob;
   bad_digit:
     Py_DECREF(ob);
