@@ -243,8 +243,8 @@ static inline Py_ssize_t
 _PyLong_SignedDigitCount(const PyLongObject *op)
 {
     assert(PyLong_Check(op));
-    Py_ssize_t sign = 1 - (op->long_value.lv_tag & SIGN_MASK);
-    return sign * (Py_ssize_t)(op->long_value.lv_tag >> NON_SIZE_BITS);
+    Py_ssize_t negate = (op->long_value.lv_tag & 2) >> 1;
+    return ((Py_ssize_t)(op->long_value.lv_tag >> NON_SIZE_BITS) ^ -negate) + negate;
 }
 
 static inline int
