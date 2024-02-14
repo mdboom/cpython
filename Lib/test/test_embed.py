@@ -24,10 +24,7 @@ PYMEM_ALLOCATOR_NOT_SET = 0
 PYMEM_ALLOCATOR_DEBUG = 2
 PYMEM_ALLOCATOR_MALLOC = 3
 PYMEM_ALLOCATOR_MIMALLOC = 7
-if support.Py_GIL_DISABLED:
-    ALLOCATOR_FOR_CONFIG = PYMEM_ALLOCATOR_MIMALLOC
-else:
-    ALLOCATOR_FOR_CONFIG = PYMEM_ALLOCATOR_MALLOC
+ALLOCATOR_FOR_CONFIG = PYMEM_ALLOCATOR_MIMALLOC
 
 Py_STATS = hasattr(sys, '_stats_on')
 
@@ -408,7 +405,7 @@ class InitConfigTests(EmbeddingTestsMixin, unittest.TestCase):
 
     PRE_CONFIG_COMPAT = {
         '_config_init': API_COMPAT,
-        'allocator': PYMEM_ALLOCATOR_NOT_SET,
+        'allocator': PYMEM_ALLOCATOR_MIMALLOC,
         'parse_argv': 0,
         'configure_locale': 1,
         'coerce_c_locale': 0,
@@ -982,7 +979,7 @@ class InitConfigTests(EmbeddingTestsMixin, unittest.TestCase):
                                api=API_PYTHON)
 
     def test_init_env_dev_mode(self):
-        preconfig = dict(allocator=PYMEM_ALLOCATOR_DEBUG)
+        preconfig = dict(allocator=PYMEM_ALLOCATOR_MIMALLOC)
         config = dict(dev_mode=1,
                       faulthandler=1,
                       warnoptions=['default'])
@@ -999,7 +996,7 @@ class InitConfigTests(EmbeddingTestsMixin, unittest.TestCase):
 
     def test_init_dev_mode(self):
         preconfig = {
-            'allocator': PYMEM_ALLOCATOR_DEBUG,
+            'allocator': PYMEM_ALLOCATOR_MIMALLOC,
         }
         config = {
             'faulthandler': 1,
@@ -1013,7 +1010,7 @@ class InitConfigTests(EmbeddingTestsMixin, unittest.TestCase):
         # Pre-initialize implicitly using argv: make sure that -X dev
         # is used to configure the allocation in preinitialization
         preconfig = {
-            'allocator': PYMEM_ALLOCATOR_DEBUG,
+            'allocator': PYMEM_ALLOCATOR_MIMALLOC,
         }
         config = {
             'argv': ['script.py'],
@@ -1625,7 +1622,7 @@ class InitConfigTests(EmbeddingTestsMixin, unittest.TestCase):
             'ignore:::PySys_AddWarnOption2',  # PySys_AddWarnOption()
             'ignore:::PyConfig_BeforeRead',   # PyConfig.warnoptions
             'ignore:::PyConfig_AfterRead']    # PyWideStringList_Append()
-        preconfig = dict(allocator=PYMEM_ALLOCATOR_DEBUG)
+        preconfig = dict(allocator=PYMEM_ALLOCATOR_MIMALLOC)
         config = {
             'dev_mode': 1,
             'faulthandler': 1,
