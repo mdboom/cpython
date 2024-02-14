@@ -720,20 +720,7 @@ preconfig_init_coerce_c_locale(PyPreConfig *config)
 static PyStatus
 preconfig_init_allocator(PyPreConfig *config)
 {
-    if (config->allocator == PYMEM_ALLOCATOR_NOT_SET) {
-        /* bpo-34247. The PYTHONMALLOC environment variable has the priority
-           over PYTHONDEV env var and "-X dev" command line option.
-           For example, PYTHONMALLOC=malloc PYTHONDEVMODE=1 sets the memory
-           allocators to "malloc" (and not to "debug"). */
-        const char *envvar = _Py_GetEnv(config->use_environment, "PYTHONMALLOC");
-        if (envvar) {
-            PyMemAllocatorName name;
-            if (_PyMem_GetAllocatorName(envvar, &name) < 0) {
-                return _PyStatus_ERR("PYTHONMALLOC: unknown allocator");
-            }
-            config->allocator = (int)name;
-        }
-    }
+    config->allocator = PYMEM_ALLOCATOR_MIMALLOC;
 
     if (config->dev_mode && config->allocator == PYMEM_ALLOCATOR_NOT_SET) {
         config->allocator = PYMEM_ALLOCATOR_DEBUG;
