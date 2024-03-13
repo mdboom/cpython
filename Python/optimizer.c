@@ -1009,8 +1009,7 @@ uop_optimize(
         return err;
     }
     OPT_STAT_INC(traces_created);
-    char *env_var = Py_GETENV("PYTHON_UOPS_OPTIMIZE");
-    if (env_var == NULL || *env_var == '\0' || *env_var > '0') {
+    if (true) {
         err = _Py_uop_analyze_and_optimize(frame, buffer,
                                            UOP_MAX_TRACE_LENGTH,
                                            curr_stackentries, &dependencies);
