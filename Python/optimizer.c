@@ -520,6 +520,11 @@ translate_bytecode_to_trace(
     int trace_stack_depth = 0;
     int confidence = CONFIDENCE_RANGE;  // Adjusted by branch instructions
 
+    if ((Py_SIZE(code) - (initial_instr - (_Py_CODEUNIT *)&code->co_code_adaptive)) <= 10) {
+        OPT_STAT_INC(trace_too_short);
+        return 0;
+    }
+
 #ifdef Py_DEBUG
     char *python_lltrace = Py_GETENV("PYTHON_LLTRACE");
     int lltrace = 0;
