@@ -801,7 +801,7 @@ done:
     }
     assert(code == initial_code);
     // Skip short traces like _SET_IP, LOAD_FAST, _SET_IP, _EXIT_TRACE
-    if (progress_needed || trace_length < 5) {
+    if (progress_needed || trace_length < 3) {
         OPT_STAT_INC(trace_too_short);
         DPRINTF(4,
                 "No trace for %s (%s:%d) at byte offset %d\n",
