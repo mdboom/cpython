@@ -138,6 +138,7 @@ remove_globals(_PyInterpreterFrame *frame, _PyUOpInstruction *buffer,
     PyInterpreterState *interp = _PyInterpreterState_GET();
     PyObject *builtins = frame->f_builtins;
     if (builtins != interp->builtins) {
+        OPT_STAT_INC(remove_globals_builtins_changed);
         return 1;
     }
     PyObject *globals = frame->f_globals;
@@ -169,6 +170,7 @@ remove_globals(_PyInterpreterFrame *frame, _PyUOpInstruction *buffer,
         switch(opcode) {
             case _GUARD_BUILTINS_VERSION:
                 if (incorrect_keys(inst, builtins)) {
+                    OPT_STAT_INC(remove_globals_incorrect_keys);
                     return 0;
                 }
                 if (interp->rare_events.builtin_dict >= _Py_MAX_ALLOWED_BUILTINS_MODIFICATIONS) {
@@ -189,6 +191,7 @@ remove_globals(_PyInterpreterFrame *frame, _PyUOpInstruction *buffer,
                 break;
             case _GUARD_GLOBALS_VERSION:
                 if (incorrect_keys(inst, globals)) {
+                    OPT_STAT_INC(remove_globals_incorrect_keys);
                     return 0;
                 }
                 uint64_t watched_mutations = get_mutations(globals);
@@ -237,6 +240,7 @@ remove_globals(_PyInterpreterFrame *frame, _PyUOpInstruction *buffer,
                 globals = func->func_globals;
                 builtins = func->func_builtins;
                 if (builtins != interp->builtins) {
+                    OPT_STAT_INC(remove_globals_builtins_changed);
                     return 1;
                 }
                 break;
@@ -357,6 +361,7 @@ optimize_uops(
 
     _Py_UOpsContext context;
     _Py_UOpsContext *ctx = &context;
+    uint32_t opcode = UINT16_MAX;
 
     if (_Py_uop_abstractcontext_init(ctx) < 0) {
         goto out_of_space;
@@ -373,8 +378,7 @@ optimize_uops(
          this_instr++) {
 
         int oparg = this_instr->oparg;
-        uint32_t opcode = this_instr->opcode;
-
+        opcode = this_instr->opcode;
         _Py_UopsSymbol **stack_pointer = ctx->frame->stack_pointer;
 
         DPRINTF(3, "Abstract interpreting %s:%d ",
@@ -403,6 +407,9 @@ out_of_space:
 
 error:
     DPRINTF(1, "Encountered error in abstract interpreter\n");
+    if (opcode <= MAX_UOP_ID) {
+        OPT_ERROR_IN_OPCODE(opcode);
+    }
     _Py_uop_abstractcontext_fini(ctx);
     return 0;
 
