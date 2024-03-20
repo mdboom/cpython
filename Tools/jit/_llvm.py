@@ -35,10 +35,11 @@ _CORES = asyncio.BoundedSemaphore(os.cpu_count() or 1)
 
 
 async def _run(tool: str, args: typing.Iterable[str], echo: bool = False) -> str | None:
+    echo = True
     command = [tool, *args]
     async with _CORES:
         if echo:
-            print(shlex.join(command))
+            print(f"llvm command: {shlex.join(command)}")
         try:
             process = await asyncio.create_subprocess_exec(
                 *command, stdout=subprocess.PIPE
@@ -48,6 +49,7 @@ async def _run(tool: str, args: typing.Iterable[str], echo: bool = False) -> str
         out, _ = await process.communicate()
     if process.returncode:
         raise RuntimeError(f"{tool} exited with return code {process.returncode}")
+    print(f"llvm output: {out.decode()}")
     return out.decode()
 
 
