@@ -810,7 +810,7 @@ def compute_properties(op: parser.InstDef) -> Properties:
         pure="pure" in op.annotations,
         passthrough=passthrough,
         tier=tier_variable(op),
-        stub=((TEMPLATE_SIZES.get(op.name, 0) > 200 or TEMPLATE_SIZES.get("_" + op.name, 0) > 200) and op.name not in BROKEN),
+        stub=((TEMPLATE_SIZES.get(op.name, 0) > 300 or TEMPLATE_SIZES.get("_" + op.name, 0) > 300) and op.name not in BROKEN),
     )
 
 
