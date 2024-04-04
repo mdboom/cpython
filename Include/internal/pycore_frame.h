@@ -258,6 +258,7 @@ _PyThreadState_PushFrame(PyThreadState *tstate, size_t size);
 
 void _PyThreadState_PopFrame(PyThreadState *tstate, _PyInterpreterFrame *frame);
 
+
 /* Pushes a frame without checking for space.
  * Must be guarded by _PyThreadState_HasStackSpace()
  * Consumes reference to func. */
@@ -272,6 +273,9 @@ _PyFrame_PushUnchecked(PyThreadState *tstate, PyFunctionObject *func, int null_l
     _PyFrame_Initialize(new_frame, func, NULL, code, null_locals_from);
     return new_frame;
 }
+
+extern _PyInterpreterFrame *
+_PyFrame_PushUnchecked_NotInlined(PyThreadState *tstate, PyFunctionObject *func, int null_locals_from);
 
 /* Pushes a trampoline frame without checking for space.
  * Must be guarded by _PyThreadState_HasStackSpace() */

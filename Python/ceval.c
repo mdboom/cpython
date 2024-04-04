@@ -49,6 +49,11 @@
 #  error "ceval.c must be build with Py_BUILD_CORE define for best performance"
 #endif
 
+_PyInterpreterFrame *
+_PyFrame_PushUnchecked_NotInlined(PyThreadState *tstate, PyFunctionObject *func, int null_locals_from) {
+    return _PyFrame_PushUnchecked(tstate, func, null_locals_from);
+}
+
 #if !defined(Py_DEBUG) && !defined(Py_TRACE_REFS) && !defined(Py_GIL_DISABLED)
 // GH-89279: The MSVC compiler does not inline these static inline functions
 // in PGO build in _PyEval_EvalFrameDefault(), because this function is over
