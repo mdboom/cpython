@@ -906,7 +906,7 @@ dummy_func(
             }
         }
 
-        inst(GET_ANEXT, (aiter -- aiter, awaitable)) {
+        externalize inst(GET_ANEXT, (aiter -- aiter, awaitable)) {
             unaryfunc getter = NULL;
             PyObject *next_iter = NULL;
             PyTypeObject *type = Py_TYPE(aiter);
@@ -1567,7 +1567,7 @@ dummy_func(
             PyCell_SetTakeRef(cell, v);
         }
 
-        externalize inst(COPY_FREE_VARS, (--)) {
+        inst(COPY_FREE_VARS, (--)) {
             /* Copy closure variables to free variables */
             PyCodeObject *co = _PyFrame_GetCode(frame);
             assert(PyFunction_Check(frame->f_funcobj));
@@ -2191,7 +2191,7 @@ dummy_func(
         macro(COMPARE_OP_STR) =
             _GUARD_BOTH_UNICODE + unused/1 + _COMPARE_OP_STR;
 
-        op(_COMPARE_OP_FLOAT, (left, right -- res)) {
+        externalize op(_COMPARE_OP_FLOAT, (left, right -- res)) {
             STAT_INC(COMPARE_OP, hit);
             double dleft = PyFloat_AS_DOUBLE(left);
             double dright = PyFloat_AS_DOUBLE(right);
@@ -3107,7 +3107,7 @@ dummy_func(
             DEOPT_IF(Py_TYPE(callable) != &PyMethod_Type);
         }
 
-        externalize op(_INIT_CALL_BOUND_METHOD_EXACT_ARGS, (callable, unused, unused[oparg] -- func, self, unused[oparg])) {
+        op(_INIT_CALL_BOUND_METHOD_EXACT_ARGS, (callable, unused, unused[oparg] -- func, self, unused[oparg])) {
             STAT_INC(CALL, hit);
             self = Py_NewRef(((PyMethodObject *)callable)->im_self);
             stack_pointer[-1 - oparg] = self;  // Patch stack as it is used by _INIT_CALL_PY_EXACT_ARGS
@@ -3826,7 +3826,7 @@ dummy_func(
             func = (PyObject *)func_obj;
         }
 
-        externalize inst(SET_FUNCTION_ATTRIBUTE, (attr, func -- func)) {
+        inst(SET_FUNCTION_ATTRIBUTE, (attr, func -- func)) {
             assert(PyFunction_Check(func));
             PyFunctionObject *func_obj = (PyFunctionObject *)func;
             switch(oparg) {
