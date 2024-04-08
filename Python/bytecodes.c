@@ -906,7 +906,7 @@ dummy_func(
             }
         }
 
-        externalize inst(GET_ANEXT, (aiter -- aiter, awaitable)) {
+        inst(GET_ANEXT, (aiter -- aiter, awaitable)) {
             unaryfunc getter = NULL;
             PyObject *next_iter = NULL;
             PyTypeObject *type = Py_TYPE(aiter);

@@ -24,33 +24,23 @@
 
 #include "ceval_macros.h"
 
-        PyAPI_FUNC(PyObject **) _Py_COPY_FREE_VARS_func(PyThreadState *tstate, _PyInterpreterFrame *frame, PyObject **stack_pointer, int oparg) {
-            /* Copy closure variables to free variables */
-            PyCodeObject *co = _PyFrame_GetCode(frame);
-            assert(PyFunction_Check(frame->f_funcobj));
-            PyObject *closure = ((PyFunctionObject *)frame->f_funcobj)->func_closure;
-            assert(oparg == co->co_nfreevars);
-            int offset = co->co_nlocalsplus - oparg;
-            for (int i = 0; i < oparg; ++i) {
-                PyObject *o = PyTuple_GET_ITEM(closure, i);
-                frame->localsplus[offset + i] = Py_NewRef(o);
-            }
-            return stack_pointer;
-        }
-
-        PyAPI_FUNC(PyObject **) _Py_INIT_CALL_BOUND_METHOD_EXACT_ARGS_func(PyThreadState *tstate, _PyInterpreterFrame *frame, PyObject **stack_pointer, int oparg) {
-            PyObject *callable;
-            PyObject *func;
-            PyObject *self;
-            callable = stack_pointer[-2 - oparg];
-            STAT_INC(CALL, hit);
-            self = Py_NewRef(((PyMethodObject *)callable)->im_self);
-            stack_pointer[-1 - oparg] = self;  // Patch stack as it is used by _INIT_CALL_PY_EXACT_ARGS
-            func = Py_NewRef(((PyMethodObject *)callable)->im_func);
-            stack_pointer[-2 - oparg] = func;  // This is used by CALL, upon deoptimization
-            Py_DECREF(callable);
-            stack_pointer[-2 - oparg] = func;
-            stack_pointer[-1 - oparg] = self;
+        PyAPI_FUNC(PyObject **) _Py_COMPARE_OP_FLOAT_func(PyThreadState *tstate, _PyInterpreterFrame *frame, PyObject **stack_pointer, int oparg) {
+            PyObject *right;
+            PyObject *left;
+            PyObject *res;
+            right = stack_pointer[-1];
+            left = stack_pointer[-2];
+            STAT_INC(COMPARE_OP, hit);
+            double dleft = PyFloat_AS_DOUBLE(left);
+            double dright = PyFloat_AS_DOUBLE(right);
+            // 1 if NaN, 2 if <, 4 if >, 8 if ==; this matches low four bits of the oparg
+            int sign_ish = COMPARISON_BIT(dleft, dright);
+            _Py_DECREF_SPECIALIZED(left, _PyFloat_ExactDealloc);
+            _Py_DECREF_SPECIALIZED(right, _PyFloat_ExactDealloc);
+            res = (sign_ish & oparg) ? Py_True : Py_False;
+            // It's always a bool, so we don't care about oparg & 16.
+            stack_pointer[-2] = res;
+            stack_pointer += -1;
             return stack_pointer;
         }
 
@@ -193,40 +183,6 @@
             }
             stack_pointer[-2 - oparg] = (PyObject *)new_frame;
             stack_pointer += -1 - oparg;
-            return stack_pointer;
-        }
-
-        PyAPI_FUNC(PyObject **) _Py_SET_FUNCTION_ATTRIBUTE_func(PyThreadState *tstate, _PyInterpreterFrame *frame, PyObject **stack_pointer, int oparg) {
-            PyObject *func;
-            PyObject *attr;
-            func = stack_pointer[-1];
-            attr = stack_pointer[-2];
-            assert(PyFunction_Check(func));
-            PyFunctionObject *func_obj = (PyFunctionObject *)func;
-            switch(oparg) {
-                case MAKE_FUNCTION_CLOSURE:
-                assert(func_obj->func_closure == NULL);
-                func_obj->func_closure = attr;
-                break;
-                case MAKE_FUNCTION_ANNOTATIONS:
-                assert(func_obj->func_annotations == NULL);
-                func_obj->func_annotations = attr;
-                break;
-                case MAKE_FUNCTION_KWDEFAULTS:
-                assert(PyDict_CheckExact(attr));
-                assert(func_obj->func_kwdefaults == NULL);
-                func_obj->func_kwdefaults = attr;
-                break;
-                case MAKE_FUNCTION_DEFAULTS:
-                assert(PyTuple_CheckExact(attr));
-                assert(func_obj->func_defaults == NULL);
-                func_obj->func_defaults = attr;
-                break;
-                default:
-                Py_UNREACHABLE();
-            }
-            stack_pointer[-2] = func;
-            stack_pointer += -1;
             return stack_pointer;
         }
 

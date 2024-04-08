@@ -18,9 +18,7 @@ extern "C" {
 #include "pytypedefs.h"
 #include "pycore_frame.h"
 
-        extern PyAPI_FUNC(PyObject **) _Py_COPY_FREE_VARS_func(PyThreadState *tstate, _PyInterpreterFrame *frame, PyObject **stack_pointer, int oparg);
-
-        extern PyAPI_FUNC(PyObject **) _Py_INIT_CALL_BOUND_METHOD_EXACT_ARGS_func(PyThreadState *tstate, _PyInterpreterFrame *frame, PyObject **stack_pointer, int oparg);
+        extern PyAPI_FUNC(PyObject **) _Py_COMPARE_OP_FLOAT_func(PyThreadState *tstate, _PyInterpreterFrame *frame, PyObject **stack_pointer, int oparg);
 
         extern PyAPI_FUNC(PyObject **) _Py_INIT_CALL_PY_EXACT_ARGS_0_func(PyThreadState *tstate, _PyInterpreterFrame *frame, PyObject **stack_pointer);
 
@@ -33,8 +31,6 @@ extern "C" {
         extern PyAPI_FUNC(PyObject **) _Py_INIT_CALL_PY_EXACT_ARGS_4_func(PyThreadState *tstate, _PyInterpreterFrame *frame, PyObject **stack_pointer);
 
         extern PyAPI_FUNC(PyObject **) _Py_INIT_CALL_PY_EXACT_ARGS_func(PyThreadState *tstate, _PyInterpreterFrame *frame, PyObject **stack_pointer, int oparg);
-
-        extern PyAPI_FUNC(PyObject **) _Py_SET_FUNCTION_ATTRIBUTE_func(PyThreadState *tstate, _PyInterpreterFrame *frame, PyObject **stack_pointer, int oparg);
 
 
 #ifdef __cplusplus
