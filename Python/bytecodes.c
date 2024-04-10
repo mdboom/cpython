@@ -2191,7 +2191,7 @@ dummy_func(
         macro(COMPARE_OP_STR) =
             _GUARD_BOTH_UNICODE + unused/1 + _COMPARE_OP_STR;
 
-        externalize op(_COMPARE_OP_FLOAT, (left, right -- res)) {
+        op(_COMPARE_OP_FLOAT, (left, right -- res)) {
             STAT_INC(COMPARE_OP, hit);
             double dleft = PyFloat_AS_DOUBLE(left);
             double dright = PyFloat_AS_DOUBLE(right);
