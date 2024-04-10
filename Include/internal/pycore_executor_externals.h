@@ -18,8 +18,6 @@ extern "C" {
 #include "pytypedefs.h"
 #include "pycore_frame.h"
 
-        extern PyAPI_FUNC(PyObject **) _Py_COMPARE_OP_FLOAT_func(PyThreadState *tstate, _PyInterpreterFrame *frame, PyObject **stack_pointer, int oparg);
-
         extern PyAPI_FUNC(PyObject **) _Py_INIT_CALL_PY_EXACT_ARGS_0_func(PyThreadState *tstate, _PyInterpreterFrame *frame, PyObject **stack_pointer);
 
         extern PyAPI_FUNC(PyObject **) _Py_INIT_CALL_PY_EXACT_ARGS_1_func(PyThreadState *tstate, _PyInterpreterFrame *frame, PyObject **stack_pointer);
