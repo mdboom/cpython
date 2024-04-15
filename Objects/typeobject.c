@@ -4001,6 +4001,8 @@ type_new_init(type_new_ctx *ctx)
     et->ht_slots = ctx->slots;
     ctx->slots = NULL;
 
+    type->module_state = NULL;
+
     return type;
 
 error:
@@ -4828,6 +4830,10 @@ PyType_GetModuleByDef(PyTypeObject *type, PyModuleDef *def)
 {
     assert(PyType_Check(type));
 
+    if (type->module_state != NULL) {
+        return type->module_state;
+    }
+
     PyObject *res = NULL;
     BEGIN_TYPE_LOCK()
 
@@ -4854,6 +4860,10 @@ PyType_GetModuleByDef(PyTypeObject *type, PyModuleDef *def)
             break;
         }
     }
+
+    Py_INCREF(res);
+    type->module_state = res;
+
     END_TYPE_LOCK()
 
     if (res == NULL) {

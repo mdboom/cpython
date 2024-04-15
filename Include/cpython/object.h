@@ -230,6 +230,8 @@ struct _typeobject {
     /* bitset of which type-watchers care about this type */
     unsigned char tp_watched;
     uint16_t tp_versions_used;
+
+    PyObject *module_state;
 };
 
 /* This struct is used by the specializer
