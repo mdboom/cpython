@@ -681,7 +681,7 @@ extern void _PyUOpPrint(const _PyUOpInstruction *uop);
    PGO on MSVC. Disable that optimization temporarily. If this is fixed
    upstream, we should gate this on the version of MSVC.
  */
-#  pragma optimize("t", off)
+// #  pragma optimize("t", off)
 /* This setting is reversed below following _PyEval_EvalFrameDefault */
 #endif
 
@@ -1125,7 +1125,7 @@ exit_to_trace:
 #  pragma GCC diagnostic pop
 #elif defined(_MSC_VER) /* MS_WINDOWS */
 #  pragma warning(pop)
-#  pragma optimize("", on)
+// #  pragma optimize("", on)
 #endif
 
 static void
