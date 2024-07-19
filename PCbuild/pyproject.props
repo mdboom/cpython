@@ -72,7 +72,7 @@
       <AdditionalOptions Condition="$(MSVCHasBrokenARM64Clamping) == 'true' and $(Platform) == 'ARM64'">-d2pattern-opt-disable:-932189325 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="$(MSVCHasBrokenARM64SignExtension) == 'true' and $(Platform) == 'ARM64'">-d2ssa-patterns-all- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="$(GenerateSourceDependencies) == 'true'">/sourceDependencies "$(IntDir.Trim(`\`))" %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions>/d2:-noadditionalscheduling</AdditionalOptions>
+      <AdditionalOptions>-d2noadditionalscheduling</AdditionalOptions>
     </ClCompile>
     <ClCompile Condition="$(Configuration) == 'Debug'">
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
