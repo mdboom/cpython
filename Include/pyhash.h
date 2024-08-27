@@ -16,7 +16,7 @@ extern "C" {
  * provide a decent safety margin.
  */
 #ifndef Py_HASH_CUTOFF
-#  define Py_HASH_CUTOFF 0
+#  define Py_HASH_CUTOFF 7
 #elif (Py_HASH_CUTOFF > 7 || Py_HASH_CUTOFF < 0)
 #  error Py_HASH_CUTOFF must in range 0...7.
 #endif /* Py_HASH_CUTOFF */
