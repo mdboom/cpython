@@ -307,7 +307,7 @@ void* _PyObject_Realloc(void *ctx, void *ptr, size_t size);
 #  define PYMALLOC_ALLOC {NULL, _PyObject_Malloc, _PyObject_Calloc, _PyObject_Realloc, _PyObject_Free}
 #endif  // WITH_PYMALLOC
 
-#if defined(Py_GIL_DISABLED)
+#if defined(Py_GIL_DISABLED) || defined(WITH_MIMALLOC)
 // Py_GIL_DISABLED requires using mimalloc for "mem" and "obj" domains.
 #  define PYRAW_ALLOC MALLOC_ALLOC
 #  define PYMEM_ALLOC MIMALLOC_ALLOC
