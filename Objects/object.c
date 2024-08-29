@@ -1027,6 +1027,34 @@ PyObject_RichCompare(PyObject *v, PyObject *w, int op)
     return res;
 }
 
+/* Test a value used as condition, e.g., in a while or if statement.
+   Return -1 if an error occurred */
+
+inline int
+PyObject_IsTrue(PyObject *v)
+{
+    Py_ssize_t res;
+    if (v == Py_True)
+        return 1;
+    if (v == Py_False)
+        return 0;
+    if (v == Py_None)
+        return 0;
+    else if (Py_TYPE(v)->tp_as_number != NULL &&
+             Py_TYPE(v)->tp_as_number->nb_bool != NULL)
+        res = (*Py_TYPE(v)->tp_as_number->nb_bool)(v);
+    else if (Py_TYPE(v)->tp_as_mapping != NULL &&
+             Py_TYPE(v)->tp_as_mapping->mp_length != NULL)
+        res = (*Py_TYPE(v)->tp_as_mapping->mp_length)(v);
+    else if (Py_TYPE(v)->tp_as_sequence != NULL &&
+             Py_TYPE(v)->tp_as_sequence->sq_length != NULL)
+        res = (*Py_TYPE(v)->tp_as_sequence->sq_length)(v);
+    else
+        return 1;
+    /* if it is negative, it should be either -1 or -2 */
+    return (res > 0) ? 1 : Py_SAFE_DOWNCAST(res, Py_ssize_t, int);
+}
+
 /* Perform a rich comparison with integer result.  This wraps
    PyObject_RichCompare(), returning -1 for error, 0 for false, 1 for true. */
 int
@@ -1047,10 +1075,7 @@ PyObject_RichCompareBool(PyObject *v, PyObject *w, int op)
     res = PyObject_RichCompare(v, w, op);
     if (res == NULL)
         return -1;
-    if (PyBool_Check(res))
-        ok = (res == Py_True);
-    else
-        ok = PyObject_IsTrue(res);
+    ok = PyObject_IsTrue(res);
     Py_DECREF(res);
     return ok;
 }
@@ -1837,34 +1862,6 @@ PyObject_GenericSetDict(PyObject *obj, PyObject *value, void *context)
     return 0;
 }
 
-
-/* Test a value used as condition, e.g., in a while or if statement.
-   Return -1 if an error occurred */
-
-int
-PyObject_IsTrue(PyObject *v)
-{
-    Py_ssize_t res;
-    if (v == Py_True)
-        return 1;
-    if (v == Py_False)
-        return 0;
-    if (v == Py_None)
-        return 0;
-    else if (Py_TYPE(v)->tp_as_number != NULL &&
-             Py_TYPE(v)->tp_as_number->nb_bool != NULL)
-        res = (*Py_TYPE(v)->tp_as_number->nb_bool)(v);
-    else if (Py_TYPE(v)->tp_as_mapping != NULL &&
-             Py_TYPE(v)->tp_as_mapping->mp_length != NULL)
-        res = (*Py_TYPE(v)->tp_as_mapping->mp_length)(v);
-    else if (Py_TYPE(v)->tp_as_sequence != NULL &&
-             Py_TYPE(v)->tp_as_sequence->sq_length != NULL)
-        res = (*Py_TYPE(v)->tp_as_sequence->sq_length)(v);
-    else
-        return 1;
-    /* if it is negative, it should be either -1 or -2 */
-    return (res > 0) ? 1 : Py_SAFE_DOWNCAST(res, Py_ssize_t, int);
-}
 
 /* equivalent of 'not v'
    Return -1 if an error occurred */
