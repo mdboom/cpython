@@ -1462,8 +1462,8 @@ initialize_locals(PyThreadState *tstate, PyFunctionObject *func,
     }
     for (j = 0; j < n; j++) {
         assert(PyStackRef_IsNull(localsplus[j]));
-        localsplus[j] = args[j];
     }
+    memcpy(localsplus, args, sizeof(_PyStackRef) * n);
 
     /* Pack other positional arguments into the *args argument */
     if (co->co_flags & CO_VARARGS) {
