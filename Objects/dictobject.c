@@ -1034,6 +1034,65 @@ do_lookup(PyDictObject *mp, PyDictKeysObject *dk, PyObject *key, Py_hash_t hash,
 }
 
 static inline int
+compare_unicode_unicode(PyDictObject *mp, PyDictKeysObject *dk,
+                        void *ep0, Py_ssize_t ix, PyObject *key, Py_hash_t hash)
+{
+    PyDictUnicodeEntry *ep = &((PyDictUnicodeEntry *)ep0)[ix];
+    PyObject *ep_key = FT_ATOMIC_LOAD_PTR_RELAXED(ep->me_key);
+    assert(ep_key != NULL);
+    assert(PyUnicode_CheckExact(ep_key));
+    if (ep_key == key ||
+            (unicode_get_hash(ep_key) == hash && unicode_eq(ep_key, key))) {
+        return 1;
+    }
+    return 0;
+}
+
+static inline Py_ALWAYS_INLINE Py_ssize_t
+do_lookup_unicode(PyDictKeysObject *dk, PyObject *key, Py_hash_t hash)
+{
+    void *ep0 = _DK_ENTRIES(dk);
+    size_t mask = DK_MASK(dk);
+    size_t perturb = hash;
+    size_t i = (size_t)hash & mask;
+    Py_ssize_t ix;
+    for (;;) {
+        ix = dictkeys_get_index(dk, i);
+        if (ix >= 0) {
+            int cmp = compare_unicode_unicode(NULL, dk, ep0, ix, key, hash);
+            if (cmp < 0) {
+                return cmp;
+            } else if (cmp) {
+                return ix;
+            }
+        }
+        else if (ix == DKIX_EMPTY) {
+            return DKIX_EMPTY;
+        }
+        perturb >>= PERTURB_SHIFT;
+        i = mask & (i*5 + perturb + 1);
+
+        // Manual loop unrolling
+        ix = dictkeys_get_index(dk, i);
+        if (ix >= 0) {
+            int cmp = compare_unicode_unicode(NULL, dk, ep0, ix, key, hash);
+            if (cmp < 0) {
+                return cmp;
+            } else if (cmp) {
+                return ix;
+            }
+        }
+        else if (ix == DKIX_EMPTY) {
+            return DKIX_EMPTY;
+        }
+        perturb >>= PERTURB_SHIFT;
+        i = mask & (i*5 + perturb + 1);
+    }
+    Py_UNREACHABLE();
+}
+
+
+static inline int
 compare_unicode_generic(PyDictObject *mp, PyDictKeysObject *dk,
                         void *ep0, Py_ssize_t ix, PyObject *key, Py_hash_t hash)
 {
@@ -1068,25 +1127,10 @@ unicodekeys_lookup_generic(PyDictObject *mp, PyDictKeysObject* dk, PyObject *key
     return do_lookup(mp, dk, key, hash, compare_unicode_generic);
 }
 
-static inline int
-compare_unicode_unicode(PyDictObject *mp, PyDictKeysObject *dk,
-                        void *ep0, Py_ssize_t ix, PyObject *key, Py_hash_t hash)
-{
-    PyDictUnicodeEntry *ep = &((PyDictUnicodeEntry *)ep0)[ix];
-    PyObject *ep_key = FT_ATOMIC_LOAD_PTR_RELAXED(ep->me_key);
-    assert(ep_key != NULL);
-    assert(PyUnicode_CheckExact(ep_key));
-    if (ep_key == key ||
-            (unicode_get_hash(ep_key) == hash && unicode_eq(ep_key, key))) {
-        return 1;
-    }
-    return 0;
-}
-
 static Py_ssize_t _Py_HOT_FUNCTION
 unicodekeys_lookup_unicode(PyDictKeysObject* dk, PyObject *key, Py_hash_t hash)
 {
-    return do_lookup(NULL, dk, key, hash, compare_unicode_unicode);
+    return do_lookup_unicode(dk, key, hash);
 }
 
 static inline int
