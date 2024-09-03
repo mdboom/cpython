@@ -48,16 +48,31 @@
 #endif
 
 #ifdef HAVE_COMPUTED_GOTOS
-    #ifndef USE_COMPUTED_GOTOS
-    #define USE_COMPUTED_GOTOS 1
-    #endif
+#ifndef USE_COMPUTED_GOTOS
+#define USE_COMPUTED_GOTOS 1
+#endif
 #else
-    #if defined(USE_COMPUTED_GOTOS) && USE_COMPUTED_GOTOS
+#if defined(USE_COMPUTED_GOTOS) && USE_COMPUTED_GOTOS
     #error "Computed gotos are not supported on this compiler."
-    #endif
+#endif
     #undef USE_COMPUTED_GOTOS
     #define USE_COMPUTED_GOTOS 0
 #endif
+
+#ifdef INSTR_STATS
+#define RECORD_STATS() \
+if (stats_elem) { \
+gettimeofday(&end, NULL); \
+stats_elem->exec_ms += (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec); \
+} \
+gettimeofday(&start, NULL); \
+stats_elem = get_stats_elem(frame->f_code, next_instr); \
+if (stats_elem) { stats_elem->exec_count++; }
+
+#else
+#define RECORD_STATS(op) ((void)0)
+#endif
+
 
 #ifdef Py_STATS
 #define INSTRUCTION_START(op) \
@@ -68,7 +83,11 @@
         lastopcode = op; \
     } while (0)
 #else
-#define INSTRUCTION_START(op) (frame->prev_instr = next_instr++)
+#define INSTRUCTION_START(op) \
+    RECORD_STATS(); \
+    do { \
+        frame->prev_instr = next_instr++; \
+    } while (0)
 #endif
 
 #if USE_COMPUTED_GOTOS
@@ -86,7 +105,6 @@
 #else
 #define PRE_DISPATCH_GOTO() ((void)0)
 #endif
-
 
 /* Do interpreter dispatch accounting for tracing and instrumentation */
 #define DISPATCH() \
@@ -126,8 +144,8 @@
 #ifndef Py_DEBUG
 #define GETITEM(v, i) PyTuple_GET_ITEM((v), (i))
 #else
-static inline PyObject *
-GETITEM(PyObject *v, Py_ssize_t i) {
+static inline PyObject*
+GETITEM(PyObject* v, Py_ssize_t i) {
     assert(PyTuple_Check(v));
     assert(i >= 0);
     assert(i < PyTuple_GET_SIZE(v));

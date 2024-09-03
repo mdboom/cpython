@@ -175,6 +175,7 @@ dummy_func(
             }
         }
 
+
         inst(LOAD_CLOSURE, (-- value)) {
             /* We keep LOAD_CLOSURE so that the bytecode stays more readable. */
             value = GETLOCAL(oparg);
@@ -290,7 +291,7 @@ dummy_func(
         };
 
 
-        inst(BINARY_OP_MULTIPLY_INT, (unused/1, left, right -- prod)) {
+        inst(BINARY_OP_MULTIPLY_INT, (unused/1, unused/4, left, right -- prod)) {
             DEOPT_IF(!PyLong_CheckExact(left), BINARY_OP);
             DEOPT_IF(!PyLong_CheckExact(right), BINARY_OP);
             STAT_INC(BINARY_OP, hit);
@@ -300,7 +301,7 @@ dummy_func(
             ERROR_IF(prod == NULL, error);
         }
 
-        inst(BINARY_OP_MULTIPLY_FLOAT, (unused/1, left, right -- prod)) {
+        inst(BINARY_OP_MULTIPLY_FLOAT, (unused/1, unused/4, left, right -- prod)) {
             DEOPT_IF(!PyFloat_CheckExact(left), BINARY_OP);
             DEOPT_IF(!PyFloat_CheckExact(right), BINARY_OP);
             STAT_INC(BINARY_OP, hit);
@@ -309,7 +310,7 @@ dummy_func(
             DECREF_INPUTS_AND_REUSE_FLOAT(left, right, dprod, prod);
         }
 
-        inst(BINARY_OP_SUBTRACT_INT, (unused/1, left, right -- sub)) {
+        inst(BINARY_OP_SUBTRACT_INT, (unused/1, unused/4, left, right -- sub)) {
             DEOPT_IF(!PyLong_CheckExact(left), BINARY_OP);
             DEOPT_IF(!PyLong_CheckExact(right), BINARY_OP);
             STAT_INC(BINARY_OP, hit);
@@ -319,7 +320,7 @@ dummy_func(
             ERROR_IF(sub == NULL, error);
         }
 
-        inst(BINARY_OP_SUBTRACT_FLOAT, (unused/1, left, right -- sub)) {
+        inst(BINARY_OP_SUBTRACT_FLOAT, (unused/1, unused/4, left, right -- sub)) {
             DEOPT_IF(!PyFloat_CheckExact(left), BINARY_OP);
             DEOPT_IF(!PyFloat_CheckExact(right), BINARY_OP);
             STAT_INC(BINARY_OP, hit);
@@ -327,7 +328,7 @@ dummy_func(
             DECREF_INPUTS_AND_REUSE_FLOAT(left, right, dsub, sub);
         }
 
-        inst(BINARY_OP_ADD_UNICODE, (unused/1, left, right -- res)) {
+        inst(BINARY_OP_ADD_UNICODE, (unused/1, unused/4, left, right -- res)) {
             DEOPT_IF(!PyUnicode_CheckExact(left), BINARY_OP);
             DEOPT_IF(Py_TYPE(right) != Py_TYPE(left), BINARY_OP);
             STAT_INC(BINARY_OP, hit);
@@ -372,7 +373,7 @@ dummy_func(
             JUMPBY(INLINE_CACHE_ENTRIES_BINARY_OP + 1);
         }
 
-        inst(BINARY_OP_ADD_FLOAT, (unused/1, left, right -- sum)) {
+        inst(BINARY_OP_ADD_FLOAT, (unused/1, unused/4, left, right -- sum)) {
             DEOPT_IF(!PyFloat_CheckExact(left), BINARY_OP);
             DEOPT_IF(Py_TYPE(right) != Py_TYPE(left), BINARY_OP);
             STAT_INC(BINARY_OP, hit);
@@ -381,7 +382,7 @@ dummy_func(
             DECREF_INPUTS_AND_REUSE_FLOAT(left, right, dsum, sum);
         }
 
-        inst(BINARY_OP_ADD_INT, (unused/1, left, right -- sum)) {
+        inst(BINARY_OP_ADD_INT, (unused/1, unused/4, left, right -- sum)) {
             DEOPT_IF(!PyLong_CheckExact(left), BINARY_OP);
             DEOPT_IF(Py_TYPE(right) != Py_TYPE(left), BINARY_OP);
             STAT_INC(BINARY_OP, hit);
@@ -399,12 +400,16 @@ dummy_func(
             BINARY_SUBSCR_TUPLE_INT,
         };
 
-        inst(BINARY_SUBSCR, (unused/1, container, sub -- res)) {
+        inst(BINARY_SUBSCR, (unused/1, unused/4, container, sub -- res)) {
             #if ENABLE_SPECIALIZATION
             _PyBinarySubscrCache *cache = (_PyBinarySubscrCache *)next_instr;
             if (ADAPTIVE_COUNTER_IS_ZERO(cache->counter)) {
                 next_instr--;
                 _Py_Specialize_BinarySubscr(container, sub, next_instr);
+                int result = _PyExternal_TrySpecialize(next_instr, &stack_pointer, (_PyCache *)cache);
+                if (result) {
+                    oparg = next_instr->op.arg;
+                }
                 DISPATCH_SAME_OPARG();
             }
             STAT_INC(BINARY_SUBSCR, deferred);
@@ -445,7 +450,7 @@ dummy_func(
             ERROR_IF(err, error);
         }
 
-        inst(BINARY_SUBSCR_LIST_INT, (unused/1, list, sub -- res)) {
+        inst(BINARY_SUBSCR_LIST_INT, (unused/1, unused/4, list, sub -- res)) {
             DEOPT_IF(!PyLong_CheckExact(sub), BINARY_SUBSCR);
             DEOPT_IF(!PyList_CheckExact(list), BINARY_SUBSCR);
 
@@ -461,7 +466,7 @@ dummy_func(
             Py_DECREF(list);
         }
 
-        inst(BINARY_SUBSCR_TUPLE_INT, (unused/1, tuple, sub -- res)) {
+        inst(BINARY_SUBSCR_TUPLE_INT, (unused/1, unused/4, tuple, sub -- res)) {
             DEOPT_IF(!PyLong_CheckExact(sub), BINARY_SUBSCR);
             DEOPT_IF(!PyTuple_CheckExact(tuple), BINARY_SUBSCR);
 
@@ -477,7 +482,7 @@ dummy_func(
             Py_DECREF(tuple);
         }
 
-        inst(BINARY_SUBSCR_DICT, (unused/1, dict, sub -- res)) {
+        inst(BINARY_SUBSCR_DICT, (unused/1, unused/4, dict, sub -- res)) {
             DEOPT_IF(!PyDict_CheckExact(dict), BINARY_SUBSCR);
             STAT_INC(BINARY_SUBSCR, hit);
             res = PyDict_GetItemWithError(dict, sub);
@@ -492,7 +497,7 @@ dummy_func(
             DECREF_INPUTS();
         }
 
-        inst(BINARY_SUBSCR_GETITEM, (unused/1, container, sub -- unused)) {
+        inst(BINARY_SUBSCR_GETITEM, (unused/1, unused/4, container, sub -- unused)) {
             DEOPT_IF(tstate->interp->eval_frame, BINARY_SUBSCR);
             PyTypeObject *tp = Py_TYPE(container);
             DEOPT_IF(!PyType_HasFeature(tp, Py_TPFLAGS_HEAPTYPE), BINARY_SUBSCR);
@@ -516,6 +521,7 @@ dummy_func(
             frame->return_offset = 0;
             DISPATCH_INLINED(new_frame);
         }
+
 
         inst(LIST_APPEND, (list, unused[oparg-1], v -- list, unused[oparg-1])) {
             ERROR_IF(_PyList_AppendTakeRef((PyListObject *)list, v) < 0, error);
@@ -643,6 +649,7 @@ dummy_func(
             STACK_SHRINK(1);
             assert(EMPTY());
             _PyFrame_SetStackPointer(frame, stack_pointer);
+            _PyExternal_FunctionEnd(frame);
             _Py_LeaveRecursiveCallPy(tstate);
             assert(frame != &entry_frame);
             // GH-99729: We need to unlink the frame *before* clearing it:
@@ -679,6 +686,7 @@ dummy_func(
             assert(EMPTY());
             _PyFrame_SetStackPointer(frame, stack_pointer);
             _Py_LeaveRecursiveCallPy(tstate);
+            _PyExternal_FunctionEnd(frame);
             assert(frame != &entry_frame);
             // GH-99729: We need to unlink the frame *before* clearing it:
             _PyInterpreterFrame *dying = frame;
@@ -2654,7 +2662,7 @@ dummy_func(
         // (Some args may be keywords, see KW_NAMES, which sets 'kwnames'.)
         // On exit, the stack is [result].
         // When calling Python, inline the call using DISPATCH_INLINED().
-        inst(CALL, (unused/1, unused/2, method, callable, args[oparg] -- res)) {
+        inst(CALL, (unused/1, unused/2, unused/4, method, callable, args[oparg] -- res)) {
             int is_meth = method != NULL;
             int total_args = oparg;
             if (is_meth) {
@@ -2667,6 +2675,10 @@ dummy_func(
             if (ADAPTIVE_COUNTER_IS_ZERO(cache->counter)) {
                 next_instr--;
                 _Py_Specialize_Call(callable, next_instr, total_args, kwnames);
+                int result = _PyExternal_TrySpecialize(next_instr, &stack_pointer, (_PyCache *)cache);
+                if (result) {
+                    oparg = next_instr->op.arg;
+                }
                 DISPATCH_SAME_OPARG();
             }
             STAT_INC(CALL, deferred);
@@ -2742,7 +2754,7 @@ dummy_func(
         // Start out with [NULL, bound_method, arg1, arg2, ...]
         // Transform to [callable, self, arg1, arg2, ...]
         // Then fall through to CALL_PY_EXACT_ARGS
-        inst(CALL_BOUND_METHOD_EXACT_ARGS, (unused/1, unused/2, method, callable, unused[oparg] -- unused)) {
+        inst(CALL_BOUND_METHOD_EXACT_ARGS, (unused/1, unused/2, unused/4, method, callable, unused[oparg] -- unused)) {
             DEOPT_IF(method != NULL, CALL);
             DEOPT_IF(Py_TYPE(callable) != &PyMethod_Type, CALL);
             STAT_INC(CALL, hit);
@@ -2754,7 +2766,7 @@ dummy_func(
             GO_TO_INSTRUCTION(CALL_PY_EXACT_ARGS);
         }
 
-        inst(CALL_PY_EXACT_ARGS, (unused/1, func_version/2, method, callable, args[oparg] -- unused)) {
+        inst(CALL_PY_EXACT_ARGS, (unused/1, func_version/2, unused/4, method, callable, args[oparg] -- unused)) {
             assert(kwnames == NULL);
             DEOPT_IF(tstate->interp->eval_frame, CALL);
             int is_meth = method != NULL;
@@ -2782,7 +2794,7 @@ dummy_func(
             DISPATCH_INLINED(new_frame);
         }
 
-        inst(CALL_PY_WITH_DEFAULTS, (unused/1, func_version/2, method, callable, args[oparg] -- unused)) {
+        inst(CALL_PY_WITH_DEFAULTS, (unused/1, func_version/2, unused/4, method, callable, args[oparg] -- unused)) {
             assert(kwnames == NULL);
             DEOPT_IF(tstate->interp->eval_frame, CALL);
             int is_meth = method != NULL;
@@ -2820,7 +2832,7 @@ dummy_func(
             DISPATCH_INLINED(new_frame);
         }
 
-        inst(CALL_NO_KW_TYPE_1, (unused/1, unused/2, null, callable, args[oparg] -- res)) {
+        inst(CALL_NO_KW_TYPE_1, (unused/1, unused/2, unused/4, null, callable, args[oparg] -- res)) {
             assert(kwnames == NULL);
             assert(oparg == 1);
             DEOPT_IF(null != NULL, CALL);
@@ -2832,7 +2844,7 @@ dummy_func(
             Py_DECREF(&PyType_Type);  // I.e., callable
         }
 
-        inst(CALL_NO_KW_STR_1, (unused/1, unused/2, null, callable, args[oparg] -- res)) {
+        inst(CALL_NO_KW_STR_1, (unused/1, unused/2, unused/4, null, callable, args[oparg] -- res)) {
             assert(kwnames == NULL);
             assert(oparg == 1);
             DEOPT_IF(null != NULL, CALL);
@@ -2846,7 +2858,7 @@ dummy_func(
             CHECK_EVAL_BREAKER();
         }
 
-        inst(CALL_NO_KW_TUPLE_1, (unused/1, unused/2, null, callable, args[oparg] -- res)) {
+        inst(CALL_NO_KW_TUPLE_1, (unused/1, unused/2, unused/4, null, callable, args[oparg] -- res)) {
             assert(kwnames == NULL);
             assert(oparg == 1);
             DEOPT_IF(null != NULL, CALL);
@@ -2860,7 +2872,7 @@ dummy_func(
             CHECK_EVAL_BREAKER();
         }
 
-        inst(CALL_BUILTIN_CLASS, (unused/1, unused/2, method, callable, args[oparg] -- res)) {
+        inst(CALL_BUILTIN_CLASS, (unused/1, unused/2, unused/4, method, callable, args[oparg] -- res)) {
             int is_meth = method != NULL;
             int total_args = oparg;
             if (is_meth) {
@@ -2885,7 +2897,7 @@ dummy_func(
             CHECK_EVAL_BREAKER();
         }
 
-        inst(CALL_NO_KW_BUILTIN_O, (unused/1, unused/2, method, callable, args[oparg] -- res)) {
+        inst(CALL_NO_KW_BUILTIN_O, (unused/1, unused/2, unused/4, method, callable, args[oparg] -- res)) {
             /* Builtin METH_O functions */
             assert(kwnames == NULL);
             int is_meth = method != NULL;
@@ -2916,7 +2928,7 @@ dummy_func(
             CHECK_EVAL_BREAKER();
         }
 
-        inst(CALL_NO_KW_BUILTIN_FAST, (unused/1, unused/2, method, callable, args[oparg] -- res)) {
+        inst(CALL_NO_KW_BUILTIN_FAST, (unused/1, unused/2, unused/4, method, callable, args[oparg] -- res)) {
             /* Builtin METH_FASTCALL functions, without keywords */
             assert(kwnames == NULL);
             int is_meth = method != NULL;
@@ -2951,7 +2963,7 @@ dummy_func(
             CHECK_EVAL_BREAKER();
         }
 
-        inst(CALL_BUILTIN_FAST_WITH_KEYWORDS, (unused/1, unused/2, method, callable, args[oparg] -- res)) {
+        inst(CALL_BUILTIN_FAST_WITH_KEYWORDS, (unused/1, unused/2, unused/4, method, callable, args[oparg] -- res)) {
             /* Builtin METH_FASTCALL | METH_KEYWORDS functions */
             int is_meth = method != NULL;
             int total_args = oparg;
@@ -2986,7 +2998,7 @@ dummy_func(
             CHECK_EVAL_BREAKER();
         }
 
-        inst(CALL_NO_KW_LEN, (unused/1, unused/2, method, callable, args[oparg] -- res)) {
+        inst(CALL_NO_KW_LEN, (unused/1, unused/2, unused/4, method, callable, args[oparg] -- res)) {
             assert(kwnames == NULL);
             /* len(o) */
             int is_meth = method != NULL;
@@ -3013,7 +3025,7 @@ dummy_func(
             ERROR_IF(res == NULL, error);
         }
 
-        inst(CALL_NO_KW_ISINSTANCE, (unused/1, unused/2, method, callable, args[oparg] -- res)) {
+        inst(CALL_NO_KW_ISINSTANCE, (unused/1, unused/2, unused/4, method, callable, args[oparg] -- res)) {
             assert(kwnames == NULL);
             /* isinstance(o, o2) */
             int is_meth = method != NULL;
@@ -3043,7 +3055,7 @@ dummy_func(
         }
 
         // This is secretly a super-instruction
-        inst(CALL_NO_KW_LIST_APPEND, (unused/1, unused/2, method, self, args[oparg] -- unused)) {
+        inst(CALL_NO_KW_LIST_APPEND, (unused/1, unused/2, unused/4, method, self, args[oparg] -- unused)) {
             assert(kwnames == NULL);
             assert(oparg == 1);
             PyInterpreterState *interp = _PyInterpreterState_GET();
@@ -3063,7 +3075,7 @@ dummy_func(
             DISPATCH();
         }
 
-        inst(CALL_NO_KW_METHOD_DESCRIPTOR_O, (unused/1, unused/2, method, unused, args[oparg] -- res)) {
+        inst(CALL_NO_KW_METHOD_DESCRIPTOR_O, (unused/1, unused/2, unused/4, method, unused, args[oparg] -- res)) {
             assert(kwnames == NULL);
             int is_meth = method != NULL;
             int total_args = oparg;
@@ -3097,7 +3109,7 @@ dummy_func(
             CHECK_EVAL_BREAKER();
         }
 
-        inst(CALL_METHOD_DESCRIPTOR_FAST_WITH_KEYWORDS, (unused/1, unused/2, method, unused, args[oparg] -- res)) {
+        inst(CALL_METHOD_DESCRIPTOR_FAST_WITH_KEYWORDS, (unused/1, unused/2, unused/4, method, unused, args[oparg] -- res)) {
             int is_meth = method != NULL;
             int total_args = oparg;
             if (is_meth) {
@@ -3129,7 +3141,7 @@ dummy_func(
             CHECK_EVAL_BREAKER();
         }
 
-        inst(CALL_NO_KW_METHOD_DESCRIPTOR_NOARGS, (unused/1, unused/2, method, unused, args[oparg] -- res)) {
+        inst(CALL_NO_KW_METHOD_DESCRIPTOR_NOARGS, (unused/1, unused/2, unused/4, method, unused, args[oparg] -- res)) {
             assert(kwnames == NULL);
             assert(oparg == 0 || oparg == 1);
             int is_meth = method != NULL;
@@ -3161,7 +3173,7 @@ dummy_func(
             CHECK_EVAL_BREAKER();
         }
 
-        inst(CALL_NO_KW_METHOD_DESCRIPTOR_FAST, (unused/1, unused/2, method, unused, args[oparg] -- res)) {
+        inst(CALL_NO_KW_METHOD_DESCRIPTOR_FAST, (unused/1, unused/2, unused/4, method, unused, args[oparg] -- res)) {
             assert(kwnames == NULL);
             int is_meth = method != NULL;
             int total_args = oparg;
@@ -3370,12 +3382,16 @@ dummy_func(
             top = Py_NewRef(bottom);
         }
 
-        inst(BINARY_OP, (unused/1, lhs, rhs -- res)) {
+        inst(BINARY_OP, (unused/1, unused/4, lhs, rhs -- res)) {
             #if ENABLE_SPECIALIZATION
             _PyBinaryOpCache *cache = (_PyBinaryOpCache *)next_instr;
             if (ADAPTIVE_COUNTER_IS_ZERO(cache->counter)) {
                 next_instr--;
                 _Py_Specialize_BinaryOp(lhs, rhs, next_instr, oparg, &GETLOCAL(0));
+                int result = _PyExternal_TrySpecialize(next_instr, &stack_pointer, (_PyCache *)cache);
+                if (result) {
+                    oparg = next_instr->op.arg;
+                }
                 DISPATCH_SAME_OPARG();
             }
             STAT_INC(BINARY_OP, deferred);
@@ -3384,7 +3400,16 @@ dummy_func(
             assert(0 <= oparg);
             assert((unsigned)oparg < Py_ARRAY_LENGTH(binary_ops));
             assert(binary_ops[oparg]);
-            res = binary_ops[oparg](lhs, rhs);
+            CMLQ_PAPI_REGION("binary_op", res = binary_ops[oparg](lhs, rhs));
+            DECREF_INPUTS();
+            ERROR_IF(res == NULL, error);
+        }
+
+        op(LONG_TRUE_DIVIDE, (unused/1, lhs, rhs -- res)) {
+            assert(0 <= oparg);
+            assert((unsigned)oparg < Py_ARRAY_LENGTH(binary_ops));
+            assert(binary_ops[oparg]);
+            res = _PyLong_True_Divide(lhs, rhs);
             DECREF_INPUTS();
             ERROR_IF(res == NULL, error);
         }

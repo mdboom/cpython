@@ -75,6 +75,22 @@ typedef struct _PyInterpreterFrame {
 #define _PyInterpreterFrame_LASTI(IF) \
     ((int)((IF)->prev_instr - _PyCode_CODE((IF)->f_code)))
 
+
+typedef struct _PyCache {
+    uint16_t counter;
+} _PyCache;
+
+#define POINTER_FROM_ARRAY(array) *((void **)array)
+int
+_PyExternal_TrySpecialize(_Py_CODEUNIT *instr, PyObject ***stack_pointer, _PyCache *cache);
+void
+_PyExternal_FunctionEnd(_PyInterpreterFrame *frame);
+
+
+
+_Py_CODEUNIT*
+_PyExternal_Deoptimize(const _Py_CODEUNIT *instr, _PyInterpreterFrame* frame);
+
 static inline PyObject **_PyFrame_Stackbase(_PyInterpreterFrame *f) {
     return f->localsplus + f->f_code->co_nlocalsplus;
 }
@@ -95,6 +111,39 @@ static inline void _PyFrame_StackPush(_PyInterpreterFrame *f, PyObject *value) {
     f->localsplus[f->stacktop] = value;
     f->stacktop++;
 }
+
+__attribute__((__used__))
+static const char* function_name(_PyInterpreterFrame* f) {
+    if (!f) {
+        return "NULL";
+    }
+    if (f->f_code && f->f_code->co_name) {
+        return _PyUnicode_AsString(f->f_code->co_name);
+    }
+    else {
+        return "No Code";
+    }
+}
+
+__attribute__((__used__))
+static const char* code_name(PyCodeObject* c) {
+    if (!c) {
+        return "NULL";
+    }
+    if (c->co_name) {
+        return _PyUnicode_AsString(c->co_name);
+    }
+    else {
+        return "No Code";
+    }
+}
+
+__attribute__((__used__))
+static int in_function(_PyInterpreterFrame* f, char* name) {
+    int result = strcmp(function_name(f), name) == 0;
+    return result;
+}
+
 
 #define FRAME_SPECIALS_SIZE ((int)((sizeof(_PyInterpreterFrame)-1)/sizeof(PyObject *)))
 

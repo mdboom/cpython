@@ -348,12 +348,15 @@ _specializations = {
         "BINARY_OP_MULTIPLY_INT",
         "BINARY_OP_SUBTRACT_FLOAT",
         "BINARY_OP_SUBTRACT_INT",
+        "BINARY_OP_EXTERNAL"
     ],
     "BINARY_SUBSCR": [
         "BINARY_SUBSCR_DICT",
         "BINARY_SUBSCR_GETITEM",
         "BINARY_SUBSCR_LIST_INT",
         "BINARY_SUBSCR_TUPLE_INT",
+        "BINARY_SUBSCR_EXTERNAL"
+
     ],
     "CALL": [
         "CALL_PY_EXACT_ARGS",
@@ -373,6 +376,7 @@ _specializations = {
         "CALL_NO_KW_STR_1",
         "CALL_NO_KW_TUPLE_1",
         "CALL_NO_KW_TYPE_1",
+        "CALL_EXTERNAL",
     ],
     "COMPARE_OP": [
         "COMPARE_OP_FLOAT",
@@ -449,7 +453,9 @@ _cache_format = {
     },
     "BINARY_OP": {
         "counter": 1,
+        "external_cache_pointer": 4,
     },
+
     "UNPACK_SEQUENCE": {
         "counter": 1,
     },
@@ -458,8 +464,12 @@ _cache_format = {
     },
     "BINARY_SUBSCR": {
         "counter": 1,
+        "external_cache_pointer": 4,
     },
     "FOR_ITER": {
+        "counter": 1,
+    },
+    "LXML_FOR_ITER": {
         "counter": 1,
     },
     "LOAD_SUPER_ATTR": {
@@ -479,6 +489,7 @@ _cache_format = {
     "CALL": {
         "counter": 1,
         "func_version": 2,
+        "external_cache_pointer": 4,
     },
     "STORE_SUBSCR": {
         "counter": 1,
@@ -486,6 +497,7 @@ _cache_format = {
     "SEND": {
         "counter": 1,
     },
+
 }
 
 _inline_cache_entries = [

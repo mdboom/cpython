@@ -1,3 +1,4 @@
+
 #ifndef Py_CPYTHON_PYFRAME_H
 #  error "this header file must not be included directly"
 #endif
@@ -33,3 +34,6 @@ PyAPI_FUNC(int) PyUnstable_InterpreterFrame_GetLasti(struct _PyInterpreterFrame 
 /* Returns the currently executing line number, or -1 if there is no line number.
  * Does not raise an exception. */
 PyAPI_FUNC(int) PyUnstable_InterpreterFrame_GetLine(struct _PyInterpreterFrame *frame);
+
+PyAPI_FUNC(void) PyExternal_SetSpecializer(PyExternalSpecializer *specializer);
+//PyAPI_FUNC(int) PyExternal_SpecializeInstruction(_Py_CODEUNIT *instr, int slot, PyExternal_CodeHandler new_handler);

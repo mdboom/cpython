@@ -21,6 +21,10 @@
 #include <ctype.h>
 #include <stddef.h>               // ptrdiff_t
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <execinfo.h>
+
 /*[clinic input]
 class type "PyTypeObject *" "&PyType_Type"
 class object "PyObject *" "&PyBaseObject_Type"
@@ -1714,6 +1718,24 @@ _PyType_AllocNoTrack(PyTypeObject *type, Py_ssize_t nitems)
         _PyObject_InitVar((PyVarObject *)obj, type, nitems);
     }
     return obj;
+}
+
+static void
+print_trace (void)
+{
+    void *array[10];
+    char **strings;
+    int size, i;
+
+    size = backtrace (array, 10);
+    strings = backtrace_symbols (array, size);
+    if (strings != NULL)
+    {
+        for (i = 0; i < size; i++)
+            fprintf (stderr, "%s\n", strings[i]);
+    }
+
+    free (strings);
 }
 
 PyObject *

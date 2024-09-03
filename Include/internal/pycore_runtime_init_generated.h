@@ -696,6 +696,7 @@ extern "C" {
     INIT_ID(__release_buffer__), \
     INIT_ID(__repr__), \
     INIT_ID(__reversed__), \
+    INIT_ID(__rewrite__), \
     INIT_ID(__rfloordiv__), \
     INIT_ID(__rlshift__), \
     INIT_ID(__rmatmul__), \

@@ -190,6 +190,7 @@ struct _Py_global_strings {
         STRUCT_FOR_ID(__release_buffer__)
         STRUCT_FOR_ID(__repr__)
         STRUCT_FOR_ID(__reversed__)
+        STRUCT_FOR_ID(__rewrite__)
         STRUCT_FOR_ID(__rfloordiv__)
         STRUCT_FOR_ID(__rlshift__)
         STRUCT_FOR_ID(__rmatmul__)

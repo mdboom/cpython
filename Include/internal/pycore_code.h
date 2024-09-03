@@ -28,6 +28,7 @@ typedef struct {
 
 typedef struct {
     uint16_t counter;
+    uint16_t external_cache_pointer[4];
 } _PyBinaryOpCache;
 
 #define INLINE_CACHE_ENTRIES_BINARY_OP CACHE_ENTRIES(_PyBinaryOpCache)
@@ -47,6 +48,7 @@ typedef struct {
 
 typedef struct {
     uint16_t counter;
+    uint16_t external_cache_pointer[4];
 } _PyBinarySubscrCache;
 
 #define INLINE_CACHE_ENTRIES_BINARY_SUBSCR CACHE_ENTRIES(_PyBinarySubscrCache)
@@ -79,6 +81,7 @@ typedef struct {
 typedef struct {
     uint16_t counter;
     uint16_t func_version[2];
+    uint16_t external_cache_pointer[4];
 } _PyCallCache;
 
 #define INLINE_CACHE_ENTRIES_CALL CACHE_ENTRIES(_PyCallCache)
@@ -163,6 +166,7 @@ struct _PyCodeConstructor {
 
     /* the code */
     PyObject *code;
+    PyObject *size_table;
     int firstlineno;
     PyObject *linetable;
 

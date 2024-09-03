@@ -1788,6 +1788,54 @@ else
   DEF_MAKE_RULE="all"
 fi
 
+
+AC_ARG_WITH(
+  [instr-stats],
+  [AS_HELP_STRING([--with(out)-instr-stats@<:@=yes|no@:>@],
+                  [build with per instruction statistics (default is no)])],
+  [],
+  [with_instr_stats=no]
+)
+
+AS_VAR_IF([with_instr_stats], [yes], [
+  AC_DEFINE([INSTR_STATS], [1],
+  [Per instruction statistics.])
+])
+
+
+AC_ARG_WITH(
+  [cmlq],
+  [AS_HELP_STRING([--with(out)-readline@<:@=always|env|no@:>@],
+                  [use CMLQ optimization (default is no)])],
+  [
+    AS_CASE([$with_cmlq],
+      [always], [with_cmlq=always],
+      [env], [with_cmlq=env],
+      [no], [],
+      [AC_MSG_ERROR([proper usage is --with(out)-cmlq@<:@=always|env|no@:>@])]
+    )
+  ],
+  [with_cmlq=no]
+)
+
+AS_VAR_IF([with_cmlq], [always], [
+  AC_DEFINE([Py_OPT_CMLQ_ALWAYS], [1],
+  [Use CMLQ unconditionally.])
+])
+
+AS_VAR_IF([with_cmlq], [env], [
+  AC_DEFINE([Py_OPT_CMLQ_ENV], [1],
+  [Use CMLQ if an environment variable is set.])
+])
+
+AC_MSG_CHECKING([whether to use cmlq])
+AS_VAR_IF([with_cmlq], [no], [
+  AC_MSG_RESULT([no])
+], [
+  AC_MSG_RESULT([$with_cmlq])
+])
+
+
 AC_ARG_VAR([PROFILE_TASK], [Python args for PGO generation task])
 AC_MSG_CHECKING([PROFILE_TASK])
 if test -z "$PROFILE_TASK"
@@ -3856,6 +3904,28 @@ AS_VAR_IF([have_libffi], [yes], [
     PY_CHECK_FUNC([ffi_prep_closure_loc], [@%:@include <ffi.h>])
     PY_CHECK_FUNC([ffi_closure_alloc], [@%:@include <ffi.h>])
   ])
+])
+
+AH_TEMPLATE([HAVE_PAPI], [Define to 1 if you have the `papi' library.])
+AC_SUBST([PAPI_LIBS])
+AC_ARG_WITH(
+  [cmlq-papi],
+  [AS_HELP_STRING([--with(out)-cmlq-papi@<:@=yes|no@:>@],
+                  [build with CMLQ PAPI measurements (default is no)])],
+  [],
+  [with_cmlq_papi=no]
+)
+
+have_papi=no
+AS_VAR_IF([with_cmlq_papi], [yes], [
+  AC_DEFINE([CMLQ_PAPI], [1], [Build with CMLQ PAPI measurements.]),
+  WITH_SAVE_ENV([
+    AC_CHECK_LIB(papi, [PAPI_library_init], [
+      AC_DEFINE([HAVE_PAPI], [1])
+      PAPI_CFLAGS=${PAPI_CFLAGS-""}
+      PAPI_LIBS=${PAPI_LIBS-"-lpapi"}
+    ])
+  ]),
 ])
 
 # Check for use of the system libmpdec library

@@ -44,6 +44,7 @@ typedef union {
 } _Py_CODEUNIT;
 
 
+
 /* These macros only remain defined for compatibility. */
 #define _Py_OPCODE(word) ((word).op.code)
 #define _Py_OPARG(word) ((word).op.arg)
@@ -104,6 +105,57 @@ typedef struct {
     uint8_t *per_instruction_tools;
 } _PyCoMonitoringData;
 
+typedef struct _deoptInfo{
+    // if a whole chain of instructions is deoptimized
+    struct _deoptInfo *child;
+    _Py_CODEUNIT orig_instr;
+    _Py_CODEUNIT *position;
+    short data;
+    struct _deoptInfo *next;
+    struct _deoptInfo *prev;
+} PyExternalDeoptInfo;
+
+#ifndef __cplusplus
+typedef int (*PyExternal_CodeHandler)(void *restrict external_cache_pointer, PyObject* restrict ** stack_pointer);
+typedef int (*ExternalSpecializationHook)(_Py_CODEUNIT* old_instr, PyObject ***stack_pointer);
+#else
+typedef int (*PyExternal_CodeHandler)(_Py_CODEUNIT **next_instr, PyObject **stack_pointer);
+typedef int (*ExternalSpecializationHook)(_Py_CODEUNIT *old_instr, PyObject ***stack_pointer);
+#endif
+
+typedef void (*FunctionEndHook)(_Py_CODEUNIT *instr, void* external_cache_pointer);
+typedef int (*SpecializeInstructionPtr)(_Py_CODEUNIT*, int, PyExternal_CodeHandler, void *);
+typedef int (*SpecializeChainPtr)(_Py_CODEUNIT *, PyObject **, int , PyExternal_CodeHandler, unsigned char, void *);
+typedef int (*IsOperandConstantPtr)(_Py_CODEUNIT *, PyObject **, int );
+
+typedef struct _PyExternalSpecializer {
+    ExternalSpecializationHook TrySpecialization;
+    FunctionEndHook FunctionEnd;
+
+    // TODO: workaround until we resolve the mysterious linking performance issue
+    // For some reason a few benchmarks suffer a major performance regression when the numpy module
+    // dynamically resolves the function with the linker. This hack avoids the resolution by the linker and seems to help
+    SpecializeInstructionPtr SpecializeInstruction;
+    SpecializeChainPtr SpecializeChain;
+    IsOperandConstantPtr IsOperandConstant;
+} PyExternalSpecializer;
+
+
+#if defined(Py_OPT_CMLQ_ENV) || defined(Py_OPT_CMLQ_ALWAYS)
+    #define CMLQ_Def    \
+        PyObject *co_size_table;    \
+        PyExternalDeoptInfo *co_deopt_info_head;
+#else
+    #define CMLQ_Def
+#endif
+
+#ifdef INSTR_STATS
+    #define CMLQ_Stats_Def \
+        PyObject *co_stats_table;
+#else
+    #define CMLQ_Stats_Def
+#endif
+
 // To avoid repeating ourselves in deepfreeze.py, all PyCodeObject members are
 // defined in this macro:
 #define _PyCode_DEF(SIZE) {                                                    \
@@ -159,6 +211,8 @@ typedef struct {
     PyObject *co_name;            /* unicode (name, for reference) */          \
     PyObject *co_qualname;        /* unicode (qualname, for reference) */      \
     PyObject *co_linetable;       /* bytes object that holds location info */  \
+    CMLQ_Def;                                                                               \
+    CMLQ_Stats_Def;                                                            \
     PyObject *co_weakreflist;     /* to support weakrefs to code objects */    \
     _PyCoCached *_co_cached;      /* cached co_* attributes */                 \
     uint64_t _co_instrumentation_version; /* current instrumentation version */  \
@@ -225,6 +279,24 @@ static inline int PyCode_GetFirstFree(PyCodeObject *op) {
 
 #define _PyCode_CODE(CO) _Py_RVALUE((_Py_CODEUNIT *)(CO)->co_code_adaptive)
 #define _PyCode_NBYTES(CO) (Py_SIZE(CO) * (Py_ssize_t)sizeof(_Py_CODEUNIT))
+
+
+__attribute__((__used__))
+static int instruction_offset(PyCodeObject* co, _Py_CODEUNIT* instr) {
+    return instr - _PyCode_CODE(co);
+}
+
+
+#ifdef INSTR_STATS
+    typedef struct _CMLQStatsElem {
+    uint64_t exec_count;
+    uint64_t specialization_attempts;
+    uint64_t exec_ms;
+} CMLQStatsElem;
+
+CMLQStatsElem *get_stats_elem(PyCodeObject* code, _Py_CODEUNIT* instr_ptr);
+#endif
+
 
 /* Unstable public interface */
 PyAPI_FUNC(PyCodeObject *) PyUnstable_Code_New(

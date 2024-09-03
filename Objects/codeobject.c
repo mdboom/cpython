@@ -391,6 +391,16 @@ _PyCode_Validate(struct _PyCodeConstructor *con)
 
 extern void _PyCode_Quicken(PyCodeObject *code);
 
+#ifdef INSTR_STATS
+static PyObject*
+new_empty_stats_table(PyCodeObject* co) {
+    PyObject *bytes_object = PyBytes_FromStringAndSize(NULL, Py_SIZE(co) * sizeof(CMLQStatsElem));
+    CMLQStatsElem *table = (CMLQStatsElem *)PyBytes_AS_STRING(bytes_object);
+    memset(table, 0, Py_SIZE(co) * sizeof(CMLQStatsElem));
+    return bytes_object;
+}
+#endif
+
 static void
 init_code(PyCodeObject *co, struct _PyCodeConstructor *con)
 {
@@ -446,6 +456,16 @@ init_code(PyCodeObject *co, struct _PyCodeConstructor *con)
         entry_point++;
     }
     co->_co_firsttraceable = entry_point;
+
+#if defined(Py_OPT_CMLQ_ENV) || defined(Py_OPT_CMLQ_ALWAYS)
+    co->co_size_table = PyBytes_FromStringAndSize(NULL, Py_SIZE(co));
+    co->co_deopt_info_head = NULL;
+#endif
+
+#ifdef INSTR_STATS
+    co->co_stats_table = new_empty_stats_table(co);
+#endif
+
     _PyCode_Quicken(co);
     notify_code_watchers(PY_CODE_EVENT_CREATE, co);
 }
@@ -2320,6 +2340,15 @@ _PyStaticCode_Init(PyCodeObject *co)
     if (res < 0) {
         return -1;
     }
+#if defined(Py_OPT_CMLQ_ENV) || defined(Py_OPT_CMLQ_ALWAYS)
+    co->co_size_table = PyBytes_FromStringAndSize(NULL, Py_SIZE(co));
+    co->co_deopt_info_head = NULL;
+#endif
+
+#ifdef INSTR_STATS
+    co->co_stats_table = new_empty_stats_table(co);
+#endif
+
     _PyCode_Quicken(co);
     return 0;
 }
@@ -2398,3 +2427,15 @@ cleanup:
     Py_XDECREF(lines);
     return codeobj;
 }
+
+#ifdef INSTR_STATS
+CMLQStatsElem *get_stats_elem(PyCodeObject* code, _Py_CODEUNIT* instr_ptr){
+    if(code->co_stats_table == NULL) {
+        return NULL;
+    }
+    int offset = instruction_offset(code, instr_ptr);
+    CMLQStatsElem *stats_table = (CMLQStatsElem *)PyBytes_AS_STRING(code->co_stats_table);
+    CMLQStatsElem *elem = &stats_table[offset];
+    return elem;
+}
+#endif

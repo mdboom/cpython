@@ -35,6 +35,27 @@
 #include <assert.h>               // assert()
 #include <wchar.h>                // wchar_t
 
+#ifdef CMLQ_PAPI
+#define CMLQ_PAPI_BEGIN(NAME) \
+    int papi_retval = PAPI_hl_region_begin(NAME); \
+    assert(papi_retval == PAPI_OK);
+
+#define CMLQ_PAPI_END(NAME) \
+    papi_retval = PAPI_hl_region_end(NAME); \
+    assert(papi_retval == PAPI_OK);
+
+#define CMLQ_PAPI_REGION(NAME, CODE) \
+    CMLQ_PAPI_BEGIN(NAME) \
+    CODE; \
+    CMLQ_PAPI_END(NAME)
+#else
+#define CMLQ_PAPI_REGION(NAME, CODE) \
+CODE;
+#define CMLQ_PAPI_BEGIN(NAME)
+#define CMLQ_PAPI_END(NAME)
+#endif
+
+
 #include "pyport.h"
 #include "pymacro.h"
 #include "pymath.h"

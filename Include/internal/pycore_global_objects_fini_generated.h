@@ -701,6 +701,7 @@ _PyStaticObjects_CheckRefcnt(PyInterpreterState *interp) {
     _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__release_buffer__));
     _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__repr__));
     _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__reversed__));
+    _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__rewrite__));
     _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__rfloordiv__));
     _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__rlshift__));
     _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__rmatmul__));

@@ -32,6 +32,9 @@
 /* The Android API level. */
 #undef ANDROID_API_LEVEL
 
+/* Build with CMLQ PAPI measurements. */
+#undef CMLQ_PAPI
+
 /* Define if C doubles are 64-bit IEEE 754 binary format, stored in ARM
    mixed-endian order (byte order 45670123) */
 #undef DOUBLE_IS_ARM_MIXED_ENDIAN_IEEE754
@@ -875,6 +878,9 @@
 /* Define to 1 if you have the <panel.h> header file. */
 #undef HAVE_PANEL_H
 
+/* Define to 1 if you have the `papi' library. */
+#undef HAVE_PAPI
+
 /* Define to 1 if you have the `pathconf' function. */
 #undef HAVE_PATHCONF
 
@@ -1539,6 +1545,9 @@
 /* Define to 1 if you have the `_getpty' function. */
 #undef HAVE__GETPTY
 
+/* Per instruction statistics. */
+#undef INSTR_STATS
+
 /* Define to 1 if `major', `minor', and `makedev' are declared in <mkdev.h>.
    */
 #undef MAJOR_IN_MKDEV
@@ -1614,6 +1623,12 @@
 /* Define hash algorithm for str, bytes and memoryview. SipHash24: 1, FNV: 2,
    SipHash13: 3, externally defined: 0 */
 #undef Py_HASH_ALGORITHM
+
+/* Use CMLQ unconditionally. */
+#undef Py_OPT_CMLQ_ALWAYS
+
+/* Use CMLQ if an environment variable is set. */
+#undef Py_OPT_CMLQ_ENV
 
 /* Define if you want to enable internal statistics gathering. */
 #undef Py_STATS

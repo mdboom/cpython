@@ -56,6 +56,7 @@ DTRACE_HEADERS= @DTRACE_HEADERS@
 DTRACE_OBJS=    @DTRACE_OBJS@
 DSYMUTIL=       @DSYMUTIL@
 DSYMUTIL_PATH=  @DSYMUTIL_PATH@
+PAPI_LIBS=@PAPI_LIBS@
 
 GNULD=		@GNULD@
 
@@ -268,7 +269,7 @@ STATIC_LIBPYTHON=	@STATIC_LIBPYTHON@
 LIBS=		@LIBS@
 LIBM=		@LIBM@
 LIBC=		@LIBC@
-SYSLIBS=	$(LIBM) $(LIBC)
+SYSLIBS=	$(LIBM) $(LIBC) $(PAPI_LIBS)
 SHLIBS=		@SHLIBS@
 
 DLINCLDIR=	@DLINCLDIR@
@@ -1595,6 +1596,9 @@ regen-typeslots:
 ############################################################################
 # Header files
 
+NUMPY_HEADERS := $(wildcard /home/felixl/repositories/numpy/numpy/_core/include/*.h)
+
+
 PYTHON_HEADERS= \
 		$(srcdir)/Include/Python.h \
 		$(srcdir)/Include/abstract.h \
@@ -1801,7 +1805,8 @@ PYTHON_HEADERS= \
 		$(DTRACE_HEADERS) \
 		@PLATFORM_HEADERS@ \
 		\
-		$(srcdir)/Python/stdlib_module_names.h
+		$(srcdir)/Python/stdlib_module_names.h \
+		$(NUMPY_HEADERS)
 
 $(LIBRARY_OBJS) $(MODOBJS) Programs/python.o: $(PYTHON_HEADERS)
 

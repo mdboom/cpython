@@ -36,6 +36,9 @@
 #include <ctype.h>
 #include <stdbool.h>
 
+//#include <numpy/arrayobject.h>
+//#include <numpy/ufuncobject.h>
+
 #ifdef Py_DEBUG
    /* For debugging the interpreter: */
 #  define LLTRACE  1      /* Low-level trace feature */
@@ -312,6 +315,13 @@ static const binaryfunc binary_ops[] = {
     [NB_INPLACE_TRUE_DIVIDE] = PyNumber_InPlaceTrueDivide,
     [NB_INPLACE_XOR] = PyNumber_InPlaceXor,
 };
+
+
+static PyExternal_CodeHandler external_handlers[256];
+void
+PyExternal_SetCodeHandler(int slot, PyExternal_CodeHandler handler) {
+    external_handlers[slot] = handler;
+}
 
 
 // PEP 634: Structural Pattern Matching
@@ -642,11 +652,45 @@ static inline void _Py_LeaveRecursiveCallPy(PyThreadState *tstate)  {
  * so consume 3 units of C stack */
 #define PY_EVAL_C_STACK_UNITS 2
 
+//static int init_numpy() {
+//    import_array();
+//    import_ufunc();
+//}
+
+
+static bool should_rewrite(_PyInterpreterFrame *frame) {
+    PyObject *value = _PyDict_GetItemWithError(GLOBALS(), &_Py_ID(__rewrite__));
+    return value && PyObject_IsTrue(value);
+}
+
+#define PC_OFFSET ((next_instr - (_Py_CODEUNIT *)frame->f_code->co_code_adaptive - 1) * 2)
+
+#ifdef CMLQ_PAPI
+#include <papi.h>
+static int papi_initialized = 0;
+void init_papi()
+{
+    if (!papi_initialized) {
+        int retval = PAPI_library_init(PAPI_VER_CURRENT);
+        assert(retval == PAPI_VER_CURRENT);
+        papi_initialized = 1;
+    }
+}
+#endif
+
 PyObject* _Py_HOT_FUNCTION
 _PyEval_EvalFrameDefault(PyThreadState *tstate, _PyInterpreterFrame *frame, int throwflag)
 {
     _Py_EnsureTstateNotNULL(tstate);
     CALL_STAT_INC(pyeval_calls);
+#ifdef INSTR_STATS
+    struct timeval start, end;
+    CMLQStatsElem *stats_elem = NULL;
+#endif
+
+#ifdef CMLQ_PAPI
+init_papi();
+#endif
 
 #if USE_COMPUTED_GOTOS
 /* Import the static jump table */
@@ -735,6 +779,10 @@ start_frame:
     }
 
 resume_frame:
+//    if (PyArray_API == NULL && in_function(frame, "patch_and_run")) {
+//        init_numpy();
+//    }
+
     SET_LOCALS_FROM_FRAME();
 
 #ifdef LLTRACE
@@ -826,6 +874,8 @@ handle_eval_breaker:
     if (_Py_HandlePending(tstate) != 0) {
         goto error;
     }
+
+
     DISPATCH();
 
     {
@@ -835,6 +885,32 @@ handle_eval_breaker:
         switch (opcode)
 #endif
         {
+
+        /* We cannot let the generator generate these cases because we want the extension to be responsible for stack
+         * handling */
+    TARGET(BINARY_OP_EXTERNAL) {
+            _PyBinaryOpCache* cache = (_PyBinaryOpCache*)next_instr;
+            void* external_cache_pointer = POINTER_FROM_ARRAY(cache->external_cache_pointer);
+#include "cmlq_external_opcode.h"
+            next_instr += INLINE_CACHE_ENTRIES_BINARY_OP;
+            DISPATCH();
+        }
+
+        TARGET(CALL_EXTERNAL) {
+            _PyCallCache *cache = (_PyCallCache *)next_instr;
+            void *external_cache_pointer = POINTER_FROM_ARRAY(cache->external_cache_pointer);
+#include "cmlq_external_opcode.h"
+            next_instr += INLINE_CACHE_ENTRIES_CALL;
+            DISPATCH();
+        }
+
+        TARGET(BINARY_SUBSCR_EXTERNAL) {
+            _PyBinarySubscrCache *cache = (_PyBinarySubscrCache *)next_instr;
+            void *external_cache_pointer = POINTER_FROM_ARRAY(cache->external_cache_pointer);
+#include "cmlq_external_opcode.h"
+            next_instr += INLINE_CACHE_ENTRIES_BINARY_SUBSCR;
+            DISPATCH();
+        }
 
 #include "generated_cases.c.h"
 

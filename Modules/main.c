@@ -546,6 +546,10 @@ pymain_repl(PyConfig *config, int *exitcode)
 }
 
 
+#ifdef INSTR_STATS
+    extern PyObject* optimized_functions;
+#endif
+
 static void
 pymain_run_python(int *exitcode)
 {
@@ -596,6 +600,10 @@ pymain_run_python(int *exitcode)
     }
 
     pymain_header(config);
+
+#ifdef INSTR_STATS
+   optimized_functions = PyList_New(0);
+#endif
 
     if (config->run_command) {
         *exitcode = pymain_run_command(config->run_command);

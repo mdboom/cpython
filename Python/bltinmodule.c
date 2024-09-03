@@ -2,6 +2,8 @@
 
 #include "Python.h"
 #include <ctype.h>
+#include <pycore_opcode.h>
+
 #include "pycore_ast.h"           // _PyAST_Validate()
 #include "pycore_call.h"          // _PyObject_CallNoArgs()
 #include "pycore_compile.h"       // _PyAST_Compile()
@@ -277,6 +279,99 @@ builtin___import___impl(PyObject *module, PyObject *name, PyObject *globals,
 }
 
 
+#ifdef INSTR_STATS
+PyObject* optimized_functions;
+
+void
+add_optimized_function(PyCodeObject* co) {
+    Py_ssize_t i, len;
+    len = PyList_Size(optimized_functions);
+    if (len == -1) {
+        PyErr_Print();
+        return;
+    }
+    for (i = 0; i < len; i++) {
+        PyObject *item = PyList_GetItem(optimized_functions, i);
+        if (item == NULL) {
+            PyErr_Print();
+            return;
+        }
+
+        if (item == (PyObject *)co) {
+            return;
+        }
+    }
+
+    PyList_Append(optimized_functions, (PyObject *)co);
+}
+
+PyDoc_STRVAR(cmlq_doc,
+"Documentation for cmlq stats");
+
+static PyObject *
+builtin_get_cmlq_functions(PyObject *module)
+{
+    return optimized_functions;
+}
+
+static PyObject *
+builtin_get_cmlq_stats(PyObject *module, PyCodeObject *co)
+{
+    PyObject* result_dict = PyDict_New();
+
+    if (result_dict == NULL) {
+        // Failed to create list
+        return NULL;
+    }
+
+    int num_instructions = Py_SIZE(co);
+    for (int i = 0; i < num_instructions; i++) {
+        CMLQStatsElem *elem = &((CMLQStatsElem *)PyBytes_AS_STRING(co->co_stats_table))[i];
+
+        // Create a dictionary for the current struct
+        PyObject* elem_dict = PyDict_New();
+
+        if (elem_dict == NULL) {
+            // Failed to create dictionary
+            Py_DECREF(result_dict);
+            return NULL;
+        }
+
+        int base_opcode = _Py_GetBaseOpcode(co, i);
+        assert(base_opcode < MIN_INSTRUMENTED_OPCODE);
+        int caches = _PyOpcode_Caches[base_opcode];
+        uint8_t opcode = _PyCode_CODE(co)[i].op.code;
+
+        PyDict_SetItemString(elem_dict, "instr_ptr", PyLong_FromVoidPtr(_PyCode_CODE(co) + i));
+        PyDict_SetItemString(elem_dict, "offset", PyLong_FromLong(i * sizeof(_Py_CODEUNIT)));
+        PyDict_SetItemString(elem_dict, "base_opcode", PyLong_FromLong(base_opcode));
+        PyDict_SetItemString(elem_dict, "opcode", PyLong_FromLong(opcode));
+
+        // We need to include these here because dis does not know about specialized opcode names
+        PyDict_SetItemString(elem_dict, "base_opcode_name", PyUnicode_FromString(_PyOpcode_OpName[base_opcode]));
+        PyDict_SetItemString(elem_dict, "opcode_name", PyUnicode_FromString(_PyOpcode_OpName[opcode]));
+        PyDict_SetItemString(elem_dict, "exec_count", PyLong_FromUnsignedLongLong(elem->exec_count));
+        PyDict_SetItemString(elem_dict, "exec_ms", PyLong_FromUnsignedLongLong(elem->exec_ms));
+        PyDict_SetItemString(elem_dict, "specialization_attempts", PyLong_FromUnsignedLongLong(elem->specialization_attempts));
+
+        // Append the dictionary to the result list
+        PyDict_SetItem(result_dict, PyLong_FromLong(i), elem_dict);
+
+        // Decrement the reference count of the dictionary
+        Py_DECREF(elem_dict);
+
+        if (caches) {
+            i += caches;
+        }
+
+    }
+
+    return result_dict;
+
+}
+
+#endif
+
 /*[clinic input]
 abs as builtin_abs
 
@@ -455,6 +550,7 @@ builtin_callable(PyObject *module, PyObject *obj)
 static PyObject *
 builtin_breakpoint(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *keywords)
 {
+    return Py_None;
     PyObject *hook = PySys_GetObject("breakpointhook");
 
     if (hook == NULL) {
@@ -3053,6 +3149,11 @@ static PyMethodDef builtin_methods[] = {
     BUILTIN_SORTED_METHODDEF
     BUILTIN_SUM_METHODDEF
     BUILTIN_VARS_METHODDEF
+#ifdef INSTR_STATS
+    {"get_cmlq_functions", _PyCFunction_CAST(builtin_get_cmlq_functions), METH_NOARGS, cmlq_doc},
+    {"get_cmlq_stats", _PyCFunction_CAST(builtin_get_cmlq_stats), METH_O, cmlq_doc},
+#endif
+
     {NULL,              NULL},
 };
 

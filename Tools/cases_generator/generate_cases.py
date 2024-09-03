@@ -855,6 +855,14 @@ class Analyzer:
                             "which are not supported in super- or macro instructions",
                             instr.inst,  # TODO: Pass name+location of super/macro
                         )
+                    if any(
+                            eff.cond for eff in instr.input_effects + instr.output_effects
+                    ):
+                        self.error(
+                            f"Instruction {instr.name!r} has conditional stack effect, "
+                            "which are not supported in super- or macro instructions",
+                            instr.inst,
+                        )
                     current -= len(instr.input_effects)
                     lowest = min(lowest, current)
                     current += len(instr.output_effects)

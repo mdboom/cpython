@@ -209,7 +209,7 @@ def main(opcode_py, outfile='Include/opcode.h',
         fobj.write(f"#define ENABLE_SPECIALIZATION {int(ENABLE_SPECIALIZATION)}")
 
         iobj.write("\n")
-        iobj.write("#ifdef Py_DEBUG\n")
+        iobj.write("#if defined(Py_DEBUG) || defined(INSTR_STATS)\n")
         iobj.write(f"static const char *const _PyOpcode_OpName[{NUM_OPCODES}] = {{\n")
         for op, name in enumerate(opname_including_specialized):
             if name[0] != "<":
