@@ -2009,8 +2009,14 @@ PySequence_Tuple(PyObject *v)
            a copy, so there's no need for exactness below. */
         return Py_NewRef(v);
     }
-    if (PyList_CheckExact(v))
-        return PyList_AsTuple(v);
+    if (PyList_CheckExact(v)) {
+        PyListObject *l = (PyListObject *)v;
+        PyObject *ret;
+        Py_BEGIN_CRITICAL_SECTION(l);
+        ret = _PyTuple_FromArray(l->ob_item, Py_SIZE(v));
+        Py_END_CRITICAL_SECTION();
+        return ret;
+    }
 
     /* Get iterator. */
     it = PyObject_GetIter(v);
