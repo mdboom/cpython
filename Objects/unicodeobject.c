@@ -15445,17 +15445,8 @@ intern_common(PyInterpreterState *interp, PyObject *s /* stolen */,
 #ifdef Py_DEBUG
     assert(s != NULL);
     assert(_PyUnicode_CHECK(s));
-#else
-    if (s == NULL || !PyUnicode_Check(s)) {
-        return s;
-    }
+    assert(_PyUnicode_CheckExact(s));
 #endif
-
-    /* If it's a subclass, we don't really know what putting
-       it in the interned dict might do. */
-    if (!PyUnicode_CheckExact(s)) {
-        return s;
-    }
 
     /* Is it already interned? */
     switch (PyUnicode_CHECK_INTERNED(s)) {
