@@ -1595,8 +1595,8 @@ _PyDict_MaybeUntrack(PyObject *op)
 
     ASSERT_WORLD_STOPPED_OR_DICT_LOCKED(op);
 
-    if (!PyDict_CheckExact(op) || !_PyObject_GC_IS_TRACKED(op))
-        return;
+    assert(PyDict_CheckExact(op));
+    assert(_PyObject_GC_IS_TRACKED(op));
 
     mp = (PyDictObject *) op;
     ASSERT_CONSISTENT(mp);

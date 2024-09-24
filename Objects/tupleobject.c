@@ -133,8 +133,9 @@ _PyTuple_MaybeUntrack(PyObject *op)
     PyTupleObject *t;
     Py_ssize_t i, n;
 
-    if (!PyTuple_CheckExact(op) || !_PyObject_GC_IS_TRACKED(op))
-        return;
+    assert(PyTuple_CheckExact(op));
+    assert(_PyObject_GC_IS_TRACKED(op));
+
     t = (PyTupleObject *) op;
     n = Py_SIZE(t);
     for (i = 0; i < n; i++) {
