@@ -68,6 +68,8 @@
         } \
     } while (0)
 
+#define medium_value(x) ((stwodigits)_PyLong_CompactValue(x))
+
 #undef Py_XDECREF
 #define Py_XDECREF(arg) \
     do { \

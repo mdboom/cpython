@@ -418,7 +418,8 @@ dummy_func(
 
         op(_BINARY_OP_MULTIPLY_INT, (unused/1, left, right -- res)) {
             STAT_INC(BINARY_OP, hit);
-            res = _PyLong_Multiply((PyLongObject *)left, (PyLongObject *)right);
+            stwodigits v = medium_value(left) * medium_value(right);
+            res = _PyLong_FromSTwoDigits(v);
             _Py_DECREF_SPECIALIZED(right, (destructor)PyObject_Free);
             _Py_DECREF_SPECIALIZED(left, (destructor)PyObject_Free);
             ERROR_IF(res == NULL, error);
@@ -426,7 +427,8 @@ dummy_func(
 
         op(_BINARY_OP_ADD_INT, (unused/1, left, right -- res)) {
             STAT_INC(BINARY_OP, hit);
-            res = _PyLong_Add((PyLongObject *)left, (PyLongObject *)right);
+            stwodigits z = medium_value(left) + medium_value(right);
+            res = _PyLong_FromSTwoDigits(z);
             _Py_DECREF_SPECIALIZED(right, (destructor)PyObject_Free);
             _Py_DECREF_SPECIALIZED(left, (destructor)PyObject_Free);
             ERROR_IF(res == NULL, error);
@@ -434,7 +436,7 @@ dummy_func(
 
         op(_BINARY_OP_SUBTRACT_INT, (unused/1, left, right -- res)) {
             STAT_INC(BINARY_OP, hit);
-            res = _PyLong_Subtract((PyLongObject *)left, (PyLongObject *)right);
+            res = _PyLong_FromSTwoDigits(medium_value(left) - medium_value(right));
             _Py_DECREF_SPECIALIZED(right, (destructor)PyObject_Free);
             _Py_DECREF_SPECIALIZED(left, (destructor)PyObject_Free);
             ERROR_IF(res == NULL, error);
