@@ -549,7 +549,8 @@ dummy_func(
             assert(PyLong_CheckExact(right_o));
 
             STAT_INC(BINARY_OP, hit);
-            PyObject *res_o = _PyLong_Multiply((PyLongObject *)left_o, (PyLongObject *)right_o);
+            stwodigits v = medium_value(a) * medium_value(b);
+            PyObject *res_o = _PyLong_FromSTwoDigits(v);
             PyStackRef_CLOSE_SPECIALIZED(right, _PyLong_ExactDealloc);
             PyStackRef_CLOSE_SPECIALIZED(left, _PyLong_ExactDealloc);
             INPUTS_DEAD();
@@ -564,7 +565,8 @@ dummy_func(
             assert(PyLong_CheckExact(right_o));
 
             STAT_INC(BINARY_OP, hit);
-            PyObject *res_o = _PyLong_Add((PyLongObject *)left_o, (PyLongObject *)right_o);
+            stwodigits z = medium_value(a) + medium_value(b);
+            PyObject *res_o = _PyLong_FromSTwoDigits(z);
             PyStackRef_CLOSE_SPECIALIZED(right, _PyLong_ExactDealloc);
             PyStackRef_CLOSE_SPECIALIZED(left, _PyLong_ExactDealloc);
             INPUTS_DEAD();
@@ -579,7 +581,7 @@ dummy_func(
             assert(PyLong_CheckExact(right_o));
 
             STAT_INC(BINARY_OP, hit);
-            PyObject *res_o = _PyLong_Subtract((PyLongObject *)left_o, (PyLongObject *)right_o);
+            PyObject *res_o = _PyLong_FromSTwoDigits(medium_value(left_o) - medium_value(right_o));
             PyStackRef_CLOSE_SPECIALIZED(right, _PyLong_ExactDealloc);
             PyStackRef_CLOSE_SPECIALIZED(left, _PyLong_ExactDealloc);
             INPUTS_DEAD();

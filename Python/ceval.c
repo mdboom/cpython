@@ -58,6 +58,8 @@
 // Define them as macros to make sure that they are always inlined by the
 // preprocessor.
 
+#define medium_value(x) ((stwodigits)_PyLong_CompactValue(x))
+
 #undef Py_IS_TYPE
 #define Py_IS_TYPE(ob, type) \
     (_PyObject_CAST(ob)->ob_type == (type))
