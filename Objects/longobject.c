@@ -585,6 +585,7 @@ PyLong_AsInt(PyObject *obj)
     int overflow;
     long result = PyLong_AsLongAndOverflow(obj, &overflow);
     if (overflow || result > INT_MAX || result < INT_MIN) {
+    // if (overflow || (int)result > INT_MAX || (int)result < INT_MIN) {
         /* XXX: could be cute and give a different
            message for overflow == -1 */
         PyErr_SetString(PyExc_OverflowError,
