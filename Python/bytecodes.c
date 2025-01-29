@@ -538,8 +538,8 @@ dummy_func(
         op(_GUARD_BOTH_INT, (left, right -- left, right)) {
             PyObject *left_o = PyStackRef_AsPyObjectBorrow(left);
             PyObject *right_o = PyStackRef_AsPyObjectBorrow(right);
-            EXIT_IF(!PyLong_CheckExact(left_o));
-            EXIT_IF(!PyLong_CheckExact(right_o));
+            EXIT_IF(!(PyLong_CheckExact(left_o) && _PyLong_IsCompact((PyLongObject *)left_o)));
+            EXIT_IF(!(PyLong_CheckExact(right_o) && _PyLong_IsCompact((PyLongObject *)right_o)));
         }
 
         op(_GUARD_NOS_INT, (left, unused -- left, unused)) {
@@ -555,11 +555,14 @@ dummy_func(
         pure op(_BINARY_OP_MULTIPLY_INT, (left, right -- res)) {
             PyObject *left_o = PyStackRef_AsPyObjectBorrow(left);
             PyObject *right_o = PyStackRef_AsPyObjectBorrow(right);
-            assert(PyLong_CheckExact(left_o));
-            assert(PyLong_CheckExact(right_o));
+            assert(PyLong_CheckExact(left_o) && _PyLong_IsCompact((PyLongObject *)left_o));
+            assert(PyLong_CheckExact(right_o) && _PyLong_IsCompact((PyLongObject *)right_o));
 
             STAT_INC(BINARY_OP, hit);
-            PyObject *res_o = _PyLong_Multiply((PyLongObject *)left_o, (PyLongObject *)right_o);
+            PyObject *res_o = (PyObject *)_PyLong_FromSTwoDigits(
+                (int64_t)_PyLong_CompactValue((PyLongObject *)left_o) *
+                (int64_t)_PyLong_CompactValue((PyLongObject *)right_o)
+            );
             PyStackRef_CLOSE_SPECIALIZED(right, _PyLong_ExactDealloc);
             PyStackRef_CLOSE_SPECIALIZED(left, _PyLong_ExactDealloc);
             INPUTS_DEAD();
@@ -570,11 +573,14 @@ dummy_func(
         pure op(_BINARY_OP_ADD_INT, (left, right -- res)) {
             PyObject *left_o = PyStackRef_AsPyObjectBorrow(left);
             PyObject *right_o = PyStackRef_AsPyObjectBorrow(right);
-            assert(PyLong_CheckExact(left_o));
-            assert(PyLong_CheckExact(right_o));
+            assert(PyLong_CheckExact(left_o) && _PyLong_IsCompact((PyLongObject *)left_o));
+            assert(PyLong_CheckExact(right_o) && _PyLong_IsCompact((PyLongObject *)right_o));            assert(PyLong_CheckExact(left_o));
 
             STAT_INC(BINARY_OP, hit);
-            PyObject *res_o = _PyLong_Add((PyLongObject *)left_o, (PyLongObject *)right_o);
+            PyObject *res_o = (PyObject *)_PyLong_FromSTwoDigits(
+                (int64_t)_PyLong_CompactValue((PyLongObject *)left_o) +
+                (int64_t)_PyLong_CompactValue((PyLongObject *)right_o)
+            );
             PyStackRef_CLOSE_SPECIALIZED(right, _PyLong_ExactDealloc);
             PyStackRef_CLOSE_SPECIALIZED(left, _PyLong_ExactDealloc);
             INPUTS_DEAD();
@@ -585,11 +591,14 @@ dummy_func(
         pure op(_BINARY_OP_SUBTRACT_INT, (left, right -- res)) {
             PyObject *left_o = PyStackRef_AsPyObjectBorrow(left);
             PyObject *right_o = PyStackRef_AsPyObjectBorrow(right);
-            assert(PyLong_CheckExact(left_o));
-            assert(PyLong_CheckExact(right_o));
+            assert(PyLong_CheckExact(left_o) && _PyLong_IsCompact((PyLongObject *)left_o));
+            assert(PyLong_CheckExact(right_o) && _PyLong_IsCompact((PyLongObject *)right_o));
 
             STAT_INC(BINARY_OP, hit);
-            PyObject *res_o = _PyLong_Subtract((PyLongObject *)left_o, (PyLongObject *)right_o);
+            PyObject *res_o = (PyObject *)_PyLong_FromSTwoDigits(
+                (int64_t)_PyLong_CompactValue((PyLongObject *)left_o) -
+                (int64_t)_PyLong_CompactValue((PyLongObject *)right_o)
+            );
             PyStackRef_CLOSE_SPECIALIZED(right, _PyLong_ExactDealloc);
             PyStackRef_CLOSE_SPECIALIZED(left, _PyLong_ExactDealloc);
             INPUTS_DEAD();

@@ -2432,6 +2432,33 @@ binary_op_fail_kind(int oparg, PyObject *lhs, PyObject *rhs)
 
 /* long-long */
 
+static int
+longs_guard(PyObject *lhs, PyObject *rhs)
+{
+    return (
+        PyLong_CheckExact((PyLongObject *)lhs) &&
+        PyLong_CheckExact((PyLongObject *)rhs)
+    );
+}
+
+static PyObject *
+longs_add(PyObject *lhs, PyObject *rhs)
+{
+    return _PyLong_Add((PyLongObject *)lhs, (PyLongObject *)rhs);
+}
+
+static PyObject *
+longs_subtract(PyObject *lhs, PyObject *rhs)
+{
+    return _PyLong_Subtract((PyLongObject *)lhs, (PyLongObject *)rhs);
+}
+
+static PyObject *
+longs_multiply(PyObject *lhs, PyObject *rhs)
+{
+    return _PyLong_Multiply((PyLongObject *)lhs, (PyLongObject *)rhs);
+}
+
 static inline int
 is_compactlong(PyObject *v)
 {
@@ -2528,6 +2555,12 @@ LONG_FLOAT_ACTION(compactlong_float_multiply, *)
 LONG_FLOAT_ACTION(compactlong_float_true_div, /)
 #undef LONG_FLOAT_ACTION
 
+static _PyBinaryOpSpecializationDescr long_long_specs[NB_OPARG_LAST+1] = {
+    [NB_ADD] = {longs_guard, longs_add},
+    [NB_SUBTRACT] = {longs_guard, longs_subtract},
+    [NB_MULTIPLY] = {longs_guard, longs_multiply},
+};
+
 static _PyBinaryOpSpecializationDescr compactlongs_specs[NB_OPARG_LAST+1] = {
     [NB_OR] = {compactlongs_guard, compactlongs_or},
     [NB_AND] = {compactlongs_guard, compactlongs_and},
@@ -2563,6 +2596,7 @@ binary_op_extended_specialization(PyObject *lhs, PyObject *rhs, int oparg,
         } \
     }
 
+    //    LOOKUP_SPEC(long_long_specs, oparg);
     LOOKUP_SPEC(compactlong_float_specs, oparg);
     LOOKUP_SPEC(float_compactlong_specs, oparg);
     LOOKUP_SPEC(compactlongs_specs, oparg);
@@ -2600,7 +2634,10 @@ _Py_Specialize_BinaryOp(_PyStackRef lhs_st, _PyStackRef rhs_st, _Py_CODEUNIT *in
                 specialize(instr, BINARY_OP_ADD_UNICODE);
                 return;
             }
-            if (PyLong_CheckExact(lhs)) {
+            if (PyLong_CheckExact(lhs) &&
+                _PyLong_IsCompact((PyLongObject *)lhs) &&
+                _PyLong_IsCompact((PyLongObject *)rhs)
+            ) {
                 specialize(instr, BINARY_OP_ADD_INT);
                 return;
             }
@@ -2614,7 +2651,10 @@ _Py_Specialize_BinaryOp(_PyStackRef lhs_st, _PyStackRef rhs_st, _Py_CODEUNIT *in
             if (!Py_IS_TYPE(lhs, Py_TYPE(rhs))) {
                 break;
             }
-            if (PyLong_CheckExact(lhs)) {
+            if (PyLong_CheckExact(lhs) &&
+                _PyLong_IsCompact((PyLongObject *)lhs) &&
+                _PyLong_IsCompact((PyLongObject *)rhs)
+            ) {
                 specialize(instr, BINARY_OP_MULTIPLY_INT);
                 return;
             }
@@ -2628,7 +2668,10 @@ _Py_Specialize_BinaryOp(_PyStackRef lhs_st, _PyStackRef rhs_st, _Py_CODEUNIT *in
             if (!Py_IS_TYPE(lhs, Py_TYPE(rhs))) {
                 break;
             }
-            if (PyLong_CheckExact(lhs)) {
+            if (PyLong_CheckExact(lhs) &&
+                _PyLong_IsCompact((PyLongObject *)lhs) &&
+                _PyLong_IsCompact((PyLongObject *)rhs)
+            ) {
                 specialize(instr, BINARY_OP_SUBTRACT_INT);
                 return;
             }

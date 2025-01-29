@@ -302,7 +302,7 @@ _PyLong_FromLarge(stwodigits ival)
 }
 
 /* Create a new int object from a C word-sized int */
-static inline PyLongObject *
+PyLongObject *
 _PyLong_FromSTwoDigits(stwodigits x)
 {
     if (IS_SMALL_INT(x)) {

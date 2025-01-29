@@ -602,6 +602,7 @@ NON_ESCAPING_FUNCTIONS = (
     "_PyLong_Add",
     "_PyLong_CompactValue",
     "_PyLong_DigitCount",
+    "_PyLong_FromSTwoDigits",
     "_PyLong_IsCompact",
     "_PyLong_IsNegative",
     "_PyLong_IsNonNegativeCompact",

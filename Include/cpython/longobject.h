@@ -138,3 +138,5 @@ PyAPI_FUNC(int) _PyLong_AsByteArray(PyLongObject* v,
 
 /* For use by the gcd function in mathmodule.c */
 PyAPI_FUNC(PyObject *) _PyLong_GCD(PyObject *, PyObject *);
+
+PyAPI_FUNC(PyLongObject *) _PyLong_FromSTwoDigits(int64_t x);
