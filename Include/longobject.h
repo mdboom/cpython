@@ -102,6 +102,7 @@ PyAPI_FUNC(void *) PyLong_AsVoidPtr(PyObject *);
 PyAPI_FUNC(PyObject *) PyLong_FromLongLong(long long);
 PyAPI_FUNC(PyObject *) PyLong_FromUnsignedLongLong(unsigned long long);
 PyAPI_FUNC(long long) PyLong_AsLongLong(PyObject *);
+PyAPI_FUNC(__int128_t) PyLong_AsInt128(PyObject *);
 PyAPI_FUNC(unsigned long long) PyLong_AsUnsignedLongLong(PyObject *);
 PyAPI_FUNC(unsigned long long) PyLong_AsUnsignedLongLongMask(PyObject *);
 PyAPI_FUNC(long long) PyLong_AsLongLongAndOverflow(PyObject *, int *);

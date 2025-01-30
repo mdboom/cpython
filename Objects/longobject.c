@@ -1518,6 +1518,47 @@ PyLong_FromLongLong(long long ival)
     return (PyObject *)v;
 }
 
+/* Create a new int object from a C long long int. */
+
+PyObject *
+PyLong_FromInt128(__int128_t ival)
+{
+    PyLongObject *v;
+    __uint128_t abs_ival, t;
+    int ndigits;
+
+    /* Handle small and medium cases. */
+    if (IS_SMALL_INT(ival)) {
+        return get_small_int((sdigit)ival);
+    }
+    if (-(long long)PyLong_MASK <= ival && ival <= (long long)PyLong_MASK) {
+        return _PyLong_FromMedium((sdigit)ival);
+    }
+
+    /* Count digits (at least two - smaller cases were handled above). */
+    abs_ival = ival < 0 ? 0U-(unsigned long long)ival : (unsigned long long)ival;
+    /* Do shift in two steps to avoid possible undefined behavior. */
+    t = abs_ival >> PyLong_SHIFT >> PyLong_SHIFT;
+    ndigits = 2;
+    while (t) {
+        ++ndigits;
+        t >>= PyLong_SHIFT;
+    }
+
+    /* Construct output value. */
+    v = long_alloc(ndigits);
+    if (v != NULL) {
+        digit *p = v->long_value.ob_digit;
+        _PyLong_SetSignAndDigitCount(v, ival < 0 ? -1 : 1, ndigits);
+        t = abs_ival;
+        while (t) {
+            *p++ = (digit)(t & PyLong_MASK);
+            t >>= PyLong_SHIFT;
+        }
+    }
+    return (PyObject *)v;
+}
+
 /* Create a new int object from a C Py_ssize_t. */
 
 PyObject *
@@ -1605,6 +1646,49 @@ PyLong_AsLongLong(PyObject *vv)
     else
         return bytes;
 }
+
+__int128_t
+PyLong_AsInt128(PyObject *vv)
+{
+    PyLongObject *v;
+    __int128_t bytes;
+    int res;
+    int do_decref = 0; /* if PyNumber_Index was called */
+
+    if (vv == NULL) {
+        PyErr_BadInternalCall();
+        return -1;
+    }
+
+    if (PyLong_Check(vv)) {
+        v = (PyLongObject *)vv;
+    }
+    else {
+        v = (PyLongObject *)_PyNumber_Index(vv);
+        if (v == NULL)
+            return -1;
+        do_decref = 1;
+    }
+
+    if (_PyLong_IsCompact(v)) {
+        res = 0;
+        bytes = _PyLong_CompactValue(v);
+    }
+    else {
+        res = _PyLong_AsByteArray((PyLongObject *)v, (unsigned char *)&bytes,
+                                  16, PY_LITTLE_ENDIAN, 1, 1);
+    }
+    if (do_decref) {
+        Py_DECREF(v);
+    }
+
+    /* Plan 9 can't handle long long in ? : expressions */
+    if (res < 0)
+        return (__int128_t)-1;
+    else
+        return bytes;
+}
+
 
 /* Get a C unsigned long long int from an int object.
    Return -1 and set an error if overflow occurs. */
@@ -2156,7 +2240,7 @@ long_to_decimal_string_internal(PyObject *aa,
     Py_ssize_t size, strlen, size_a, i, j;
     digit *pout, *pin, rem, tenpow;
     int negative;
-    int d;
+    __int128_t d;
 
     // writer or bytes_writer can be used, but not both at the same time.
     assert(writer == NULL || bytes_writer == NULL);
@@ -2211,10 +2295,10 @@ long_to_decimal_string_internal(PyObject *aa,
        where d = (3.3 * _PyLong_DECIMAL_SHIFT) /
                  (PyLong_SHIFT - 3.3 * _PyLong_DECIMAL_SHIFT)
     */
-    d = (33 * _PyLong_DECIMAL_SHIFT) /
-        (10 * PyLong_SHIFT - 33 * _PyLong_DECIMAL_SHIFT);
+    // d = (33 * _PyLong_DECIMAL_SHIFT) /
+    //     (10 * PyLong_SHIFT - 33 * _PyLong_DECIMAL_SHIFT);
     assert(size_a < PY_SSIZE_T_MAX/2);
-    size = 1 + size_a + size_a / d;
+    size = 1 + size_a + size_a; //  / d;
     scratch = long_alloc(size);
     if (scratch == NULL)
         return -1;
@@ -5930,7 +6014,8 @@ simple:
     x = PyLong_AsLongLong((PyObject *)a);
     y = PyLong_AsLongLong((PyObject *)b);
 #else
-# error "_PyLong_GCD"
+    x = PyLong_AsInt128((PyObject *)a);
+    y = PyLong_AsInt128((PyObject *)b);
 #endif
     x = Py_ABS(x);
     y = Py_ABS(y);
@@ -5948,7 +6033,7 @@ simple:
 #elif LLONG_MAX >> PyLong_SHIFT >> PyLong_SHIFT
     return PyLong_FromLongLong(x);
 #else
-# error "_PyLong_GCD"
+    return PyLong_FromInt128(x);
 #endif
 
 error:
@@ -6317,7 +6402,7 @@ popcount_digit(digit d)
 {
     // digit can be larger than uint32_t, but only PyLong_SHIFT bits
     // of it will be ever used.
-    static_assert(PyLong_SHIFT <= 32, "digit is larger than uint32_t");
+    static_assert(PyLong_SHIFT <= 64, "digit is larger than uint64_t");
     return _Py_popcount32((uint32_t)d);
 }
 

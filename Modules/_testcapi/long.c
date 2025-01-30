@@ -223,7 +223,7 @@ pylongwriter_create(PyObject *module, PyObject *args)
     for (Py_ssize_t i = 0; i < ndigits; i++) {
         PyObject *item = PyList_GET_ITEM(list, i);
 
-        long num = PyLong_AsLong(item);
+        stwodigits num = PyLong_AsLong(item);
         if (num == -1 && PyErr_Occurred()) {
             goto error;
         }

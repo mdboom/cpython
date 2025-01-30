@@ -6100,16 +6100,16 @@ AC_CHECK_DECLS([RTLD_LAZY, RTLD_NOW, RTLD_GLOBAL, RTLD_LOCAL, RTLD_NODELETE, RTL
 # determine what size digit to use for Python's longs
 AC_MSG_CHECKING([digit size for Python's longs])
 AC_ARG_ENABLE([big-digits],
-AS_HELP_STRING([--enable-big-digits@<:@=15|30@:>@],[use big digits (30 or 15 bits) for Python longs (default is 30)]]),
+AS_HELP_STRING([--enable-big-digits@<:@=15|60@:>@],[use big digits (60 or 15 bits) for Python longs (default is 60)]]),
 [case $enable_big_digits in
 yes)
-  enable_big_digits=30 ;;
+  enable_big_digits=60 ;;
 no)
   enable_big_digits=15 ;;
-[15|30])
+[15|60])
   ;;
 *)
-  AC_MSG_ERROR([bad value $enable_big_digits for --enable-big-digits; value should be 15 or 30]) ;;
+  AC_MSG_ERROR([bad value $enable_big_digits for --enable-big-digits; value should be 15 or 60]) ;;
 esac
 AC_MSG_RESULT([$enable_big_digits])
 AC_DEFINE_UNQUOTED([PYLONG_BITS_IN_DIGIT], [$enable_big_digits],
