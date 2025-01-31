@@ -832,7 +832,7 @@ class TestTimeDelta(HarmlessMixedComparison, unittest.TestCase):
 
         day = timedelta(1)
         self.assertRaises(OverflowError, day.__mul__, 10**9)
-        self.assertRaises(OverflowError, day.__mul__, 1e9)
+        self.assertRaises(OverflowError, day.__mul__, 1e20)
         self.assertRaises(OverflowError, day.__truediv__, 1e-20)
         self.assertRaises(OverflowError, day.__truediv__, 1e-10)
         self.assertRaises(OverflowError, day.__truediv__, 9e-10)

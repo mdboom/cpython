@@ -2096,7 +2096,7 @@ v_rshift(digit *z, digit *a, Py_ssize_t m, int d)
 static digit
 inplace_divrem1(digit *pout, digit *pin, Py_ssize_t size, digit n)
 {
-    digit remainder = 0;
+    twodigits remainder = 0;
 
     assert(n > 0 && n <= PyLong_MASK);
     while (--size >= 0) {
@@ -3339,7 +3339,7 @@ long_divrem(PyLongObject *a, PyLongObject *b,
         z = divrem1(a, b->long_value.ob_digit[0], &rem);
         if (z == NULL)
             return -1;
-        *prem = (PyLongObject *) PyLong_FromLong((long)rem);
+        *prem = (PyLongObject *) PyLong_FromLongLong(rem);
         if (*prem == NULL) {
             Py_DECREF(z);
             return -1;
@@ -4482,7 +4482,7 @@ fast_mod(PyLongObject *a, PyLongObject *b)
         mod = right - 1 - (left - 1) % right;
     }
 
-    return PyLong_FromLong(mod * sign);
+    return PyLong_FromLongLong(mod * sign);
 }
 
 /* Fast floor division for single-digit longs. */
@@ -4504,7 +4504,7 @@ fast_floor_div(PyLongObject *a, PyLongObject *b)
         div = -1 - (left - 1) / right;
     }
 
-    return PyLong_FromLong(div);
+    return PyLong_FromLongLong(div);
 }
 
 #ifdef WITH_PYLONG_MODULE
