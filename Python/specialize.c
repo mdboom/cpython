@@ -2596,7 +2596,7 @@ binary_op_extended_specialization(PyObject *lhs, PyObject *rhs, int oparg,
         } \
     }
 
-    //    LOOKUP_SPEC(long_long_specs, oparg);
+    LOOKUP_SPEC(long_long_specs, oparg);
     LOOKUP_SPEC(compactlong_float_specs, oparg);
     LOOKUP_SPEC(float_compactlong_specs, oparg);
     LOOKUP_SPEC(compactlongs_specs, oparg);
