@@ -45,9 +45,8 @@ typedef int64_t sdigit; /* signed variant of digit */
 typedef __uint128_t twodigits;
 typedef __int128_t stwodigits; /* signed variant of twodigits */
 #define PyLong_SHIFT    60
-#define _PyLong_DECIMAL_SHIFT   19 /* max e such that 10*e fits in a digit) */
-/* C doesn't let us write a literal constant big enough, so we just */
-#define _PyLong_DECIMAL_BASE    ((digit)1000000000000000000ull) /* 10 ** DECIMAL_SHIFT */
+#define _PyLong_DECIMAL_SHIFT   18 /* max(e such that 10*e fits in a digit) */
+#define _PyLong_DECIMAL_BASE    ((digit)100000000000000000ull) /* 10 ** DECIMAL_SHIFT */
 #elif PYLONG_BITS_IN_DIGIT == 30
 typedef uint32_t digit;
 typedef int32_t sdigit; /* signed variant of digit */
