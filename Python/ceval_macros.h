@@ -193,8 +193,8 @@ GETITEM(PyObject *v, Py_ssize_t i) {
  * for advancing to the next instruction, taking into account cache entries
  * and skipped instructions.
  */
-#define JUMPBY(x)       (next_instr += (x)) LOAD_NEXT_OP_F()
-#define SKIP_OVER(x)    (next_instr += (x)) LOAD_NEXT_OP_F()
+#define JUMPBY(x)       (next_instr += (x)); LOAD_NEXT_OP_F()
+#define SKIP_OVER(x)    (next_instr += (x)); LOAD_NEXT_OP_F()
 
 
 /* Stack manipulation macros */
@@ -347,6 +347,7 @@ do { \
     } else { \
         _PyFrame_SetStackPointer(frame, stack_pointer); \
         next_instr = _Py_call_instrumentation_jump(this_instr, tstate, event, frame, src, dest); \
+        LOAD_NEXT_OP_F(); \
         stack_pointer = _PyFrame_GetStackPointer(frame); \
         if (next_instr == NULL) { \
             next_instr = (dest)+1; \
@@ -372,6 +373,7 @@ static inline void _Py_LeaveRecursiveCallPy(PyThreadState *tstate)  {
 
 #define LOAD_IP(OFFSET) do { \
         next_instr = frame->instr_ptr + (OFFSET); \
+    LOAD_NEXT_OP_F(); \
     } while (0)
 
 /* There's no STORE_IP(), it's inlined by the code generator. */

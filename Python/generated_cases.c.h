@@ -43,6 +43,7 @@
                 #if ENABLE_SPECIALIZATION_FT
                 if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                     next_instr = this_instr;
+                    LOAD_NEXT_OP_F();
                     _PyFrame_SetStackPointer(frame, stack_pointer);
                     _Py_Specialize_BinaryOp(lhs, rhs, next_instr, oparg, LOCALS_ARRAY);
                     stack_pointer = _PyFrame_GetStackPointer(frame);
@@ -1258,6 +1259,7 @@
                 #if ENABLE_SPECIALIZATION_FT
                 if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                     next_instr = this_instr;
+                    LOAD_NEXT_OP_F();
                     _PyFrame_SetStackPointer(frame, stack_pointer);
                     _Py_Specialize_Call(callable[0], next_instr, oparg + !PyStackRef_IsNull(self_or_null[0]));
                     stack_pointer = _PyFrame_GetStackPointer(frame);
@@ -2539,6 +2541,7 @@
                 #if ENABLE_SPECIALIZATION_FT
                 if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                     next_instr = this_instr;
+                    LOAD_NEXT_OP_F();
                     _PyFrame_SetStackPointer(frame, stack_pointer);
                     _Py_Specialize_CallKw(callable[0], next_instr, oparg + !PyStackRef_IsNull(self_or_null[0]));
                     stack_pointer = _PyFrame_GetStackPointer(frame);
@@ -4278,6 +4281,7 @@
                 #if ENABLE_SPECIALIZATION_FT
                 if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                     next_instr = this_instr;
+                    LOAD_NEXT_OP_F();
                     _PyFrame_SetStackPointer(frame, stack_pointer);
                     _Py_Specialize_CompareOp(left, right, next_instr, oparg);
                     stack_pointer = _PyFrame_GetStackPointer(frame);
@@ -4523,6 +4527,7 @@
                 #if ENABLE_SPECIALIZATION_FT
                 if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                     next_instr = this_instr;
+                    LOAD_NEXT_OP_F();
                     _PyFrame_SetStackPointer(frame, stack_pointer);
                     _Py_Specialize_ContainsOp(right, next_instr);
                     stack_pointer = _PyFrame_GetStackPointer(frame);
@@ -5076,6 +5081,7 @@
                 opcode = executor->vm_data.opcode;
                 oparg = (oparg & ~255) | executor->vm_data.oparg;
                 next_instr = this_instr;
+                LOAD_NEXT_OP_F();
                 if (_PyOpcode_Caches[_PyOpcode_Deopt[opcode]]) {
                     PAUSE_ADAPTIVE_COUNTER(this_instr[1].counter);
                 }
@@ -5228,6 +5234,7 @@
                 #if ENABLE_SPECIALIZATION
                 if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                     next_instr = this_instr;
+                    LOAD_NEXT_OP_F();
                     _PyFrame_SetStackPointer(frame, stack_pointer);
                     _Py_Specialize_ForIter(iter, next_instr, oparg);
                     stack_pointer = _PyFrame_GetStackPointer(frame);
@@ -6486,6 +6493,7 @@
                 JUMP_TO_LABEL(error);
             }
             next_instr = this_instr;
+            LOAD_NEXT_OP_F();
             if (_PyOpcode_Caches[next_opcode]) {
                 PAUSE_ADAPTIVE_COUNTER(next_instr[1].counter);
             }
@@ -6574,6 +6582,7 @@
                 }
                 next_instr = frame->instr_ptr;
                 if (next_instr != this_instr) {
+                    LOAD_NEXT_OP_F();
                     DISPATCH();
                 }
             }
@@ -6584,6 +6593,7 @@
                 PAUSE_ADAPTIVE_COUNTER(cache->counter);
             }
             opcode = original_opcode;
+            LOAD_NEXT_OP_F();
             DISPATCH_GOTO();
         }
 
@@ -6855,6 +6865,7 @@
                     // Make sure this_instr gets reset correctley for any uops that
                     // follow
                     next_instr = frame->instr_ptr;
+                    LOAD_NEXT_OP_F();
                     DISPATCH();
                 }
                 #endif
@@ -6903,6 +6914,7 @@
                 if (frame->instr_ptr != this_instr) {
                     /* Instrumentation has jumped */
                     next_instr = frame->instr_ptr;
+                    LOAD_NEXT_OP_F();
                 }
             }
             DISPATCH();
@@ -6988,6 +7000,7 @@
                 }
                 if (frame->instr_ptr != this_instr) {
                     next_instr = frame->instr_ptr;
+                    LOAD_NEXT_OP_F();
                     DISPATCH();
                 }
             }
@@ -7105,6 +7118,7 @@
                     this_instr->op.code = tstate->interp->jit ? JUMP_BACKWARD_JIT : JUMP_BACKWARD_NO_JIT;
                     // Need to re-dispatch so the warmup counter isn't off by one:
                     next_instr = this_instr;
+                    LOAD_NEXT_OP_F();
                     DISPATCH_SAME_OPARG();
                 }
                 #endif
@@ -7374,6 +7388,7 @@
                 if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                     PyObject *name = GETITEM(FRAME_CO_NAMES, oparg>>1);
                     next_instr = this_instr;
+                    LOAD_NEXT_OP_F();
                     _PyFrame_SetStackPointer(frame, stack_pointer);
                     _Py_Specialize_LoadAttr(owner, next_instr, name);
                     stack_pointer = _PyFrame_GetStackPointer(frame);
@@ -8732,6 +8747,7 @@
                 if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                     PyObject *name = GETITEM(FRAME_CO_NAMES, oparg>>1);
                     next_instr = this_instr;
+                    LOAD_NEXT_OP_F();
                     _PyFrame_SetStackPointer(frame, stack_pointer);
                     _Py_Specialize_LoadGlobal(GLOBALS(), BUILTINS(), next_instr, name);
                     stack_pointer = _PyFrame_GetStackPointer(frame);
@@ -9064,6 +9080,7 @@
                 int load_method = oparg & 1;
                 if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                     next_instr = this_instr;
+                    LOAD_NEXT_OP_F();
                     _PyFrame_SetStackPointer(frame, stack_pointer);
                     _Py_Specialize_LoadSuperAttr(global_super_st, class_st, next_instr, load_method);
                     stack_pointer = _PyFrame_GetStackPointer(frame);
@@ -9871,6 +9888,7 @@
                     // Make sure this_instr gets reset correctley for any uops that
                     // follow
                     next_instr = frame->instr_ptr;
+                    LOAD_NEXT_OP_F();
                     DISPATCH();
                 }
                 #endif
@@ -10057,6 +10075,7 @@
                 #if ENABLE_SPECIALIZATION_FT
                 if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                     next_instr = this_instr;
+                    LOAD_NEXT_OP_F();
                     _PyFrame_SetStackPointer(frame, stack_pointer);
                     _Py_Specialize_Send(receiver, next_instr);
                     stack_pointer = _PyFrame_GetStackPointer(frame);
@@ -10364,6 +10383,7 @@
                 if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                     PyObject *name = GETITEM(FRAME_CO_NAMES, oparg);
                     next_instr = this_instr;
+                    LOAD_NEXT_OP_F();
                     _PyFrame_SetStackPointer(frame, stack_pointer);
                     _Py_Specialize_StoreAttr(owner, next_instr, name);
                     stack_pointer = _PyFrame_GetStackPointer(frame);
@@ -10875,6 +10895,7 @@
                 #if ENABLE_SPECIALIZATION_FT
                 if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                     next_instr = this_instr;
+                    LOAD_NEXT_OP_F();
                     _PyFrame_SetStackPointer(frame, stack_pointer);
                     _Py_Specialize_StoreSubscr(container, sub, next_instr);
                     stack_pointer = _PyFrame_GetStackPointer(frame);
@@ -11058,6 +11079,7 @@
                 #if ENABLE_SPECIALIZATION_FT
                 if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                     next_instr = this_instr;
+                    LOAD_NEXT_OP_F();
                     _PyFrame_SetStackPointer(frame, stack_pointer);
                     _Py_Specialize_ToBool(value, next_instr);
                     stack_pointer = _PyFrame_GetStackPointer(frame);
@@ -11404,6 +11426,7 @@
                 #if ENABLE_SPECIALIZATION_FT
                 if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                     next_instr = this_instr;
+                    LOAD_NEXT_OP_F();
                     _PyFrame_SetStackPointer(frame, stack_pointer);
                     _Py_Specialize_UnpackSequence(seq, next_instr, oparg);
                     stack_pointer = _PyFrame_GetStackPointer(frame);
