@@ -5238,6 +5238,7 @@ dummy_func(
 #ifdef Py_TAIL_CALL_INTERP
             int opcode;
 #endif
+            py_tail_call_funcptr next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             DISPATCH();
         }
 
@@ -5280,6 +5281,7 @@ dummy_func(
 #ifdef Py_TAIL_CALL_INTERP
             int opcode;
 #endif
+            py_tail_call_funcptr next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             DISPATCH();
         }
 

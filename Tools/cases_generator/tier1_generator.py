@@ -232,6 +232,7 @@ def generate_tier1_cases(
         out.emit(f"#if defined(Py_TAIL_CALL_INTERP)\n")
         out.emit(f"int opcode = {name};\n")
         out.emit(f"(void)(opcode);\n")
+        out.emit(f"py_tail_call_funcptr next_op_f;\n")
         out.emit(f"#endif\n")
         needs_this = uses_this(inst)
         unused_guard = "(void)this_instr;\n"
@@ -245,6 +246,7 @@ def generate_tier1_cases(
             out.emit(f"frame->instr_ptr = next_instr;\n")
 
         out.emit(f"next_instr += {inst.size};\n")
+        out.emit(f"next_op_f = INSTRUCTION_TABLE[next_instr->op.code];\n")
         out.emit(f"INSTRUCTION_STATS({name});\n")
         if inst.is_target:
             out.emit(f"PREDICTED_{name}:;\n")

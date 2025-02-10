@@ -22,9 +22,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BINARY_OP;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 6;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BINARY_OP);
             PREDICTED_BINARY_OP:;
             _Py_CODEUNIT* const this_instr = next_instr - 6;
@@ -78,11 +80,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BINARY_OP_ADD_FLOAT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BINARY_OP_ADD_FLOAT);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef left;
@@ -132,11 +136,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BINARY_OP_ADD_INT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BINARY_OP_ADD_INT);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef left;
@@ -185,11 +191,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BINARY_OP_ADD_UNICODE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BINARY_OP_ADD_UNICODE);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef left;
@@ -238,11 +246,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BINARY_OP_EXTEND;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BINARY_OP_EXTEND);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef left;
@@ -294,11 +304,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BINARY_OP_INPLACE_ADD_UNICODE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BINARY_OP_INPLACE_ADD_UNICODE);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef left;
@@ -377,11 +389,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BINARY_OP_MULTIPLY_FLOAT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BINARY_OP_MULTIPLY_FLOAT);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef left;
@@ -431,11 +445,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BINARY_OP_MULTIPLY_INT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BINARY_OP_MULTIPLY_INT);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef left;
@@ -484,11 +500,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BINARY_OP_SUBSCR_DICT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BINARY_OP_SUBSCR_DICT);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef dict_st;
@@ -531,11 +549,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BINARY_OP_SUBSCR_GETITEM;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BINARY_OP_SUBSCR_GETITEM);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef container;
@@ -616,11 +636,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BINARY_OP_SUBSCR_LIST_INT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BINARY_OP_SUBSCR_LIST_INT);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef list_st;
@@ -686,11 +708,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BINARY_OP_SUBSCR_STR_INT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BINARY_OP_SUBSCR_STR_INT);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef str_st;
@@ -748,11 +772,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BINARY_OP_SUBSCR_TUPLE_INT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BINARY_OP_SUBSCR_TUPLE_INT);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef tuple_st;
@@ -806,11 +832,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BINARY_OP_SUBTRACT_FLOAT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BINARY_OP_SUBTRACT_FLOAT);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef left;
@@ -860,11 +888,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BINARY_OP_SUBTRACT_INT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BINARY_OP_SUBTRACT_INT);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef left;
@@ -913,9 +943,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BINARY_SLICE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BINARY_SLICE);
             _PyStackRef container;
             _PyStackRef start;
@@ -973,9 +1005,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BUILD_LIST;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BUILD_LIST);
             _PyStackRef *values;
             _PyStackRef list;
@@ -995,9 +1029,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BUILD_MAP;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BUILD_MAP);
             _PyStackRef *values;
             _PyStackRef map;
@@ -1037,9 +1073,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BUILD_SET;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BUILD_SET);
             _PyStackRef *values;
             _PyStackRef set;
@@ -1085,9 +1123,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BUILD_SLICE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BUILD_SLICE);
             _PyStackRef *args;
             _PyStackRef slice;
@@ -1115,9 +1155,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BUILD_STRING;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BUILD_STRING);
             _PyStackRef *pieces;
             _PyStackRef str;
@@ -1152,9 +1194,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = BUILD_TUPLE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(BUILD_TUPLE);
             _PyStackRef *values;
             _PyStackRef tup;
@@ -1174,9 +1218,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CACHE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CACHE);
             assert(0 && "Executing a cache.");
             Py_FatalError("Executing a cache.");
@@ -1187,9 +1233,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL);
             PREDICTED_CALL:;
             _Py_CODEUNIT* const this_instr = next_instr - 4;
@@ -1359,11 +1407,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_ALLOC_AND_ENTER_INIT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_ALLOC_AND_ENTER_INIT);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -1487,11 +1537,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_BOUND_METHOD_EXACT_ARGS;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_BOUND_METHOD_EXACT_ARGS);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -1626,11 +1678,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_BOUND_METHOD_GENERAL;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_BOUND_METHOD_GENERAL);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -1748,11 +1802,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_BUILTIN_CLASS;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_BUILTIN_CLASS);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -1840,11 +1896,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_BUILTIN_FAST;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_BUILTIN_FAST);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -1938,11 +1996,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_BUILTIN_FAST_WITH_KEYWORDS;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_BUILTIN_FAST_WITH_KEYWORDS);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -2037,11 +2097,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_BUILTIN_O;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_BUILTIN_O);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -2133,11 +2195,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_FUNCTION_EX;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_FUNCTION_EX);
             opcode = CALL_FUNCTION_EX;
             _PyStackRef func;
@@ -2325,9 +2389,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_INTRINSIC_1;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_INTRINSIC_1);
             _PyStackRef value;
             _PyStackRef res;
@@ -2349,9 +2415,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_INTRINSIC_2;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_INTRINSIC_2);
             _PyStackRef value2_st;
             _PyStackRef value1_st;
@@ -2380,11 +2448,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_ISINSTANCE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_ISINSTANCE);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -2441,9 +2511,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_KW;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_KW);
             PREDICTED_CALL_KW:;
             _Py_CODEUNIT* const this_instr = next_instr - 4;
@@ -2612,11 +2684,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_KW_BOUND_METHOD;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_KW_BOUND_METHOD);
             static_assert(INLINE_CACHE_ENTRIES_CALL_KW == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -2745,11 +2819,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_KW_NON_PY;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_KW_NON_PY);
             opcode = CALL_KW_NON_PY;
             static_assert(INLINE_CACHE_ENTRIES_CALL_KW == 3, "incorrect cache size");
@@ -2858,11 +2934,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_KW_PY;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_KW_PY);
             static_assert(INLINE_CACHE_ENTRIES_CALL_KW == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -2965,11 +3043,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_LEN;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_LEN);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -3032,11 +3112,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_LIST_APPEND;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_LIST_APPEND);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef callable;
@@ -3096,11 +3178,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_METHOD_DESCRIPTOR_FAST;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_METHOD_DESCRIPTOR_FAST);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -3200,11 +3284,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_METHOD_DESCRIPTOR_FAST_WITH_KEYWORDS;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_METHOD_DESCRIPTOR_FAST_WITH_KEYWORDS);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -3304,11 +3390,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_METHOD_DESCRIPTOR_NOARGS;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_METHOD_DESCRIPTOR_NOARGS);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -3408,11 +3496,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_METHOD_DESCRIPTOR_O;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_METHOD_DESCRIPTOR_O);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -3514,11 +3604,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_NON_PY_GENERAL;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_NON_PY_GENERAL);
             opcode = CALL_NON_PY_GENERAL;
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
@@ -3617,11 +3709,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_PY_EXACT_ARGS;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_PY_EXACT_ARGS);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -3728,11 +3822,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_PY_GENERAL;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_PY_GENERAL);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -3824,11 +3920,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_STR_1;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_STR_1);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef callable;
@@ -3897,11 +3995,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_TUPLE_1;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_TUPLE_1);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef callable;
@@ -3970,11 +4070,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CALL_TYPE_1;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CALL_TYPE_1);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef callable;
@@ -4014,9 +4116,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CHECK_EG_MATCH;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CHECK_EG_MATCH);
             _PyStackRef exc_value_st;
             _PyStackRef match_type_st;
@@ -4069,9 +4173,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CHECK_EXC_MATCH;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CHECK_EXC_MATCH);
             _PyStackRef left;
             _PyStackRef right;
@@ -4101,11 +4207,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CLEANUP_THROW;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CLEANUP_THROW);
             _PyStackRef sub_iter_st;
             _PyStackRef last_sent_val_st;
@@ -4149,9 +4257,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = COMPARE_OP;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(COMPARE_OP);
             PREDICTED_COMPARE_OP:;
             _Py_CODEUNIT* const this_instr = next_instr - 2;
@@ -4218,11 +4328,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = COMPARE_OP_FLOAT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(COMPARE_OP_FLOAT);
             static_assert(INLINE_CACHE_ENTRIES_COMPARE_OP == 1, "incorrect cache size");
             _PyStackRef left;
@@ -4270,11 +4382,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = COMPARE_OP_INT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(COMPARE_OP_INT);
             static_assert(INLINE_CACHE_ENTRIES_COMPARE_OP == 1, "incorrect cache size");
             _PyStackRef left;
@@ -4334,11 +4448,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = COMPARE_OP_STR;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(COMPARE_OP_STR);
             static_assert(INLINE_CACHE_ENTRIES_COMPARE_OP == 1, "incorrect cache size");
             _PyStackRef left;
@@ -4387,9 +4503,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CONTAINS_OP;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CONTAINS_OP);
             PREDICTED_CONTAINS_OP:;
             _Py_CODEUNIT* const this_instr = next_instr - 2;
@@ -4439,11 +4557,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CONTAINS_OP_DICT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CONTAINS_OP_DICT);
             static_assert(INLINE_CACHE_ENTRIES_CONTAINS_OP == 1, "incorrect cache size");
             _PyStackRef left;
@@ -4479,11 +4599,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CONTAINS_OP_SET;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CONTAINS_OP_SET);
             static_assert(INLINE_CACHE_ENTRIES_CONTAINS_OP == 1, "incorrect cache size");
             _PyStackRef left;
@@ -4520,9 +4642,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = CONVERT_VALUE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(CONVERT_VALUE);
             _PyStackRef value;
             _PyStackRef result;
@@ -4552,9 +4676,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = COPY;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(COPY);
             _PyStackRef bottom;
             _PyStackRef top;
@@ -4571,9 +4697,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = COPY_FREE_VARS;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(COPY_FREE_VARS);
             /* Copy closure variables to free variables */
             PyCodeObject *co = _PyFrame_GetCode(frame);
@@ -4593,9 +4721,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = DELETE_ATTR;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(DELETE_ATTR);
             _PyStackRef owner;
             owner = stack_pointer[-1];
@@ -4616,9 +4746,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = DELETE_DEREF;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(DELETE_DEREF);
             PyObject *cell = PyStackRef_AsPyObjectBorrow(GETLOCAL(oparg));
             // Can't use ERROR_IF here.
@@ -4640,9 +4772,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = DELETE_FAST;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(DELETE_FAST);
             _PyStackRef v = GETLOCAL(oparg);
             if (PyStackRef_IsNull(v)) {
@@ -4666,9 +4800,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = DELETE_GLOBAL;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(DELETE_GLOBAL);
             PyObject *name = GETITEM(FRAME_CO_NAMES, oparg);
             _PyFrame_SetStackPointer(frame, stack_pointer);
@@ -4692,9 +4828,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = DELETE_NAME;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(DELETE_NAME);
             PyObject *name = GETITEM(FRAME_CO_NAMES, oparg);
             PyObject *ns = LOCALS();
@@ -4725,9 +4863,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = DELETE_SUBSCR;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(DELETE_SUBSCR);
             _PyStackRef container;
             _PyStackRef sub;
@@ -4752,9 +4892,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = DICT_MERGE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(DICT_MERGE);
             _PyStackRef callable;
             _PyStackRef dict;
@@ -4785,9 +4927,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = DICT_UPDATE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(DICT_UPDATE);
             _PyStackRef dict;
             _PyStackRef update;
@@ -4822,11 +4966,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = END_ASYNC_FOR;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(END_ASYNC_FOR);
             _PyStackRef awaitable_st;
             _PyStackRef exc_st;
@@ -4859,8 +5005,10 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = END_FOR;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(END_FOR);
             _PyStackRef value;
             value = stack_pointer[-1];
@@ -4881,9 +5029,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = END_SEND;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(END_SEND);
             _PyStackRef receiver;
             _PyStackRef value;
@@ -4903,11 +5053,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = ENTER_EXECUTOR;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(ENTER_EXECUTOR);
             opcode = ENTER_EXECUTOR;
             #ifdef _Py_TIER2
@@ -4942,9 +5094,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = EXIT_INIT_CHECK;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(EXIT_INIT_CHECK);
             _PyStackRef should_be_none;
             should_be_none = stack_pointer[-1];
@@ -4966,9 +5120,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = EXTENDED_ARG;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(EXTENDED_ARG);
             opcode = EXTENDED_ARG;
             assert(oparg);
@@ -4982,9 +5138,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = FORMAT_SIMPLE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(FORMAT_SIMPLE);
             _PyStackRef value;
             _PyStackRef res;
@@ -5021,9 +5179,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = FORMAT_WITH_SPEC;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(FORMAT_WITH_SPEC);
             _PyStackRef value;
             _PyStackRef fmt_spec;
@@ -5049,9 +5209,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = FOR_ITER;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(FOR_ITER);
             PREDICTED_FOR_ITER:;
             _Py_CODEUNIT* const this_instr = next_instr - 2;
@@ -5115,11 +5277,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = FOR_ITER_GEN;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(FOR_ITER_GEN);
             static_assert(INLINE_CACHE_ENTRIES_FOR_ITER == 1, "incorrect cache size");
             _PyStackRef iter;
@@ -5181,11 +5345,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = FOR_ITER_LIST;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(FOR_ITER_LIST);
             static_assert(INLINE_CACHE_ENTRIES_FOR_ITER == 1, "incorrect cache size");
             _PyStackRef iter;
@@ -5242,11 +5408,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = FOR_ITER_RANGE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(FOR_ITER_RANGE);
             static_assert(INLINE_CACHE_ENTRIES_FOR_ITER == 1, "incorrect cache size");
             _PyStackRef iter;
@@ -5297,11 +5465,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = FOR_ITER_TUPLE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(FOR_ITER_TUPLE);
             static_assert(INLINE_CACHE_ENTRIES_FOR_ITER == 1, "incorrect cache size");
             _PyStackRef iter;
@@ -5355,9 +5525,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = GET_AITER;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(GET_AITER);
             _PyStackRef obj;
             _PyStackRef iter;
@@ -5408,9 +5580,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = GET_ANEXT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(GET_ANEXT);
             _PyStackRef aiter;
             _PyStackRef awaitable;
@@ -5432,9 +5606,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = GET_AWAITABLE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(GET_AWAITABLE);
             _PyStackRef iterable;
             _PyStackRef iter;
@@ -5455,9 +5631,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = GET_ITER;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(GET_ITER);
             _PyStackRef iterable;
             _PyStackRef iter;
@@ -5479,9 +5657,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = GET_LEN;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(GET_LEN);
             _PyStackRef obj;
             _PyStackRef len;
@@ -5508,9 +5688,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = GET_YIELD_FROM_ITER;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(GET_YIELD_FROM_ITER);
             _PyStackRef iterable;
             _PyStackRef iter;
@@ -5555,9 +5737,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = IMPORT_FROM;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(IMPORT_FROM);
             _PyStackRef from;
             _PyStackRef res;
@@ -5580,9 +5764,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = IMPORT_NAME;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(IMPORT_NAME);
             _PyStackRef level;
             _PyStackRef fromlist;
@@ -5611,11 +5797,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INSTRUMENTED_CALL;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INSTRUMENTED_CALL);
             opcode = INSTRUMENTED_CALL;
             _PyStackRef *callable;
@@ -5794,11 +5982,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INSTRUMENTED_CALL_FUNCTION_EX;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INSTRUMENTED_CALL_FUNCTION_EX);
             opcode = INSTRUMENTED_CALL_FUNCTION_EX;
             _PyStackRef func;
@@ -5986,11 +6176,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INSTRUMENTED_CALL_KW;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INSTRUMENTED_CALL_KW);
             opcode = INSTRUMENTED_CALL_KW;
             _PyStackRef *callable;
@@ -6166,10 +6358,12 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INSTRUMENTED_END_FOR;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INSTRUMENTED_END_FOR);
             _PyStackRef receiver;
             _PyStackRef value;
@@ -6195,11 +6389,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INSTRUMENTED_END_SEND;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INSTRUMENTED_END_SEND);
             _PyStackRef receiver;
             _PyStackRef value;
@@ -6229,11 +6425,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INSTRUMENTED_FOR_ITER;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INSTRUMENTED_FOR_ITER);
             /* Skip 1 cache entry */
             _PyStackRef iter_stackref = TOP();
@@ -6271,11 +6469,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INSTRUMENTED_INSTRUCTION;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INSTRUMENTED_INSTRUCTION);
             opcode = INSTRUMENTED_INSTRUCTION;
             _PyFrame_SetStackPointer(frame, stack_pointer);
@@ -6298,11 +6498,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INSTRUMENTED_JUMP_BACKWARD;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INSTRUMENTED_JUMP_BACKWARD);
             /* Skip 1 cache entry */
             // _CHECK_PERIODIC
@@ -6329,11 +6531,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INSTRUMENTED_JUMP_FORWARD;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INSTRUMENTED_JUMP_FORWARD);
             INSTRUMENTED_JUMP(this_instr, next_instr + oparg, PY_MONITORING_EVENT_JUMP);
             DISPATCH();
@@ -6343,12 +6547,14 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INSTRUMENTED_LINE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const prev_instr = frame->instr_ptr;
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INSTRUMENTED_LINE);
             opcode = INSTRUMENTED_LINE;
             int original_opcode = 0;
@@ -6385,11 +6591,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INSTRUMENTED_LOAD_SUPER_ATTR;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INSTRUMENTED_LOAD_SUPER_ATTR);
             opcode = INSTRUMENTED_LOAD_SUPER_ATTR;
             _PyStackRef global_super_st;
@@ -6481,12 +6689,14 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INSTRUMENTED_NOT_TAKEN;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const prev_instr = frame->instr_ptr;
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INSTRUMENTED_NOT_TAKEN);
             (void)this_instr; // INSTRUMENTED_JUMP requires this_instr
             INSTRUMENTED_JUMP(prev_instr, next_instr, PY_MONITORING_EVENT_BRANCH_LEFT);
@@ -6497,12 +6707,14 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INSTRUMENTED_POP_ITER;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const prev_instr = frame->instr_ptr;
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INSTRUMENTED_POP_ITER);
             _PyStackRef iter;
             iter = stack_pointer[-1];
@@ -6519,11 +6731,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INSTRUMENTED_POP_JUMP_IF_FALSE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INSTRUMENTED_POP_JUMP_IF_FALSE);
             /* Skip 1 cache entry */
             _PyStackRef cond = POP();
@@ -6540,11 +6754,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INSTRUMENTED_POP_JUMP_IF_NONE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INSTRUMENTED_POP_JUMP_IF_NONE);
             /* Skip 1 cache entry */
             _PyStackRef value_stackref = POP();
@@ -6565,11 +6781,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INSTRUMENTED_POP_JUMP_IF_NOT_NONE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INSTRUMENTED_POP_JUMP_IF_NOT_NONE);
             /* Skip 1 cache entry */
             _PyStackRef value_stackref = POP();
@@ -6588,11 +6806,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INSTRUMENTED_POP_JUMP_IF_TRUE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INSTRUMENTED_POP_JUMP_IF_TRUE);
             /* Skip 1 cache entry */
             _PyStackRef cond = POP();
@@ -6609,11 +6829,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INSTRUMENTED_RESUME;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INSTRUMENTED_RESUME);
             // _LOAD_BYTECODE
             {
@@ -6690,11 +6912,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INSTRUMENTED_RETURN_VALUE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INSTRUMENTED_RETURN_VALUE);
             _PyStackRef val;
             _PyStackRef retval;
@@ -6740,11 +6964,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INSTRUMENTED_YIELD_VALUE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INSTRUMENTED_YIELD_VALUE);
             _PyStackRef val;
             _PyStackRef retval;
@@ -6812,9 +7038,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = INTERPRETER_EXIT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(INTERPRETER_EXIT);
             _PyStackRef retval;
             retval = stack_pointer[-1];
@@ -6835,9 +7063,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = IS_OP;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(IS_OP);
             _PyStackRef left;
             _PyStackRef right;
@@ -6858,9 +7088,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = JUMP_BACKWARD;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(JUMP_BACKWARD);
             PREDICTED_JUMP_BACKWARD:;
             _Py_CODEUNIT* const this_instr = next_instr - 2;
@@ -6907,11 +7139,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = JUMP_BACKWARD_JIT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(JUMP_BACKWARD_JIT);
             static_assert(1 == 1, "incorrect cache size");
             /* Skip 1 cache entry */
@@ -6980,9 +7214,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = JUMP_BACKWARD_NO_INTERRUPT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(JUMP_BACKWARD_NO_INTERRUPT);
             /* This bytecode is used in the `yield from` or `await` loop.
              * If there is an interrupt, we want it handled in the innermost
@@ -6998,9 +7234,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = JUMP_BACKWARD_NO_JIT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(JUMP_BACKWARD_NO_JIT);
             static_assert(1 == 1, "incorrect cache size");
             /* Skip 1 cache entry */
@@ -7034,9 +7272,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = JUMP_FORWARD;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(JUMP_FORWARD);
             JUMPBY(oparg);
             DISPATCH();
@@ -7046,9 +7286,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LIST_APPEND;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LIST_APPEND);
             _PyStackRef list;
             _PyStackRef v;
@@ -7068,9 +7310,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LIST_EXTEND;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LIST_EXTEND);
             _PyStackRef list_st;
             _PyStackRef iterable_st;
@@ -7109,9 +7353,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_ATTR;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 10;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_ATTR);
             PREDICTED_LOAD_ATTR:;
             _Py_CODEUNIT* const this_instr = next_instr - 10;
@@ -7193,11 +7439,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_ATTR_CLASS;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_ATTR_CLASS);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -7245,11 +7493,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_ATTR_CLASS_WITH_METACLASS_CHECK;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_ATTR_CLASS_WITH_METACLASS_CHECK);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -7307,11 +7557,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_ATTR_GETATTRIBUTE_OVERRIDDEN;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_ATTR_GETATTRIBUTE_OVERRIDDEN);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -7365,11 +7617,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_ATTR_INSTANCE_VALUE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_ATTR_INSTANCE_VALUE);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -7442,11 +7696,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_ATTR_METHOD_LAZY_DICT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_ATTR_METHOD_LAZY_DICT);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -7499,11 +7755,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_ATTR_METHOD_NO_DICT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_ATTR_METHOD_NO_DICT);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -7545,11 +7803,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_ATTR_METHOD_WITH_VALUES;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_ATTR_METHOD_WITH_VALUES);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -7613,11 +7873,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_ATTR_MODULE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_ATTR_MODULE);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -7692,11 +7954,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_ATTR_NONDESCRIPTOR_NO_DICT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_ATTR_NONDESCRIPTOR_NO_DICT);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -7733,11 +7997,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_ATTR_NONDESCRIPTOR_WITH_VALUES;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_ATTR_NONDESCRIPTOR_WITH_VALUES);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -7795,11 +8061,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_ATTR_PROPERTY;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_ATTR_PROPERTY);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -7890,11 +8158,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_ATTR_SLOT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_ATTR_SLOT);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -7953,11 +8223,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_ATTR_WITH_HINT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_ATTR_WITH_HINT);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -8057,9 +8329,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_BUILD_CLASS;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_BUILD_CLASS);
             _PyStackRef bc;
             PyObject *bc_o;
@@ -8087,9 +8361,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_COMMON_CONSTANT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_COMMON_CONSTANT);
             _PyStackRef value;
             // Keep in sync with _common_constants in opcode.py
@@ -8113,9 +8389,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_CONST;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_CONST);
             PREDICTED_LOAD_CONST:;
             _Py_CODEUNIT* const this_instr = next_instr - 1;
@@ -8150,9 +8428,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_CONST_IMMORTAL;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_CONST_IMMORTAL);
             static_assert(0 == 0, "incorrect cache size");
             _PyStackRef value;
@@ -8169,9 +8449,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_CONST_MORTAL;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_CONST_MORTAL);
             static_assert(0 == 0, "incorrect cache size");
             _PyStackRef value;
@@ -8187,9 +8469,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_DEREF;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_DEREF);
             _PyStackRef value;
             PyCellObject *cell = (PyCellObject *)PyStackRef_AsPyObjectBorrow(GETLOCAL(oparg));
@@ -8211,9 +8495,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_FAST;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_FAST);
             _PyStackRef value;
             assert(!PyStackRef_IsNull(GETLOCAL(oparg)));
@@ -8228,9 +8514,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_FAST_AND_CLEAR;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_FAST_AND_CLEAR);
             _PyStackRef value;
             value = GETLOCAL(oparg);
@@ -8245,9 +8533,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_FAST_CHECK;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_FAST_CHECK);
             _PyStackRef value;
             _PyStackRef value_s = GETLOCAL(oparg);
@@ -8271,9 +8561,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_FAST_LOAD_FAST;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_FAST_LOAD_FAST);
             _PyStackRef value1;
             _PyStackRef value2;
@@ -8292,9 +8584,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_FROM_DICT_OR_DEREF;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_FROM_DICT_OR_DEREF);
             _PyStackRef class_dict_st;
             _PyStackRef value;
@@ -8337,9 +8631,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_FROM_DICT_OR_GLOBALS;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_FROM_DICT_OR_GLOBALS);
             _PyStackRef mod_or_class_dict;
             _PyStackRef v;
@@ -8417,9 +8713,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_GLOBAL;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 5;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_GLOBAL);
             PREDICTED_LOAD_GLOBAL:;
             _Py_CODEUNIT* const this_instr = next_instr - 5;
@@ -8471,11 +8769,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_GLOBAL_BUILTIN;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 5;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_GLOBAL_BUILTIN);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_GLOBAL == 4, "incorrect cache size");
             PyDictKeysObject *builtins_keys;
@@ -8555,11 +8855,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_GLOBAL_MODULE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 5;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_GLOBAL_MODULE);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_GLOBAL == 4, "incorrect cache size");
             PyDictKeysObject *globals_keys;
@@ -8623,9 +8925,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_LOCALS;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_LOCALS);
             _PyStackRef locals;
             PyObject *l = LOCALS();
@@ -8647,9 +8951,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_NAME;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_NAME);
             _PyStackRef v;
             PyObject *name = GETITEM(FRAME_CO_NAMES, oparg);
@@ -8670,9 +8976,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_SMALL_INT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_SMALL_INT);
             _PyStackRef value;
             assert(oparg < _PY_NSMALLPOSINTS);
@@ -8688,9 +8996,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_SPECIAL;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_SPECIAL);
             _PyStackRef owner;
             _PyStackRef attr;
@@ -8729,9 +9039,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_SUPER_ATTR;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_SUPER_ATTR);
             PREDICTED_LOAD_SUPER_ATTR:;
             _Py_CODEUNIT* const this_instr = next_instr - 2;
@@ -8842,11 +9154,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_SUPER_ATTR_ATTR;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_SUPER_ATTR_ATTR);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_SUPER_ATTR == 1, "incorrect cache size");
             _PyStackRef global_super_st;
@@ -8893,11 +9207,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = LOAD_SUPER_ATTR_METHOD;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(LOAD_SUPER_ATTR_METHOD);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_SUPER_ATTR == 1, "incorrect cache size");
             _PyStackRef global_super_st;
@@ -8960,9 +9276,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = MAKE_CELL;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(MAKE_CELL);
             // "initial" is probably NULL but not if it's an arg (or set
             // via the f_locals proxy before MAKE_CELL has run).
@@ -8983,9 +9301,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = MAKE_FUNCTION;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(MAKE_FUNCTION);
             _PyStackRef codeobj_st;
             _PyStackRef func;
@@ -9016,9 +9336,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = MAP_ADD;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(MAP_ADD);
             _PyStackRef dict_st;
             _PyStackRef key;
@@ -9049,9 +9371,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = MATCH_CLASS;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(MATCH_CLASS);
             _PyStackRef subject;
             _PyStackRef type;
@@ -9093,9 +9417,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = MATCH_KEYS;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(MATCH_KEYS);
             _PyStackRef subject;
             _PyStackRef keys;
@@ -9121,9 +9447,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = MATCH_MAPPING;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(MATCH_MAPPING);
             _PyStackRef subject;
             _PyStackRef res;
@@ -9140,9 +9468,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = MATCH_SEQUENCE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(MATCH_SEQUENCE);
             _PyStackRef subject;
             _PyStackRef res;
@@ -9159,9 +9489,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = NOP;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(NOP);
             DISPATCH();
         }
@@ -9170,9 +9502,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = NOT_TAKEN;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(NOT_TAKEN);
             DISPATCH();
         }
@@ -9181,9 +9515,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = POP_EXCEPT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(POP_EXCEPT);
             _PyStackRef exc_value;
             exc_value = stack_pointer[-1];
@@ -9202,9 +9538,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = POP_ITER;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(POP_ITER);
             _PyStackRef value;
             value = stack_pointer[-1];
@@ -9218,11 +9556,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = POP_JUMP_IF_FALSE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(POP_JUMP_IF_FALSE);
             _PyStackRef cond;
             /* Skip 1 cache entry */
@@ -9240,11 +9580,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = POP_JUMP_IF_NONE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(POP_JUMP_IF_NONE);
             _PyStackRef value;
             _PyStackRef b;
@@ -9278,11 +9620,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = POP_JUMP_IF_NOT_NONE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(POP_JUMP_IF_NOT_NONE);
             _PyStackRef value;
             _PyStackRef b;
@@ -9316,11 +9660,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = POP_JUMP_IF_TRUE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(POP_JUMP_IF_TRUE);
             _PyStackRef cond;
             /* Skip 1 cache entry */
@@ -9338,9 +9684,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = POP_TOP;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(POP_TOP);
             _PyStackRef value;
             value = stack_pointer[-1];
@@ -9354,9 +9702,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = PUSH_EXC_INFO;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(PUSH_EXC_INFO);
             _PyStackRef exc;
             _PyStackRef prev_exc;
@@ -9383,9 +9733,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = PUSH_NULL;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(PUSH_NULL);
             _PyStackRef res;
             res = PyStackRef_NULL;
@@ -9399,11 +9751,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = RAISE_VARARGS;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(RAISE_VARARGS);
             _PyStackRef *args;
             args = &stack_pointer[-oparg];
@@ -9430,11 +9784,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = RERAISE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(RERAISE);
             _PyStackRef *values;
             _PyStackRef exc_st;
@@ -9473,9 +9829,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = RESERVED;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(RESERVED);
             assert(0 && "Executing RESERVED instruction.");
             Py_FatalError("Executing RESERVED instruction.");
@@ -9486,9 +9844,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = RESUME;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(RESUME);
             PREDICTED_RESUME:;
             _Py_CODEUNIT* const this_instr = next_instr - 1;
@@ -9562,11 +9922,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = RESUME_CHECK;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(RESUME_CHECK);
             static_assert(0 == 0, "incorrect cache size");
             #if defined(__EMSCRIPTEN__)
@@ -9600,9 +9962,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = RETURN_GENERATOR;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(RETURN_GENERATOR);
             _PyStackRef res;
             assert(PyStackRef_FunctionCheck(frame->f_funcobj));
@@ -9639,9 +10003,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = RETURN_VALUE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(RETURN_VALUE);
             _PyStackRef retval;
             _PyStackRef res;
@@ -9671,9 +10037,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = SEND;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(SEND);
             PREDICTED_SEND:;
             _Py_CODEUNIT* const this_instr = next_instr - 2;
@@ -9771,11 +10139,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = SEND_GEN;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(SEND_GEN);
             static_assert(INLINE_CACHE_ENTRIES_SEND == 1, "incorrect cache size");
             _PyStackRef receiver;
@@ -9841,9 +10211,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = SETUP_ANNOTATIONS;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(SETUP_ANNOTATIONS);
             PyObject *ann_dict;
             if (LOCALS() == NULL) {
@@ -9888,9 +10260,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = SET_ADD;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(SET_ADD);
             _PyStackRef set;
             _PyStackRef v;
@@ -9913,9 +10287,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = SET_FUNCTION_ATTRIBUTE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(SET_FUNCTION_ATTRIBUTE);
             _PyStackRef attr_st;
             _PyStackRef func_in;
@@ -9941,9 +10317,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = SET_UPDATE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(SET_UPDATE);
             _PyStackRef set;
             _PyStackRef iterable;
@@ -9966,9 +10344,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = STORE_ATTR;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 5;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(STORE_ATTR);
             PREDICTED_STORE_ATTR:;
             _Py_CODEUNIT* const this_instr = next_instr - 5;
@@ -10017,11 +10397,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = STORE_ATTR_INSTANCE_VALUE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 5;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(STORE_ATTR_INSTANCE_VALUE);
             static_assert(INLINE_CACHE_ENTRIES_STORE_ATTR == 4, "incorrect cache size");
             _PyStackRef owner;
@@ -10093,11 +10475,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = STORE_ATTR_SLOT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 5;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(STORE_ATTR_SLOT);
             static_assert(INLINE_CACHE_ENTRIES_STORE_ATTR == 4, "incorrect cache size");
             _PyStackRef owner;
@@ -10144,11 +10528,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = STORE_ATTR_WITH_HINT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 5;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(STORE_ATTR_WITH_HINT);
             static_assert(INLINE_CACHE_ENTRIES_STORE_ATTR == 4, "incorrect cache size");
             _PyStackRef owner;
@@ -10244,9 +10630,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = STORE_DEREF;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(STORE_DEREF);
             _PyStackRef v;
             v = stack_pointer[-1];
@@ -10263,9 +10651,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = STORE_FAST;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(STORE_FAST);
             _PyStackRef value;
             value = stack_pointer[-1];
@@ -10283,9 +10673,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = STORE_FAST_LOAD_FAST;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(STORE_FAST_LOAD_FAST);
             _PyStackRef value1;
             _PyStackRef value2;
@@ -10306,9 +10698,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = STORE_FAST_STORE_FAST;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(STORE_FAST_STORE_FAST);
             _PyStackRef value2;
             _PyStackRef value1;
@@ -10337,9 +10731,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = STORE_GLOBAL;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(STORE_GLOBAL);
             _PyStackRef v;
             v = stack_pointer[-1];
@@ -10360,9 +10756,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = STORE_NAME;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(STORE_NAME);
             _PyStackRef v;
             v = stack_pointer[-1];
@@ -10400,9 +10798,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = STORE_SLICE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(STORE_SLICE);
             _PyStackRef v;
             _PyStackRef container;
@@ -10454,9 +10854,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = STORE_SUBSCR;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(STORE_SUBSCR);
             PREDICTED_STORE_SUBSCR:;
             _Py_CODEUNIT* const this_instr = next_instr - 2;
@@ -10505,11 +10907,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = STORE_SUBSCR_DICT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(STORE_SUBSCR_DICT);
             static_assert(INLINE_CACHE_ENTRIES_STORE_SUBSCR == 1, "incorrect cache size");
             _PyStackRef value;
@@ -10546,11 +10950,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = STORE_SUBSCR_LIST_INT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(STORE_SUBSCR_LIST_INT);
             static_assert(INLINE_CACHE_ENTRIES_STORE_SUBSCR == 1, "incorrect cache size");
             _PyStackRef value;
@@ -10612,9 +11018,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = SWAP;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(SWAP);
             _PyStackRef *bottom;
             _PyStackRef *top;
@@ -10631,9 +11039,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = TO_BOOL;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(TO_BOOL);
             PREDICTED_TO_BOOL:;
             _Py_CODEUNIT* const this_instr = next_instr - 4;
@@ -10677,11 +11087,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = TO_BOOL_ALWAYS_TRUE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(TO_BOOL_ALWAYS_TRUE);
             static_assert(INLINE_CACHE_ENTRIES_TO_BOOL == 3, "incorrect cache size");
             _PyStackRef owner;
@@ -10714,11 +11126,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = TO_BOOL_BOOL;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(TO_BOOL_BOOL);
             static_assert(INLINE_CACHE_ENTRIES_TO_BOOL == 3, "incorrect cache size");
             _PyStackRef value;
@@ -10738,11 +11152,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = TO_BOOL_INT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(TO_BOOL_INT);
             static_assert(INLINE_CACHE_ENTRIES_TO_BOOL == 3, "incorrect cache size");
             _PyStackRef value;
@@ -10773,11 +11189,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = TO_BOOL_LIST;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(TO_BOOL_LIST);
             static_assert(INLINE_CACHE_ENTRIES_TO_BOOL == 3, "incorrect cache size");
             _PyStackRef value;
@@ -10802,11 +11220,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = TO_BOOL_NONE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(TO_BOOL_NONE);
             static_assert(INLINE_CACHE_ENTRIES_TO_BOOL == 3, "incorrect cache size");
             _PyStackRef value;
@@ -10830,11 +11250,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = TO_BOOL_STR;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(TO_BOOL_STR);
             static_assert(INLINE_CACHE_ENTRIES_TO_BOOL == 3, "incorrect cache size");
             _PyStackRef value;
@@ -10866,9 +11288,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = UNARY_INVERT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(UNARY_INVERT);
             _PyStackRef value;
             _PyStackRef res;
@@ -10889,9 +11313,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = UNARY_NEGATIVE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(UNARY_NEGATIVE);
             _PyStackRef value;
             _PyStackRef res;
@@ -10912,9 +11338,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = UNARY_NOT;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(UNARY_NOT);
             _PyStackRef value;
             _PyStackRef res;
@@ -10930,9 +11358,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = UNPACK_EX;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(UNPACK_EX);
             _PyStackRef seq;
             _PyStackRef *right;
@@ -10955,9 +11385,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = UNPACK_SEQUENCE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(UNPACK_SEQUENCE);
             PREDICTED_UNPACK_SEQUENCE:;
             _Py_CODEUNIT* const this_instr = next_instr - 2;
@@ -11004,11 +11436,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = UNPACK_SEQUENCE_LIST;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(UNPACK_SEQUENCE_LIST);
             static_assert(INLINE_CACHE_ENTRIES_UNPACK_SEQUENCE == 1, "incorrect cache size");
             _PyStackRef seq;
@@ -11051,11 +11485,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = UNPACK_SEQUENCE_TUPLE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(UNPACK_SEQUENCE_TUPLE);
             static_assert(INLINE_CACHE_ENTRIES_UNPACK_SEQUENCE == 1, "incorrect cache size");
             _PyStackRef seq;
@@ -11089,11 +11525,13 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = UNPACK_SEQUENCE_TWO_TUPLE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(UNPACK_SEQUENCE_TWO_TUPLE);
             static_assert(INLINE_CACHE_ENTRIES_UNPACK_SEQUENCE == 1, "incorrect cache size");
             _PyStackRef seq;
@@ -11128,9 +11566,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = WITH_EXCEPT_START;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(WITH_EXCEPT_START);
             _PyStackRef exit_func;
             _PyStackRef exit_self;
@@ -11186,9 +11626,11 @@
             #if defined(Py_TAIL_CALL_INTERP)
             int opcode = YIELD_VALUE;
             (void)(opcode);
+            py_tail_call_funcptr next_op_f;
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
+            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             INSTRUCTION_STATS(YIELD_VALUE);
             _PyStackRef retval;
             _PyStackRef value;
@@ -11370,6 +11812,7 @@ JUMP_TO_LABEL(error);
             #ifdef Py_TAIL_CALL_INTERP
             int opcode;
             #endif
+            py_tail_call_funcptr next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             DISPATCH();
         }
 
@@ -11414,6 +11857,7 @@ JUMP_TO_LABEL(error);
             #ifdef Py_TAIL_CALL_INTERP
             int opcode;
             #endif
+            py_tail_call_funcptr next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
             DISPATCH();
         }
 
