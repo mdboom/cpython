@@ -74,6 +74,10 @@
 #define TAIL_CALL_ARGS frame, stack_pointer, tstate, next_instr, oparg
 
 #ifdef Py_TAIL_CALL_INTERP
+#   define LOAD_NEXT_OP_F() \
+    do { \
+        next_op_f = INSTRUCTION_TABLE[next_instr->op.code]; \
+    } while (0)
     // Note: [[clang::musttail]] works for GCC 15, but not __attribute__((musttail)) at the moment.
 #   define Py_MUSTTAIL [[clang::musttail]]
 #   define Py_PRESERVE_NONE_CC __attribute__((preserve_none))
@@ -189,8 +193,8 @@ GETITEM(PyObject *v, Py_ssize_t i) {
  * for advancing to the next instruction, taking into account cache entries
  * and skipped instructions.
  */
-#define JUMPBY(x)       (next_instr += (x))
-#define SKIP_OVER(x)    (next_instr += (x))
+#define JUMPBY(x)       (next_instr += (x)) LOAD_NEXT_OP_F()
+#define SKIP_OVER(x)    (next_instr += (x)) LOAD_NEXT_OP_F()
 
 
 /* Stack manipulation macros */
