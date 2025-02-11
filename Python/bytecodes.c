@@ -3036,7 +3036,8 @@ dummy_func(
             #if ENABLE_SPECIALIZATION
             if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                 next_instr = this_instr;
-                LOAD_NEXT_OP_F();
+                LOAD_NEXT_OP_F();  // TODO this is redundand with DISPATCH_SAME_ARG now,
+                                   // though maybe is good to load it before the following func call
                 _Py_Specialize_ForIter(iter, next_instr, oparg);
                 DISPATCH_SAME_OPARG();
             }

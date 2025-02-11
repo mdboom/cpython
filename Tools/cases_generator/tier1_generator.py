@@ -246,7 +246,7 @@ def generate_tier1_cases(
             out.emit(f"frame->instr_ptr = next_instr;\n")
 
         out.emit(f"next_instr += {inst.size};\n")
-        out.emit(f"next_op_f = INSTRUCTION_TABLE[next_instr->op.code];\n")
+        out.emit(f"LOAD_NEXT_OP_F();\n")
         out.emit(f"INSTRUCTION_STATS({name});\n")
         if inst.is_target:
             out.emit(f"PREDICTED_{name}:;\n")

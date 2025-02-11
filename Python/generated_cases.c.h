@@ -26,7 +26,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 6;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BINARY_OP);
             PREDICTED_BINARY_OP:;
             _Py_CODEUNIT* const this_instr = next_instr - 6;
@@ -87,7 +87,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BINARY_OP_ADD_FLOAT);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef left;
@@ -143,7 +143,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BINARY_OP_ADD_INT);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef left;
@@ -198,7 +198,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BINARY_OP_ADD_UNICODE);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef left;
@@ -253,7 +253,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BINARY_OP_EXTEND);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef left;
@@ -311,7 +311,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BINARY_OP_INPLACE_ADD_UNICODE);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef left;
@@ -396,7 +396,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BINARY_OP_MULTIPLY_FLOAT);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef left;
@@ -452,7 +452,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BINARY_OP_MULTIPLY_INT);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef left;
@@ -507,7 +507,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BINARY_OP_SUBSCR_DICT);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef dict_st;
@@ -556,7 +556,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BINARY_OP_SUBSCR_GETITEM);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef container;
@@ -643,7 +643,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BINARY_OP_SUBSCR_LIST_INT);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef list_st;
@@ -715,7 +715,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BINARY_OP_SUBSCR_STR_INT);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef str_st;
@@ -779,7 +779,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BINARY_OP_SUBSCR_TUPLE_INT);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef tuple_st;
@@ -839,7 +839,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BINARY_OP_SUBTRACT_FLOAT);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef left;
@@ -895,7 +895,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 6;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BINARY_OP_SUBTRACT_INT);
             static_assert(INLINE_CACHE_ENTRIES_BINARY_OP == 5, "incorrect cache size");
             _PyStackRef left;
@@ -948,7 +948,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BINARY_SLICE);
             _PyStackRef container;
             _PyStackRef start;
@@ -1010,7 +1010,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BUILD_LIST);
             _PyStackRef *values;
             _PyStackRef list;
@@ -1034,7 +1034,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BUILD_MAP);
             _PyStackRef *values;
             _PyStackRef map;
@@ -1078,7 +1078,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BUILD_SET);
             _PyStackRef *values;
             _PyStackRef set;
@@ -1128,7 +1128,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BUILD_SLICE);
             _PyStackRef *args;
             _PyStackRef slice;
@@ -1160,7 +1160,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BUILD_STRING);
             _PyStackRef *pieces;
             _PyStackRef str;
@@ -1199,7 +1199,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(BUILD_TUPLE);
             _PyStackRef *values;
             _PyStackRef tup;
@@ -1223,7 +1223,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CACHE);
             assert(0 && "Executing a cache.");
             Py_FatalError("Executing a cache.");
@@ -1238,7 +1238,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL);
             PREDICTED_CALL:;
             _Py_CODEUNIT* const this_instr = next_instr - 4;
@@ -1415,7 +1415,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_ALLOC_AND_ENTER_INIT);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -1545,7 +1545,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_BOUND_METHOD_EXACT_ARGS);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -1686,7 +1686,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_BOUND_METHOD_GENERAL);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -1810,7 +1810,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_BUILTIN_CLASS);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -1904,7 +1904,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_BUILTIN_FAST);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -2004,7 +2004,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_BUILTIN_FAST_WITH_KEYWORDS);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -2105,7 +2105,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_BUILTIN_O);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -2203,7 +2203,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_FUNCTION_EX);
             opcode = CALL_FUNCTION_EX;
             _PyStackRef func;
@@ -2395,7 +2395,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_INTRINSIC_1);
             _PyStackRef value;
             _PyStackRef res;
@@ -2421,7 +2421,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_INTRINSIC_2);
             _PyStackRef value2_st;
             _PyStackRef value1_st;
@@ -2456,7 +2456,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_ISINSTANCE);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -2517,7 +2517,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_KW);
             PREDICTED_CALL_KW:;
             _Py_CODEUNIT* const this_instr = next_instr - 4;
@@ -2693,7 +2693,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_KW_BOUND_METHOD);
             static_assert(INLINE_CACHE_ENTRIES_CALL_KW == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -2828,7 +2828,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_KW_NON_PY);
             opcode = CALL_KW_NON_PY;
             static_assert(INLINE_CACHE_ENTRIES_CALL_KW == 3, "incorrect cache size");
@@ -2943,7 +2943,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_KW_PY);
             static_assert(INLINE_CACHE_ENTRIES_CALL_KW == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -3052,7 +3052,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_LEN);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -3121,7 +3121,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_LIST_APPEND);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef callable;
@@ -3187,7 +3187,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_METHOD_DESCRIPTOR_FAST);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -3293,7 +3293,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_METHOD_DESCRIPTOR_FAST_WITH_KEYWORDS);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -3399,7 +3399,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_METHOD_DESCRIPTOR_NOARGS);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -3505,7 +3505,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_METHOD_DESCRIPTOR_O);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -3613,7 +3613,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_NON_PY_GENERAL);
             opcode = CALL_NON_PY_GENERAL;
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
@@ -3718,7 +3718,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_PY_EXACT_ARGS);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -3831,7 +3831,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_PY_GENERAL);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef *callable;
@@ -3929,7 +3929,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_STR_1);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef callable;
@@ -4004,7 +4004,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_TUPLE_1);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef callable;
@@ -4079,7 +4079,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CALL_TYPE_1);
             static_assert(INLINE_CACHE_ENTRIES_CALL == 3, "incorrect cache size");
             _PyStackRef callable;
@@ -4123,7 +4123,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CHECK_EG_MATCH);
             _PyStackRef exc_value_st;
             _PyStackRef match_type_st;
@@ -4180,7 +4180,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CHECK_EXC_MATCH);
             _PyStackRef left;
             _PyStackRef right;
@@ -4216,7 +4216,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CLEANUP_THROW);
             _PyStackRef sub_iter_st;
             _PyStackRef last_sent_val_st;
@@ -4264,7 +4264,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(COMPARE_OP);
             PREDICTED_COMPARE_OP:;
             _Py_CODEUNIT* const this_instr = next_instr - 2;
@@ -4338,7 +4338,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(COMPARE_OP_FLOAT);
             static_assert(INLINE_CACHE_ENTRIES_COMPARE_OP == 1, "incorrect cache size");
             _PyStackRef left;
@@ -4392,7 +4392,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(COMPARE_OP_INT);
             static_assert(INLINE_CACHE_ENTRIES_COMPARE_OP == 1, "incorrect cache size");
             _PyStackRef left;
@@ -4458,7 +4458,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(COMPARE_OP_STR);
             static_assert(INLINE_CACHE_ENTRIES_COMPARE_OP == 1, "incorrect cache size");
             _PyStackRef left;
@@ -4511,7 +4511,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CONTAINS_OP);
             PREDICTED_CONTAINS_OP:;
             _Py_CODEUNIT* const this_instr = next_instr - 2;
@@ -4568,7 +4568,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CONTAINS_OP_DICT);
             static_assert(INLINE_CACHE_ENTRIES_CONTAINS_OP == 1, "incorrect cache size");
             _PyStackRef left;
@@ -4610,7 +4610,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CONTAINS_OP_SET);
             static_assert(INLINE_CACHE_ENTRIES_CONTAINS_OP == 1, "incorrect cache size");
             _PyStackRef left;
@@ -4651,7 +4651,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(CONVERT_VALUE);
             _PyStackRef value;
             _PyStackRef result;
@@ -4685,7 +4685,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(COPY);
             _PyStackRef bottom;
             _PyStackRef top;
@@ -4706,7 +4706,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(COPY_FREE_VARS);
             /* Copy closure variables to free variables */
             PyCodeObject *co = _PyFrame_GetCode(frame);
@@ -4730,7 +4730,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(DELETE_ATTR);
             _PyStackRef owner;
             owner = stack_pointer[-1];
@@ -4755,7 +4755,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(DELETE_DEREF);
             PyObject *cell = PyStackRef_AsPyObjectBorrow(GETLOCAL(oparg));
             // Can't use ERROR_IF here.
@@ -4781,7 +4781,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(DELETE_FAST);
             _PyStackRef v = GETLOCAL(oparg);
             if (PyStackRef_IsNull(v)) {
@@ -4809,7 +4809,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(DELETE_GLOBAL);
             PyObject *name = GETITEM(FRAME_CO_NAMES, oparg);
             _PyFrame_SetStackPointer(frame, stack_pointer);
@@ -4837,7 +4837,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(DELETE_NAME);
             PyObject *name = GETITEM(FRAME_CO_NAMES, oparg);
             PyObject *ns = LOCALS();
@@ -4872,7 +4872,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(DELETE_SUBSCR);
             _PyStackRef container;
             _PyStackRef sub;
@@ -4901,7 +4901,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(DICT_MERGE);
             _PyStackRef callable;
             _PyStackRef dict;
@@ -4936,7 +4936,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(DICT_UPDATE);
             _PyStackRef dict;
             _PyStackRef update;
@@ -4977,7 +4977,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(END_ASYNC_FOR);
             _PyStackRef awaitable_st;
             _PyStackRef exc_st;
@@ -5013,7 +5013,7 @@
             py_tail_call_funcptr next_op_f;
             #endif
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(END_FOR);
             _PyStackRef value;
             value = stack_pointer[-1];
@@ -5038,7 +5038,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(END_SEND);
             _PyStackRef receiver;
             _PyStackRef value;
@@ -5064,7 +5064,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(ENTER_EXECUTOR);
             opcode = ENTER_EXECUTOR;
             #ifdef _Py_TIER2
@@ -5104,7 +5104,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(EXIT_INIT_CHECK);
             _PyStackRef should_be_none;
             should_be_none = stack_pointer[-1];
@@ -5130,7 +5130,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(EXTENDED_ARG);
             opcode = EXTENDED_ARG;
             assert(oparg);
@@ -5148,7 +5148,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(FORMAT_SIMPLE);
             _PyStackRef value;
             _PyStackRef res;
@@ -5189,7 +5189,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(FORMAT_WITH_SPEC);
             _PyStackRef value;
             _PyStackRef fmt_spec;
@@ -5219,7 +5219,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(FOR_ITER);
             PREDICTED_FOR_ITER:;
             _Py_CODEUNIT* const this_instr = next_instr - 2;
@@ -5290,7 +5290,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(FOR_ITER_GEN);
             static_assert(INLINE_CACHE_ENTRIES_FOR_ITER == 1, "incorrect cache size");
             _PyStackRef iter;
@@ -5358,7 +5358,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(FOR_ITER_LIST);
             static_assert(INLINE_CACHE_ENTRIES_FOR_ITER == 1, "incorrect cache size");
             _PyStackRef iter;
@@ -5421,7 +5421,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(FOR_ITER_RANGE);
             static_assert(INLINE_CACHE_ENTRIES_FOR_ITER == 1, "incorrect cache size");
             _PyStackRef iter;
@@ -5478,7 +5478,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(FOR_ITER_TUPLE);
             static_assert(INLINE_CACHE_ENTRIES_FOR_ITER == 1, "incorrect cache size");
             _PyStackRef iter;
@@ -5536,7 +5536,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(GET_AITER);
             _PyStackRef obj;
             _PyStackRef iter;
@@ -5591,7 +5591,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(GET_ANEXT);
             _PyStackRef aiter;
             _PyStackRef awaitable;
@@ -5617,7 +5617,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(GET_AWAITABLE);
             _PyStackRef iterable;
             _PyStackRef iter;
@@ -5642,7 +5642,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(GET_ITER);
             _PyStackRef iterable;
             _PyStackRef iter;
@@ -5668,7 +5668,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(GET_LEN);
             _PyStackRef obj;
             _PyStackRef len;
@@ -5699,7 +5699,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(GET_YIELD_FROM_ITER);
             _PyStackRef iterable;
             _PyStackRef iter;
@@ -5748,7 +5748,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(IMPORT_FROM);
             _PyStackRef from;
             _PyStackRef res;
@@ -5775,7 +5775,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(IMPORT_NAME);
             _PyStackRef level;
             _PyStackRef fromlist;
@@ -5810,7 +5810,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INSTRUMENTED_CALL);
             opcode = INSTRUMENTED_CALL;
             _PyStackRef *callable;
@@ -5995,7 +5995,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INSTRUMENTED_CALL_FUNCTION_EX);
             opcode = INSTRUMENTED_CALL_FUNCTION_EX;
             _PyStackRef func;
@@ -6189,7 +6189,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INSTRUMENTED_CALL_KW);
             opcode = INSTRUMENTED_CALL_KW;
             _PyStackRef *callable;
@@ -6370,7 +6370,7 @@
             _Py_CODEUNIT* const this_instr = next_instr;
             (void)this_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INSTRUMENTED_END_FOR);
             _PyStackRef receiver;
             _PyStackRef value;
@@ -6402,7 +6402,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INSTRUMENTED_END_SEND);
             _PyStackRef receiver;
             _PyStackRef value;
@@ -6438,7 +6438,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INSTRUMENTED_FOR_ITER);
             /* Skip 1 cache entry */
             _PyStackRef iter_stackref = TOP();
@@ -6482,7 +6482,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INSTRUMENTED_INSTRUCTION);
             opcode = INSTRUMENTED_INSTRUCTION;
             _PyFrame_SetStackPointer(frame, stack_pointer);
@@ -6512,7 +6512,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INSTRUMENTED_JUMP_BACKWARD);
             /* Skip 1 cache entry */
             // _CHECK_PERIODIC
@@ -6545,7 +6545,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INSTRUMENTED_JUMP_FORWARD);
             INSTRUMENTED_JUMP(this_instr, next_instr + oparg, PY_MONITORING_EVENT_JUMP);
             DISPATCH();
@@ -6562,7 +6562,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INSTRUMENTED_LINE);
             opcode = INSTRUMENTED_LINE;
             int original_opcode = 0;
@@ -6607,7 +6607,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INSTRUMENTED_LOAD_SUPER_ATTR);
             opcode = INSTRUMENTED_LOAD_SUPER_ATTR;
             _PyStackRef global_super_st;
@@ -6706,7 +6706,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INSTRUMENTED_NOT_TAKEN);
             (void)this_instr; // INSTRUMENTED_JUMP requires this_instr
             INSTRUMENTED_JUMP(prev_instr, next_instr, PY_MONITORING_EVENT_BRANCH_LEFT);
@@ -6724,7 +6724,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INSTRUMENTED_POP_ITER);
             _PyStackRef iter;
             iter = stack_pointer[-1];
@@ -6747,7 +6747,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INSTRUMENTED_POP_JUMP_IF_FALSE);
             /* Skip 1 cache entry */
             _PyStackRef cond = POP();
@@ -6770,7 +6770,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INSTRUMENTED_POP_JUMP_IF_NONE);
             /* Skip 1 cache entry */
             _PyStackRef value_stackref = POP();
@@ -6797,7 +6797,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INSTRUMENTED_POP_JUMP_IF_NOT_NONE);
             /* Skip 1 cache entry */
             _PyStackRef value_stackref = POP();
@@ -6822,7 +6822,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INSTRUMENTED_POP_JUMP_IF_TRUE);
             /* Skip 1 cache entry */
             _PyStackRef cond = POP();
@@ -6845,7 +6845,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INSTRUMENTED_RESUME);
             // _LOAD_BYTECODE
             {
@@ -6930,7 +6930,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INSTRUMENTED_RETURN_VALUE);
             _PyStackRef val;
             _PyStackRef retval;
@@ -6982,7 +6982,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INSTRUMENTED_YIELD_VALUE);
             _PyStackRef val;
             _PyStackRef retval;
@@ -7055,7 +7055,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(INTERPRETER_EXIT);
             _PyStackRef retval;
             retval = stack_pointer[-1];
@@ -7080,7 +7080,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(IS_OP);
             _PyStackRef left;
             _PyStackRef right;
@@ -7105,7 +7105,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(JUMP_BACKWARD);
             PREDICTED_JUMP_BACKWARD:;
             _Py_CODEUNIT* const this_instr = next_instr - 2;
@@ -7159,7 +7159,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(JUMP_BACKWARD_JIT);
             static_assert(1 == 1, "incorrect cache size");
             /* Skip 1 cache entry */
@@ -7232,7 +7232,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(JUMP_BACKWARD_NO_INTERRUPT);
             /* This bytecode is used in the `yield from` or `await` loop.
              * If there is an interrupt, we want it handled in the innermost
@@ -7252,7 +7252,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(JUMP_BACKWARD_NO_JIT);
             static_assert(1 == 1, "incorrect cache size");
             /* Skip 1 cache entry */
@@ -7290,7 +7290,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(JUMP_FORWARD);
             JUMPBY(oparg);
             DISPATCH();
@@ -7304,7 +7304,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LIST_APPEND);
             _PyStackRef list;
             _PyStackRef v;
@@ -7328,7 +7328,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LIST_EXTEND);
             _PyStackRef list_st;
             _PyStackRef iterable_st;
@@ -7371,7 +7371,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 10;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_ATTR);
             PREDICTED_LOAD_ATTR:;
             _Py_CODEUNIT* const this_instr = next_instr - 10;
@@ -7460,7 +7460,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_ATTR_CLASS);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -7514,7 +7514,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_ATTR_CLASS_WITH_METACLASS_CHECK);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -7578,7 +7578,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_ATTR_GETATTRIBUTE_OVERRIDDEN);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -7638,7 +7638,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_ATTR_INSTANCE_VALUE);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -7717,7 +7717,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_ATTR_METHOD_LAZY_DICT);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -7776,7 +7776,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_ATTR_METHOD_NO_DICT);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -7824,7 +7824,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_ATTR_METHOD_WITH_VALUES);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -7894,7 +7894,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_ATTR_MODULE);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -7975,7 +7975,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_ATTR_NONDESCRIPTOR_NO_DICT);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -8018,7 +8018,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_ATTR_NONDESCRIPTOR_WITH_VALUES);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -8082,7 +8082,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_ATTR_PROPERTY);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -8179,7 +8179,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_ATTR_SLOT);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -8244,7 +8244,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 10;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_ATTR_WITH_HINT);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_ATTR == 9, "incorrect cache size");
             _PyStackRef owner;
@@ -8348,7 +8348,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_BUILD_CLASS);
             _PyStackRef bc;
             PyObject *bc_o;
@@ -8380,7 +8380,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_COMMON_CONSTANT);
             _PyStackRef value;
             // Keep in sync with _common_constants in opcode.py
@@ -8408,7 +8408,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_CONST);
             PREDICTED_LOAD_CONST:;
             _Py_CODEUNIT* const this_instr = next_instr - 1;
@@ -8447,7 +8447,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_CONST_IMMORTAL);
             static_assert(0 == 0, "incorrect cache size");
             _PyStackRef value;
@@ -8468,7 +8468,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_CONST_MORTAL);
             static_assert(0 == 0, "incorrect cache size");
             _PyStackRef value;
@@ -8488,7 +8488,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_DEREF);
             _PyStackRef value;
             PyCellObject *cell = (PyCellObject *)PyStackRef_AsPyObjectBorrow(GETLOCAL(oparg));
@@ -8514,7 +8514,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_FAST);
             _PyStackRef value;
             assert(!PyStackRef_IsNull(GETLOCAL(oparg)));
@@ -8533,7 +8533,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_FAST_AND_CLEAR);
             _PyStackRef value;
             value = GETLOCAL(oparg);
@@ -8552,7 +8552,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_FAST_CHECK);
             _PyStackRef value;
             _PyStackRef value_s = GETLOCAL(oparg);
@@ -8580,7 +8580,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_FAST_LOAD_FAST);
             _PyStackRef value1;
             _PyStackRef value2;
@@ -8603,7 +8603,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_FROM_DICT_OR_DEREF);
             _PyStackRef class_dict_st;
             _PyStackRef value;
@@ -8650,7 +8650,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_FROM_DICT_OR_GLOBALS);
             _PyStackRef mod_or_class_dict;
             _PyStackRef v;
@@ -8732,7 +8732,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 5;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_GLOBAL);
             PREDICTED_LOAD_GLOBAL:;
             _Py_CODEUNIT* const this_instr = next_instr - 5;
@@ -8791,7 +8791,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 5;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_GLOBAL_BUILTIN);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_GLOBAL == 4, "incorrect cache size");
             PyDictKeysObject *builtins_keys;
@@ -8877,7 +8877,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 5;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_GLOBAL_MODULE);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_GLOBAL == 4, "incorrect cache size");
             PyDictKeysObject *globals_keys;
@@ -8945,7 +8945,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_LOCALS);
             _PyStackRef locals;
             PyObject *l = LOCALS();
@@ -8971,7 +8971,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_NAME);
             _PyStackRef v;
             PyObject *name = GETITEM(FRAME_CO_NAMES, oparg);
@@ -8996,7 +8996,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_SMALL_INT);
             _PyStackRef value;
             assert(oparg < _PY_NSMALLPOSINTS);
@@ -9016,7 +9016,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_SPECIAL);
             _PyStackRef owner;
             _PyStackRef attr;
@@ -9059,7 +9059,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_SUPER_ATTR);
             PREDICTED_LOAD_SUPER_ATTR:;
             _Py_CODEUNIT* const this_instr = next_instr - 2;
@@ -9177,7 +9177,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_SUPER_ATTR_ATTR);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_SUPER_ATTR == 1, "incorrect cache size");
             _PyStackRef global_super_st;
@@ -9230,7 +9230,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(LOAD_SUPER_ATTR_METHOD);
             static_assert(INLINE_CACHE_ENTRIES_LOAD_SUPER_ATTR == 1, "incorrect cache size");
             _PyStackRef global_super_st;
@@ -9297,7 +9297,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(MAKE_CELL);
             // "initial" is probably NULL but not if it's an arg (or set
             // via the f_locals proxy before MAKE_CELL has run).
@@ -9322,7 +9322,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(MAKE_FUNCTION);
             _PyStackRef codeobj_st;
             _PyStackRef func;
@@ -9357,7 +9357,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(MAP_ADD);
             _PyStackRef dict_st;
             _PyStackRef key;
@@ -9392,7 +9392,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(MATCH_CLASS);
             _PyStackRef subject;
             _PyStackRef type;
@@ -9438,7 +9438,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(MATCH_KEYS);
             _PyStackRef subject;
             _PyStackRef keys;
@@ -9468,7 +9468,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(MATCH_MAPPING);
             _PyStackRef subject;
             _PyStackRef res;
@@ -9489,7 +9489,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(MATCH_SEQUENCE);
             _PyStackRef subject;
             _PyStackRef res;
@@ -9510,7 +9510,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(NOP);
             DISPATCH();
         }
@@ -9523,7 +9523,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(NOT_TAKEN);
             DISPATCH();
         }
@@ -9536,7 +9536,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(POP_EXCEPT);
             _PyStackRef exc_value;
             exc_value = stack_pointer[-1];
@@ -9559,7 +9559,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(POP_ITER);
             _PyStackRef value;
             value = stack_pointer[-1];
@@ -9579,7 +9579,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(POP_JUMP_IF_FALSE);
             _PyStackRef cond;
             /* Skip 1 cache entry */
@@ -9603,7 +9603,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(POP_JUMP_IF_NONE);
             _PyStackRef value;
             _PyStackRef b;
@@ -9643,7 +9643,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(POP_JUMP_IF_NOT_NONE);
             _PyStackRef value;
             _PyStackRef b;
@@ -9683,7 +9683,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(POP_JUMP_IF_TRUE);
             _PyStackRef cond;
             /* Skip 1 cache entry */
@@ -9705,7 +9705,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(POP_TOP);
             _PyStackRef value;
             value = stack_pointer[-1];
@@ -9723,7 +9723,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(PUSH_EXC_INFO);
             _PyStackRef exc;
             _PyStackRef prev_exc;
@@ -9754,7 +9754,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(PUSH_NULL);
             _PyStackRef res;
             res = PyStackRef_NULL;
@@ -9774,7 +9774,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(RAISE_VARARGS);
             _PyStackRef *args;
             args = &stack_pointer[-oparg];
@@ -9807,7 +9807,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(RERAISE);
             _PyStackRef *values;
             _PyStackRef exc_st;
@@ -9850,7 +9850,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(RESERVED);
             assert(0 && "Executing RESERVED instruction.");
             Py_FatalError("Executing RESERVED instruction.");
@@ -9865,7 +9865,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(RESUME);
             PREDICTED_RESUME:;
             _Py_CODEUNIT* const this_instr = next_instr - 1;
@@ -9946,7 +9946,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(RESUME_CHECK);
             static_assert(0 == 0, "incorrect cache size");
             #if defined(__EMSCRIPTEN__)
@@ -9984,7 +9984,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(RETURN_GENERATOR);
             _PyStackRef res;
             assert(PyStackRef_FunctionCheck(frame->f_funcobj));
@@ -10025,7 +10025,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(RETURN_VALUE);
             _PyStackRef retval;
             _PyStackRef res;
@@ -10059,7 +10059,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(SEND);
             PREDICTED_SEND:;
             _Py_CODEUNIT* const this_instr = next_instr - 2;
@@ -10164,7 +10164,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(SEND_GEN);
             static_assert(INLINE_CACHE_ENTRIES_SEND == 1, "incorrect cache size");
             _PyStackRef receiver;
@@ -10234,7 +10234,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(SETUP_ANNOTATIONS);
             PyObject *ann_dict;
             if (LOCALS() == NULL) {
@@ -10283,7 +10283,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(SET_ADD);
             _PyStackRef set;
             _PyStackRef v;
@@ -10310,7 +10310,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(SET_FUNCTION_ATTRIBUTE);
             _PyStackRef attr_st;
             _PyStackRef func_in;
@@ -10340,7 +10340,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(SET_UPDATE);
             _PyStackRef set;
             _PyStackRef iterable;
@@ -10367,7 +10367,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 5;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(STORE_ATTR);
             PREDICTED_STORE_ATTR:;
             _Py_CODEUNIT* const this_instr = next_instr - 5;
@@ -10423,7 +10423,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 5;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(STORE_ATTR_INSTANCE_VALUE);
             static_assert(INLINE_CACHE_ENTRIES_STORE_ATTR == 4, "incorrect cache size");
             _PyStackRef owner;
@@ -10501,7 +10501,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 5;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(STORE_ATTR_SLOT);
             static_assert(INLINE_CACHE_ENTRIES_STORE_ATTR == 4, "incorrect cache size");
             _PyStackRef owner;
@@ -10554,7 +10554,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 5;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(STORE_ATTR_WITH_HINT);
             static_assert(INLINE_CACHE_ENTRIES_STORE_ATTR == 4, "incorrect cache size");
             _PyStackRef owner;
@@ -10654,7 +10654,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(STORE_DEREF);
             _PyStackRef v;
             v = stack_pointer[-1];
@@ -10675,7 +10675,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(STORE_FAST);
             _PyStackRef value;
             value = stack_pointer[-1];
@@ -10697,7 +10697,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(STORE_FAST_LOAD_FAST);
             _PyStackRef value1;
             _PyStackRef value2;
@@ -10722,7 +10722,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(STORE_FAST_STORE_FAST);
             _PyStackRef value2;
             _PyStackRef value1;
@@ -10755,7 +10755,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(STORE_GLOBAL);
             _PyStackRef v;
             v = stack_pointer[-1];
@@ -10780,7 +10780,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(STORE_NAME);
             _PyStackRef v;
             v = stack_pointer[-1];
@@ -10822,7 +10822,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(STORE_SLICE);
             _PyStackRef v;
             _PyStackRef container;
@@ -10878,7 +10878,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(STORE_SUBSCR);
             PREDICTED_STORE_SUBSCR:;
             _Py_CODEUNIT* const this_instr = next_instr - 2;
@@ -10934,7 +10934,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(STORE_SUBSCR_DICT);
             static_assert(INLINE_CACHE_ENTRIES_STORE_SUBSCR == 1, "incorrect cache size");
             _PyStackRef value;
@@ -10977,7 +10977,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(STORE_SUBSCR_LIST_INT);
             static_assert(INLINE_CACHE_ENTRIES_STORE_SUBSCR == 1, "incorrect cache size");
             _PyStackRef value;
@@ -11043,7 +11043,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(SWAP);
             _PyStackRef *bottom;
             _PyStackRef *top;
@@ -11064,7 +11064,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(TO_BOOL);
             PREDICTED_TO_BOOL:;
             _Py_CODEUNIT* const this_instr = next_instr - 4;
@@ -11115,7 +11115,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(TO_BOOL_ALWAYS_TRUE);
             static_assert(INLINE_CACHE_ENTRIES_TO_BOOL == 3, "incorrect cache size");
             _PyStackRef owner;
@@ -11154,7 +11154,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(TO_BOOL_BOOL);
             static_assert(INLINE_CACHE_ENTRIES_TO_BOOL == 3, "incorrect cache size");
             _PyStackRef value;
@@ -11180,7 +11180,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(TO_BOOL_INT);
             static_assert(INLINE_CACHE_ENTRIES_TO_BOOL == 3, "incorrect cache size");
             _PyStackRef value;
@@ -11217,7 +11217,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(TO_BOOL_LIST);
             static_assert(INLINE_CACHE_ENTRIES_TO_BOOL == 3, "incorrect cache size");
             _PyStackRef value;
@@ -11248,7 +11248,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(TO_BOOL_NONE);
             static_assert(INLINE_CACHE_ENTRIES_TO_BOOL == 3, "incorrect cache size");
             _PyStackRef value;
@@ -11278,7 +11278,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 4;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(TO_BOOL_STR);
             static_assert(INLINE_CACHE_ENTRIES_TO_BOOL == 3, "incorrect cache size");
             _PyStackRef value;
@@ -11314,7 +11314,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(UNARY_INVERT);
             _PyStackRef value;
             _PyStackRef res;
@@ -11339,7 +11339,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(UNARY_NEGATIVE);
             _PyStackRef value;
             _PyStackRef res;
@@ -11364,7 +11364,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(UNARY_NOT);
             _PyStackRef value;
             _PyStackRef res;
@@ -11384,7 +11384,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(UNPACK_EX);
             _PyStackRef seq;
             _PyStackRef *right;
@@ -11411,7 +11411,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(UNPACK_SEQUENCE);
             PREDICTED_UNPACK_SEQUENCE:;
             _Py_CODEUNIT* const this_instr = next_instr - 2;
@@ -11465,7 +11465,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(UNPACK_SEQUENCE_LIST);
             static_assert(INLINE_CACHE_ENTRIES_UNPACK_SEQUENCE == 1, "incorrect cache size");
             _PyStackRef seq;
@@ -11514,7 +11514,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(UNPACK_SEQUENCE_TUPLE);
             static_assert(INLINE_CACHE_ENTRIES_UNPACK_SEQUENCE == 1, "incorrect cache size");
             _PyStackRef seq;
@@ -11554,7 +11554,7 @@
             (void)this_instr;
             frame->instr_ptr = next_instr;
             next_instr += 2;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(UNPACK_SEQUENCE_TWO_TUPLE);
             static_assert(INLINE_CACHE_ENTRIES_UNPACK_SEQUENCE == 1, "incorrect cache size");
             _PyStackRef seq;
@@ -11593,7 +11593,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(WITH_EXCEPT_START);
             _PyStackRef exit_func;
             _PyStackRef exit_self;
@@ -11653,7 +11653,7 @@
             #endif
             frame->instr_ptr = next_instr;
             next_instr += 1;
-            next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+            LOAD_NEXT_OP_F();
             INSTRUCTION_STATS(YIELD_VALUE);
             _PyStackRef retval;
             _PyStackRef value;

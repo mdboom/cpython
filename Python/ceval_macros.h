@@ -73,10 +73,14 @@
 #define TAIL_CALL_PARAMS _PyInterpreterFrame *frame, _PyStackRef *stack_pointer, PyThreadState *tstate, _Py_CODEUNIT *next_instr, int oparg
 #define TAIL_CALL_ARGS frame, stack_pointer, tstate, next_instr, oparg
 
+// 1st version looks like this where we load directly
+//   next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
+// 2nd version is like NEXTOPARG which does this atomic thing
 #ifdef Py_TAIL_CALL_INTERP
 #   define LOAD_NEXT_OP_F() \
     do { \
-        next_op_f = INSTRUCTION_TABLE[next_instr->op.code]; \
+        _Py_CODEUNIT word  = {.cache = FT_ATOMIC_LOAD_UINT16_RELAXED(*(uint16_t*)next_instr)}; \
+        next_op_f = INSTRUCTION_TABLE[word.op.code]; \
     } while (0)
     // Note: [[clang::musttail]] works for GCC 15, but not __attribute__((musttail)) at the moment.
 #   define Py_MUSTTAIL [[clang::musttail]]
@@ -86,6 +90,7 @@
 #   define TARGET(op) Py_PRESERVE_NONE_CC PyObject *_TAIL_CALL_##op(TAIL_CALL_PARAMS)
 #   define DISPATCH_GOTO() \
         do { \
+            assert(next_op_f == INSTRUCTION_TABLE[opcode]); \
             Py_MUSTTAIL return next_op_f(TAIL_CALL_ARGS); \
         } while (0)
 #   define JUMP_TO_LABEL(name) \
@@ -148,9 +153,11 @@ do { \
         DISPATCH_GOTO(); \
     }
 
+// TODO better
 #define DISPATCH_SAME_OPARG() \
     { \
         opcode = next_instr->op.code; \
+        next_op_f = INSTRUCTION_TABLE[opcode]; \
         PRE_DISPATCH_GOTO(); \
         DISPATCH_GOTO(); \
     }
@@ -347,13 +354,13 @@ do { \
     } else { \
         _PyFrame_SetStackPointer(frame, stack_pointer); \
         next_instr = _Py_call_instrumentation_jump(this_instr, tstate, event, frame, src, dest); \
-        LOAD_NEXT_OP_F(); \
         stack_pointer = _PyFrame_GetStackPointer(frame); \
         if (next_instr == NULL) { \
             next_instr = (dest)+1; \
             JUMP_TO_LABEL(error); \
         } \
     } \
+    LOAD_NEXT_OP_F(); \
 } while (0);
 
 
@@ -373,7 +380,7 @@ static inline void _Py_LeaveRecursiveCallPy(PyThreadState *tstate)  {
 
 #define LOAD_IP(OFFSET) do { \
         next_instr = frame->instr_ptr + (OFFSET); \
-    LOAD_NEXT_OP_F(); \
+        LOAD_NEXT_OP_F(); \
     } while (0)
 
 /* There's no STORE_IP(), it's inlined by the code generator. */
