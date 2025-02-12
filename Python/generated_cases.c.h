@@ -2368,6 +2368,7 @@
                     JUMP_TO_LABEL(error);
                 }
                 result = PyStackRef_FromPyObjectSteal(result_o);
+                LOAD_NEXT_OP_F();
             }
             // _CHECK_PERIODIC
             {
@@ -3265,6 +3266,7 @@
                     JUMP_TO_LABEL(error);
                 }
                 res = PyStackRef_FromPyObjectSteal(res_o);
+                LOAD_NEXT_OP_F();
             }
             // _CHECK_PERIODIC
             {
@@ -6173,6 +6175,7 @@
                     JUMP_TO_LABEL(error);
                 }
                 result = PyStackRef_FromPyObjectSteal(result_o);
+                LOAD_NEXT_OP_F();
             }
             // _CHECK_PERIODIC
             {

@@ -4326,6 +4326,7 @@ dummy_func(
             DECREF_INPUTS();
             ERROR_IF(res_o == NULL, error);
             res = PyStackRef_FromPyObjectSteal(res_o);
+            LOAD_NEXT_OP_F();
         }
 
         macro(CALL_METHOD_DESCRIPTOR_FAST) =
@@ -4690,6 +4691,7 @@ dummy_func(
             PyStackRef_CLOSE(func_st);
             ERROR_IF(result_o == NULL, error);
             result = PyStackRef_FromPyObjectSteal(result_o);
+            LOAD_NEXT_OP_F();
         }
 
         macro(CALL_FUNCTION_EX) =
