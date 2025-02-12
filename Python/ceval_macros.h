@@ -77,6 +77,14 @@
 //   next_op_f = INSTRUCTION_TABLE[next_instr->op.code];
 // 2nd version is like NEXTOPARG which does this atomic thing
 // we also need a version that loads from opcode directly b/c a few things write to it directly
+
+            /*if (next_op_f != INSTRUCTION_TABLE[opcode]) { \*/
+            /*    int myopcode=-1; \*/
+            /*    for (int i = 0; i < 256; i++) { \*/
+            /*        if (next_op_f == INSTRUCTION_TABLE[i]) { myopcode = i; break; } \*/
+            /*    } \*/
+            /*    printf("yo expected %p but got %p used opcode=%d but is really opcode=%d\n", INSTRUCTION_TABLE[opcode], next_op_f, myopcode, opcode); \*/
+            /*} \*/
 #ifdef Py_TAIL_CALL_INTERP
 #   define LOAD_NEXT_OP_F() \
     do { \
@@ -95,13 +103,6 @@
 #   define TARGET(op) Py_PRESERVE_NONE_CC PyObject *_TAIL_CALL_##op(TAIL_CALL_PARAMS)
 #   define DISPATCH_GOTO() \
         do { \
-            if (next_op_f != INSTRUCTION_TABLE[opcode]) { \
-                int myopcode=-1; \
-                for (int i = 0; i < 256; i++) { \
-                    if (next_op_f == INSTRUCTION_TABLE[i]) { myopcode = i; break; } \
-                } \
-                printf("yo expected %p but got %p used opcode=%d but is really opcode=%d\n", INSTRUCTION_TABLE[opcode], next_op_f, myopcode, opcode); \
-            } \
             assert(next_op_f == INSTRUCTION_TABLE[opcode]); \
             Py_MUSTTAIL return next_op_f(TAIL_CALL_ARGS); \
         } while (0)
