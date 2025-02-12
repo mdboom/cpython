@@ -157,6 +157,7 @@ dummy_func(
             if (_Py_atomic_load_uintptr_relaxed(&tstate->eval_breaker) & _PY_EVAL_EVENTS_MASK) {
                 int err = _Py_HandlePending(tstate);
                 ERROR_IF(err != 0, error);
+                LOAD_NEXT_OP_F();
             }
         }
 
@@ -167,6 +168,7 @@ dummy_func(
                 if (_Py_atomic_load_uintptr_relaxed(&tstate->eval_breaker) & _PY_EVAL_EVENTS_MASK) {
                     int err = _Py_HandlePending(tstate);
                     ERROR_IF(err != 0, error);
+                    LOAD_NEXT_OP_F();
                 }
             }
         }
@@ -189,6 +191,7 @@ dummy_func(
                         ERROR_NO_POP();
                     }
                     next_instr = this_instr;
+                    LOAD_NEXT_OP_F();
                     DISPATCH();
                 }
             }
@@ -241,8 +244,8 @@ dummy_func(
             if (frame->instr_ptr != this_instr) {
                 /* Instrumentation has jumped */
                 next_instr = frame->instr_ptr;
-                LOAD_NEXT_OP_F();
             }
+            LOAD_NEXT_OP_F(); // maybe needs to be unconditional?
         }
 
         macro(INSTRUMENTED_RESUME) =
@@ -364,6 +367,7 @@ dummy_func(
 
         pure inst(POP_TOP, (value --)) {
             DECREF_INPUTS();
+            LOAD_NEXT_OP_F();
         }
 
         pure inst(PUSH_NULL, (-- res)) {
@@ -445,7 +449,6 @@ dummy_func(
             #if ENABLE_SPECIALIZATION_FT
             if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                 next_instr = this_instr;
-                LOAD_NEXT_OP_F();
                 _Py_Specialize_ToBool(value, next_instr);
                 DISPATCH_SAME_OPARG();
             }
@@ -838,6 +841,7 @@ dummy_func(
             }
             else {
                 err = PyObject_SetItem(PyStackRef_AsPyObjectBorrow(container), slice, PyStackRef_AsPyObjectBorrow(v));
+                LOAD_NEXT_OP_F();
                 Py_DECREF(slice);
             }
             DECREF_INPUTS();
@@ -983,7 +987,6 @@ dummy_func(
             #if ENABLE_SPECIALIZATION_FT
             if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                 next_instr = this_instr;
-                LOAD_NEXT_OP_F();
                 _Py_Specialize_StoreSubscr(container, sub, next_instr);
                 DISPATCH_SAME_OPARG();
             }
@@ -995,6 +998,7 @@ dummy_func(
         op(_STORE_SUBSCR, (v, container, sub -- )) {
             /* container[sub] = v */
             int err = PyObject_SetItem(PyStackRef_AsPyObjectBorrow(container), PyStackRef_AsPyObjectBorrow(sub), PyStackRef_AsPyObjectBorrow(v));
+            LOAD_NEXT_OP_F();
             DECREF_INPUTS();
             ERROR_IF(err, error);
         }
@@ -1183,7 +1187,6 @@ dummy_func(
             #if ENABLE_SPECIALIZATION_FT
             if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                 next_instr = this_instr;
-                LOAD_NEXT_OP_F();
                 _Py_Specialize_Send(receiver, next_instr);
                 DISPATCH_SAME_OPARG();
             }
@@ -1239,6 +1242,7 @@ dummy_func(
             }
             PyStackRef_CLOSE(v);
             retval = PyStackRef_FromPyObjectSteal(retval_o);
+            LOAD_NEXT_OP_F();
         }
 
         macro(SEND) = _SPECIALIZE_SEND + _SEND;
@@ -1424,6 +1428,7 @@ dummy_func(
             }
             else {
                 err = PyObject_SetItem(ns, name, PyStackRef_AsPyObjectBorrow(v));
+                LOAD_NEXT_OP_F();
             }
             DECREF_INPUTS();
             ERROR_IF(err, error);
@@ -1458,7 +1463,6 @@ dummy_func(
             #if ENABLE_SPECIALIZATION_FT
             if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                 next_instr = this_instr;
-                LOAD_NEXT_OP_F();
                 _Py_Specialize_UnpackSequence(seq, next_instr, oparg);
                 DISPATCH_SAME_OPARG();
             }
@@ -1536,7 +1540,6 @@ dummy_func(
             if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                 PyObject *name = GETITEM(FRAME_CO_NAMES, oparg);
                 next_instr = this_instr;
-                LOAD_NEXT_OP_F();
                 _Py_Specialize_StoreAttr(owner, next_instr, name);
                 DISPATCH_SAME_OPARG();
             }
@@ -1549,6 +1552,8 @@ dummy_func(
             PyObject *name = GETITEM(FRAME_CO_NAMES, oparg);
             int err = PyObject_SetAttr(PyStackRef_AsPyObjectBorrow(owner),
                                        name, PyStackRef_AsPyObjectBorrow(v));
+            // SetAttr can call into specialize
+            LOAD_NEXT_OP_F();
             DECREF_INPUTS();
             ERROR_IF(err, error);
         }
@@ -1654,7 +1659,6 @@ dummy_func(
             if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                 PyObject *name = GETITEM(FRAME_CO_NAMES, oparg>>1);
                 next_instr = this_instr;
-                LOAD_NEXT_OP_F();
                 _Py_Specialize_LoadGlobal(GLOBALS(), BUILTINS(), next_instr, name);
                 DISPATCH_SAME_OPARG();
             }
@@ -1768,6 +1772,7 @@ dummy_func(
             _PyStackRef tmp = GETLOCAL(oparg);
             GETLOCAL(oparg) = PyStackRef_NULL;
             PyStackRef_XCLOSE(tmp);
+            LOAD_NEXT_OP_F();
         }
 
         inst(MAKE_CELL, (--)) {
@@ -1959,6 +1964,7 @@ dummy_func(
                 ERROR_IF(ann_dict == NULL, error);
                 err = PyObject_SetItem(LOCALS(), &_Py_ID(__annotations__),
                                        ann_dict);
+                LOAD_NEXT_OP_F();
                 Py_DECREF(ann_dict);
                 ERROR_IF(err, error);
             }
@@ -2027,7 +2033,6 @@ dummy_func(
             int load_method = oparg & 1;
             if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                 next_instr = this_instr;
-                LOAD_NEXT_OP_F();
                 _Py_Specialize_LoadSuperAttr(global_super_st, class_st, next_instr, load_method);
                 DISPATCH_SAME_OPARG();
             }
@@ -2151,7 +2156,6 @@ dummy_func(
             if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                 PyObject *name = GETITEM(FRAME_CO_NAMES, oparg>>1);
                 next_instr = this_instr;
-                LOAD_NEXT_OP_F();
                 _Py_Specialize_LoadAttr(owner, next_instr, name);
                 DISPATCH_SAME_OPARG();
             }
@@ -2191,6 +2195,7 @@ dummy_func(
             else {
                 /* Classic, pushes one value. */
                 attr_o = PyObject_GetAttr(PyStackRef_AsPyObjectBorrow(owner), name);
+                LOAD_NEXT_OP_F();
                 DECREF_INPUTS();
                 ERROR_IF(attr_o == NULL, error);
             }
@@ -2558,7 +2563,6 @@ dummy_func(
             #if ENABLE_SPECIALIZATION_FT
             if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                 next_instr = this_instr;
-                LOAD_NEXT_OP_F();
                 _Py_Specialize_CompareOp(left, right, next_instr, oparg);
                 DISPATCH_SAME_OPARG();
             }
@@ -2680,7 +2684,6 @@ dummy_func(
             #if ENABLE_SPECIALIZATION_FT
             if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                 next_instr = this_instr;
-                LOAD_NEXT_OP_F();
                 _Py_Specialize_ContainsOp(right, next_instr);
                 DISPATCH_SAME_OPARG();
             }
@@ -2790,7 +2793,6 @@ dummy_func(
                 this_instr->op.code = tstate->interp->jit ? JUMP_BACKWARD_JIT : JUMP_BACKWARD_NO_JIT;
                 // Need to re-dispatch so the warmup counter isn't off by one:
                 next_instr = this_instr;
-                LOAD_NEXT_OP_F();
                 DISPATCH_SAME_OPARG();
             }
         #endif
@@ -2873,9 +2875,9 @@ dummy_func(
              * involving _RESUME_CHECK */
             if (_Py_atomic_load_uintptr_relaxed(&tstate->eval_breaker) & _PY_EVAL_EVENTS_MASK) {
                 opcode = executor->vm_data.opcode;
+                LOAD_NEXT_OP_F_OPCODE();
                 oparg = (oparg & ~255) | executor->vm_data.oparg;
                 next_instr = this_instr;
-                LOAD_NEXT_OP_F();
                 if (_PyOpcode_Caches[_PyOpcode_Deopt[opcode]]) {
                     PAUSE_ADAPTIVE_COUNTER(this_instr[1].counter);
                 }
@@ -2983,6 +2985,7 @@ dummy_func(
         inst(GET_ITER, (iterable -- iter)) {
             /* before: [obj]; after [getiter(obj)] */
             PyObject *iter_o = PyObject_GetIter(PyStackRef_AsPyObjectBorrow(iterable));
+            LOAD_NEXT_OP_F();
             DECREF_INPUTS();
             ERROR_IF(iter_o == NULL, error);
             iter = PyStackRef_FromPyObjectSteal(iter_o);
@@ -3036,9 +3039,7 @@ dummy_func(
             #if ENABLE_SPECIALIZATION
             if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                 next_instr = this_instr;
-                LOAD_NEXT_OP_F();  // TODO this is redundand with DISPATCH_SAME_ARG now,
-                                   // though maybe is good to load it before the following func call
-                _Py_Specialize_ForIter(iter, next_instr, oparg);
+                _Py_Specialize_ForIter(iter, next_instr, oparg); // <- this can modify next_instr!
                 DISPATCH_SAME_OPARG();
             }
             OPCODE_DEFERRED_INC(FOR_ITER);
@@ -3333,6 +3334,7 @@ dummy_func(
                     (3 + has_self) | PY_VECTORCALL_ARGUMENTS_OFFSET, NULL);
             ERROR_IF(res_o == NULL, error);
             res = PyStackRef_FromPyObjectSteal(res_o);
+            LOAD_NEXT_OP_F();
         }
 
         pseudo(SETUP_FINALLY, (-- unused), (HAS_ARG)) = {
@@ -3506,7 +3508,6 @@ dummy_func(
             #if ENABLE_SPECIALIZATION_FT
             if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                 next_instr = this_instr;
-                LOAD_NEXT_OP_F();
                 _Py_Specialize_Call(callable[0], next_instr, oparg + !PyStackRef_IsNull(self_or_null[0]));
                 DISPATCH_SAME_OPARG();
             }
@@ -3592,6 +3593,8 @@ dummy_func(
             DECREF_INPUTS();
             ERROR_IF(res_o == NULL, error);
             res = PyStackRef_FromPyObjectSteal(res_o);
+            // when vectorcall calls into eg sys_settrace, our code can be modified
+            LOAD_NEXT_OP_F();
         }
 
         op(_MONITOR_CALL, (func[1], maybe_self[1], args[oparg] -- func[1], maybe_self[1], args[oparg])) {
@@ -3728,6 +3731,7 @@ dummy_func(
             DECREF_INPUTS();
             ERROR_IF(res_o == NULL, error);
             res = PyStackRef_FromPyObjectSteal(res_o);
+            LOAD_NEXT_OP_F();
         }
 
         macro(CALL_NON_PY_GENERAL) =
@@ -4044,6 +4048,7 @@ dummy_func(
             DECREF_INPUTS();
             ERROR_IF(res_o == NULL, error);
             res = PyStackRef_FromPyObjectSteal(res_o);
+            LOAD_NEXT_OP_F();
         }
 
         macro(CALL_BUILTIN_FAST) =
@@ -4517,7 +4522,6 @@ dummy_func(
             #if ENABLE_SPECIALIZATION_FT
             if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                 next_instr = this_instr;
-                LOAD_NEXT_OP_F();
                 _Py_Specialize_CallKw(callable[0], next_instr, oparg + !PyStackRef_IsNull(self_or_null[0]));
                 DISPATCH_SAME_OPARG();
             }
@@ -4800,7 +4804,6 @@ dummy_func(
             #if ENABLE_SPECIALIZATION_FT
             if (ADAPTIVE_COUNTER_TRIGGERS(counter)) {
                 next_instr = this_instr;
-                LOAD_NEXT_OP_F();
                 _Py_Specialize_BinaryOp(lhs, rhs, next_instr, oparg, LOCALS_ARRAY);
                 DISPATCH_SAME_OPARG();
             }
@@ -4859,7 +4862,7 @@ dummy_func(
                 PAUSE_ADAPTIVE_COUNTER(cache->counter);
             }
             opcode = original_opcode;
-            LOAD_NEXT_OP_F();
+            LOAD_NEXT_OP_F_OPCODE();
             DISPATCH_GOTO();
         }
 
@@ -4868,12 +4871,12 @@ dummy_func(
                 tstate, frame, this_instr);
             ERROR_IF(next_opcode < 0, error);
             next_instr = this_instr;
-            LOAD_NEXT_OP_F();
             if (_PyOpcode_Caches[next_opcode]) {
                 PAUSE_ADAPTIVE_COUNTER(next_instr[1].counter);
             }
             assert(next_opcode > 0 && next_opcode < 256);
             opcode = next_opcode;
+            LOAD_NEXT_OP_F_OPCODE();
             DISPATCH_GOTO();
         }
 
@@ -4940,6 +4943,7 @@ dummy_func(
         tier1 inst(EXTENDED_ARG, ( -- )) {
             assert(oparg);
             opcode = next_instr->op.code;
+            LOAD_NEXT_OP_F_OPCODE();
             oparg = oparg << 8 | next_instr->op.arg;
             PRE_DISPATCH_GOTO();
             DISPATCH_GOTO();
