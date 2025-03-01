@@ -1390,10 +1390,11 @@ dummy_func(
         }
 
         inst(LOAD_BUILD_CLASS, ( -- bc)) {
-            PyObject *bc_o;
-            int err = PyMapping_GetOptionalItem(BUILTINS(), &_Py_ID(__build_class__), &bc_o);
-            ERROR_IF(err < 0, error);
+            PyObject *bc_o = PyObject_GetItem(BUILTINS(), &_Py_ID(__build_class__));
             if (bc_o == NULL) {
+                assert(_PyErr_Occurred(tstate));
+                ERROR_IF(!_PyErr_ExceptionMatches(tstate, PyExc_KeyError), error);
+                _PyErr_Clear(tstate);
                 _PyErr_SetString(tstate, PyExc_NameError,
                                  "__build_class__ not found");
                 ERROR_IF(true, error);
@@ -1585,11 +1586,12 @@ dummy_func(
 
         inst(LOAD_FROM_DICT_OR_GLOBALS, (mod_or_class_dict -- v)) {
             PyObject *name = GETITEM(FRAME_CO_NAMES, oparg);
-            PyObject *v_o;
-            int err = PyMapping_GetOptionalItem(PyStackRef_AsPyObjectBorrow(mod_or_class_dict), name, &v_o);
+            PyObject *v_o = PyObject_GetItem(PyStackRef_AsPyObjectBorrow(mod_or_class_dict), name);
             PyStackRef_CLOSE(mod_or_class_dict);
-            ERROR_IF(err < 0, error);
             if (v_o == NULL) {
+                assert(_PyErr_Occurred(tstate));
+                ERROR_IF(!_PyErr_ExceptionMatches(tstate, PyExc_KeyError), error);
+                _PyErr_Clear(tstate);
                 if (PyDict_CheckExact(GLOBALS())
                     && PyDict_CheckExact(BUILTINS()))
                 {
@@ -1609,13 +1611,17 @@ dummy_func(
                 else {
                     /* Slow-path if globals or builtins is not a dict */
                     /* namespace 1: globals */
-                    int err = PyMapping_GetOptionalItem(GLOBALS(), name, &v_o);
-                    ERROR_IF(err < 0, error);
+                    v_o = PyObject_GetItem(GLOBALS(), name);
                     if (v_o == NULL) {
+                        assert(_PyErr_Occurred(tstate));
+                        ERROR_IF(!_PyErr_ExceptionMatches(tstate, PyExc_KeyError), error);
+                        _PyErr_Clear(tstate);
                         /* namespace 2: builtins */
-                        int err = PyMapping_GetOptionalItem(BUILTINS(), name, &v_o);
-                        ERROR_IF(err < 0, error);
+                        v_o = PyObject_GetItem(BUILTINS(), name);
                         if (v_o == NULL) {
+                            assert(_PyErr_Occurred(tstate));
+                            ERROR_IF(!_PyErr_ExceptionMatches(tstate, PyExc_KeyError), error);
+                            _PyErr_Clear(tstate);
                             _PyEval_FormatExcCheckArg(
                                         tstate, PyExc_NameError,
                                         NAME_ERROR_MSG, name);
@@ -1785,18 +1791,19 @@ dummy_func(
         }
 
         inst(LOAD_FROM_DICT_OR_DEREF, (class_dict_st -- value)) {
-            PyObject *value_o;
             PyObject *name;
             PyObject *class_dict = PyStackRef_AsPyObjectBorrow(class_dict_st);
 
             assert(class_dict);
             assert(oparg >= 0 && oparg < _PyFrame_GetCode(frame)->co_nlocalsplus);
             name = PyTuple_GET_ITEM(_PyFrame_GetCode(frame)->co_localsplusnames, oparg);
-            int err = PyMapping_GetOptionalItem(class_dict, name, &value_o);
-            if (err < 0) {
-                ERROR_NO_POP();
-            }
-            if (!value_o) {
+            PyObject *value_o = PyObject_GetItem(class_dict, name);
+            if (value_o == NULL) {
+                assert(_PyErr_Occurred(tstate));
+                if (!_PyErr_ExceptionMatches(tstate, PyExc_KeyError)) {
+                    ERROR_NO_POP();
+                }
+                _PyErr_Clear(tstate);
                 PyCellObject *cell = (PyCellObject *)PyStackRef_AsPyObjectBorrow(GETLOCAL(oparg));
                 value_o = PyCell_GetRef(cell);
                 if (value_o == NULL) {
@@ -1934,19 +1941,20 @@ dummy_func(
         }
 
         inst(SETUP_ANNOTATIONS, (--)) {
-            PyObject *ann_dict;
             if (LOCALS() == NULL) {
                 _PyErr_Format(tstate, PyExc_SystemError,
                               "no locals found when setting up annotations");
                 ERROR_IF(true, error);
             }
             /* check if __annotations__ in locals()... */
-            int err = PyMapping_GetOptionalItem(LOCALS(), &_Py_ID(__annotations__), &ann_dict);
-            ERROR_IF(err < 0, error);
+            PyObject *ann_dict = PyObject_GetItem(LOCALS(), &_Py_ID(__annotations__));
             if (ann_dict == NULL) {
+                assert(_PyErr_Occurred(tstate));
+                ERROR_IF(!_PyErr_ExceptionMatches(tstate, PyExc_KeyError), error);
+                _PyErr_Clear(tstate);
                 ann_dict = PyDict_New();
                 ERROR_IF(ann_dict == NULL, error);
-                err = PyObject_SetItem(LOCALS(), &_Py_ID(__annotations__),
+                int err = PyObject_SetItem(LOCALS(), &_Py_ID(__annotations__),
                                        ann_dict);
                 Py_DECREF(ann_dict);
                 ERROR_IF(err, error);
@@ -2041,8 +2049,13 @@ dummy_func(
             }
             // we make no attempt to optimize here; specializations should
             // handle any case whose performance we care about
-            PyObject *stack[] = {class, self};
-            PyObject *super = PyObject_Vectorcall(global_super, stack, oparg & 2, NULL);
+            PyObject *super;
+            if (oparg & 2) {
+                super = PyObject_CallFunctionObjArgs(global_super, class, self);
+            }
+            else {
+                super = PyObject_CallNoArgs(global_super);
+            }
             if (opcode == INSTRUMENTED_LOAD_SUPER_ATTR) {
                 PyObject *arg = oparg & 2 ? class : &_PyInstrumentation_MISSING;
                 if (super == NULL) {
@@ -3306,10 +3319,14 @@ dummy_func(
             }
             assert(PyStackRef_LongCheck(lasti));
             (void)lasti; // Shut up compiler warning if asserts are off
-            PyObject *stack[5] = {NULL, PyStackRef_AsPyObjectBorrow(exit_self), exc, val_o, tb};
-            int has_self = !PyStackRef_IsNull(exit_self);
-            PyObject *res_o = PyObject_Vectorcall(exit_func_o, stack + 2 - has_self,
-                    (3 + has_self) | PY_VECTORCALL_ARGUMENTS_OFFSET, NULL);
+            PyObject *res_o;
+            if (PyStackRef_IsNull(exit_self)) {
+                res_o = PyObject_CallFunctionObjArgs(exit_func_o, exc, val_o, tb);
+            }
+            else {
+                PyObject *exit_self_o = PyStackRef_AsPyObjectBorrow(exit_self);
+                res_o = PyObject_CallFunctionObjArgs(exit_func_o, exit_self_o, exc, val_o, tb);
+            }
             ERROR_IF(res_o == NULL, error);
             res = PyStackRef_FromPyObjectSteal(res_o);
         }

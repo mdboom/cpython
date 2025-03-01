@@ -5142,9 +5142,7 @@
             int err = PyDict_Update(dict_o, update_o);
             stack_pointer = _PyFrame_GetStackPointer(frame);
             if (err < 0) {
-                _PyFrame_SetStackPointer(frame, stack_pointer);
                 int matches = _PyErr_ExceptionMatches(tstate, PyExc_AttributeError);
-                stack_pointer = _PyFrame_GetStackPointer(frame);
                 if (matches) {
                     _PyFrame_SetStackPointer(frame, stack_pointer);
                     _PyErr_Format(tstate, PyExc_TypeError,
@@ -5449,9 +5447,7 @@
                 stack_pointer = _PyFrame_GetStackPointer(frame);
                 if (next_o == NULL) {
                     if (_PyErr_Occurred(tstate)) {
-                        _PyFrame_SetStackPointer(frame, stack_pointer);
                         int matches = _PyErr_ExceptionMatches(tstate, PyExc_StopIteration);
-                        stack_pointer = _PyFrame_GetStackPointer(frame);
                         if (!matches) {
                             JUMP_TO_LABEL(error);
                         }
@@ -6687,9 +6683,7 @@
             }
             else {
                 if (_PyErr_Occurred(tstate)) {
-                    _PyFrame_SetStackPointer(frame, stack_pointer);
                     int matches = _PyErr_ExceptionMatches(tstate, PyExc_StopIteration);
-                    stack_pointer = _PyFrame_GetStackPointer(frame);
                     if (!matches) {
                         JUMP_TO_LABEL(error);
                     }
@@ -6875,10 +6869,17 @@
                 }
                 // we make no attempt to optimize here; specializations should
                 // handle any case whose performance we care about
-                PyObject *stack[] = {class, self};
-                _PyFrame_SetStackPointer(frame, stack_pointer);
-                PyObject *super = PyObject_Vectorcall(global_super, stack, oparg & 2, NULL);
-                stack_pointer = _PyFrame_GetStackPointer(frame);
+                PyObject *super;
+                if (oparg & 2) {
+                    _PyFrame_SetStackPointer(frame, stack_pointer);
+                    super = PyObject_CallFunctionObjArgs(global_super, class, self);
+                    stack_pointer = _PyFrame_GetStackPointer(frame);
+                }
+                else {
+                    _PyFrame_SetStackPointer(frame, stack_pointer);
+                    super = PyObject_CallNoArgs(global_super);
+                    stack_pointer = _PyFrame_GetStackPointer(frame);
+                }
                 if (opcode == INSTRUMENTED_LOAD_SUPER_ATTR) {
                     PyObject *arg = oparg & 2 ? class : &_PyInstrumentation_MISSING;
                     if (super == NULL) {
@@ -7555,9 +7556,7 @@
             PyObject *none_val = _PyList_Extend((PyListObject *)list, iterable);
             stack_pointer = _PyFrame_GetStackPointer(frame);
             if (none_val == NULL) {
-                _PyFrame_SetStackPointer(frame, stack_pointer);
                 int matches = _PyErr_ExceptionMatches(tstate, PyExc_TypeError);
-                stack_pointer = _PyFrame_GetStackPointer(frame);
                 if (matches &&
                     (Py_TYPE(iterable)->tp_iter == NULL && !PySequence_Check(iterable)))
                 {
@@ -8585,15 +8584,16 @@
             next_instr += 1;
             INSTRUCTION_STATS(LOAD_BUILD_CLASS);
             _PyStackRef bc;
-            PyObject *bc_o;
             _PyFrame_SetStackPointer(frame, stack_pointer);
-            int err = PyMapping_GetOptionalItem(BUILTINS(), &_Py_ID(__build_class__), &bc_o);
+            PyObject *bc_o = PyObject_GetItem(BUILTINS(), &_Py_ID(__build_class__));
             stack_pointer = _PyFrame_GetStackPointer(frame);
-            if (err < 0) {
-                JUMP_TO_LABEL(error);
-            }
             if (bc_o == NULL) {
+                assert(_PyErr_Occurred(tstate));
+                if (!_PyErr_ExceptionMatches(tstate, PyExc_KeyError)) {
+                    JUMP_TO_LABEL(error);
+                }
                 _PyFrame_SetStackPointer(frame, stack_pointer);
+                _PyErr_Clear(tstate);
                 _PyErr_SetString(tstate, PyExc_NameError,
                                  "__build_class__ not found");
                 stack_pointer = _PyFrame_GetStackPointer(frame);
@@ -8822,19 +8822,22 @@
             _PyStackRef class_dict_st;
             _PyStackRef value;
             class_dict_st = stack_pointer[-1];
-            PyObject *value_o;
             PyObject *name;
             PyObject *class_dict = PyStackRef_AsPyObjectBorrow(class_dict_st);
             assert(class_dict);
             assert(oparg >= 0 && oparg < _PyFrame_GetCode(frame)->co_nlocalsplus);
             name = PyTuple_GET_ITEM(_PyFrame_GetCode(frame)->co_localsplusnames, oparg);
             _PyFrame_SetStackPointer(frame, stack_pointer);
-            int err = PyMapping_GetOptionalItem(class_dict, name, &value_o);
+            PyObject *value_o = PyObject_GetItem(class_dict, name);
             stack_pointer = _PyFrame_GetStackPointer(frame);
-            if (err < 0) {
-                JUMP_TO_LABEL(error);
-            }
-            if (!value_o) {
+            if (value_o == NULL) {
+                assert(_PyErr_Occurred(tstate));
+                if (!_PyErr_ExceptionMatches(tstate, PyExc_KeyError)) {
+                    JUMP_TO_LABEL(error);
+                }
+                _PyFrame_SetStackPointer(frame, stack_pointer);
+                _PyErr_Clear(tstate);
+                stack_pointer = _PyFrame_GetStackPointer(frame);
                 PyCellObject *cell = (PyCellObject *)PyStackRef_AsPyObjectBorrow(GETLOCAL(oparg));
                 value_o = PyCell_GetRef(cell);
                 if (value_o == NULL) {
@@ -8868,19 +8871,22 @@
             _PyStackRef v;
             mod_or_class_dict = stack_pointer[-1];
             PyObject *name = GETITEM(FRAME_CO_NAMES, oparg);
-            PyObject *v_o;
             _PyFrame_SetStackPointer(frame, stack_pointer);
-            int err = PyMapping_GetOptionalItem(PyStackRef_AsPyObjectBorrow(mod_or_class_dict), name, &v_o);
+            PyObject *v_o = PyObject_GetItem(PyStackRef_AsPyObjectBorrow(mod_or_class_dict), name);
             stack_pointer = _PyFrame_GetStackPointer(frame);
             stack_pointer += -1;
             assert(WITHIN_STACK_BOUNDS());
             _PyFrame_SetStackPointer(frame, stack_pointer);
             PyStackRef_CLOSE(mod_or_class_dict);
             stack_pointer = _PyFrame_GetStackPointer(frame);
-            if (err < 0) {
-                JUMP_TO_LABEL(error);
-            }
             if (v_o == NULL) {
+                assert(_PyErr_Occurred(tstate));
+                if (!_PyErr_ExceptionMatches(tstate, PyExc_KeyError)) {
+                    JUMP_TO_LABEL(error);
+                }
+                _PyFrame_SetStackPointer(frame, stack_pointer);
+                _PyErr_Clear(tstate);
+                stack_pointer = _PyFrame_GetStackPointer(frame);
                 if (PyDict_CheckExact(GLOBALS())
                     && PyDict_CheckExact(BUILTINS()))
                 {
@@ -8905,21 +8911,27 @@
                     /* Slow-path if globals or builtins is not a dict */
                     /* namespace 1: globals */
                     _PyFrame_SetStackPointer(frame, stack_pointer);
-                    int err = PyMapping_GetOptionalItem(GLOBALS(), name, &v_o);
+                    v_o = PyObject_GetItem(GLOBALS(), name);
                     stack_pointer = _PyFrame_GetStackPointer(frame);
-                    if (err < 0) {
-                        JUMP_TO_LABEL(error);
-                    }
                     if (v_o == NULL) {
-                        /* namespace 2: builtins */
-                        _PyFrame_SetStackPointer(frame, stack_pointer);
-                        int err = PyMapping_GetOptionalItem(BUILTINS(), name, &v_o);
-                        stack_pointer = _PyFrame_GetStackPointer(frame);
-                        if (err < 0) {
+                        assert(_PyErr_Occurred(tstate));
+                        if (!_PyErr_ExceptionMatches(tstate, PyExc_KeyError)) {
                             JUMP_TO_LABEL(error);
                         }
+                        _PyFrame_SetStackPointer(frame, stack_pointer);
+                        _PyErr_Clear(tstate);
+                        stack_pointer = _PyFrame_GetStackPointer(frame);
+                        /* namespace 2: builtins */
+                        _PyFrame_SetStackPointer(frame, stack_pointer);
+                        v_o = PyObject_GetItem(BUILTINS(), name);
+                        stack_pointer = _PyFrame_GetStackPointer(frame);
                         if (v_o == NULL) {
+                            assert(_PyErr_Occurred(tstate));
+                            if (!_PyErr_ExceptionMatches(tstate, PyExc_KeyError)) {
+                                JUMP_TO_LABEL(error);
+                            }
                             _PyFrame_SetStackPointer(frame, stack_pointer);
+                            _PyErr_Clear(tstate);
                             _PyEval_FormatExcCheckArg(
                                 tstate, PyExc_NameError,
                                 NAME_ERROR_MSG, name);
@@ -9319,10 +9331,17 @@
                 }
                 // we make no attempt to optimize here; specializations should
                 // handle any case whose performance we care about
-                PyObject *stack[] = {class, self};
-                _PyFrame_SetStackPointer(frame, stack_pointer);
-                PyObject *super = PyObject_Vectorcall(global_super, stack, oparg & 2, NULL);
-                stack_pointer = _PyFrame_GetStackPointer(frame);
+                PyObject *super;
+                if (oparg & 2) {
+                    _PyFrame_SetStackPointer(frame, stack_pointer);
+                    super = PyObject_CallFunctionObjArgs(global_super, class, self);
+                    stack_pointer = _PyFrame_GetStackPointer(frame);
+                }
+                else {
+                    _PyFrame_SetStackPointer(frame, stack_pointer);
+                    super = PyObject_CallNoArgs(global_super);
+                    stack_pointer = _PyFrame_GetStackPointer(frame);
+                }
                 if (opcode == INSTRUMENTED_LOAD_SUPER_ATTR) {
                     PyObject *arg = oparg & 2 ? class : &_PyInstrumentation_MISSING;
                     if (super == NULL) {
@@ -10328,9 +10347,7 @@
                     stack_pointer = _PyFrame_GetStackPointer(frame);
                 }
                 if (retval_o == NULL) {
-                    _PyFrame_SetStackPointer(frame, stack_pointer);
                     int matches = _PyErr_ExceptionMatches(tstate, PyExc_StopIteration);
-                    stack_pointer = _PyFrame_GetStackPointer(frame);
                     if (matches) {
                         _PyFrame_SetStackPointer(frame, stack_pointer);
                         _PyEval_MonitorRaise(tstate, frame, this_instr);
@@ -10443,7 +10460,6 @@
             frame->instr_ptr = next_instr;
             next_instr += 1;
             INSTRUCTION_STATS(SETUP_ANNOTATIONS);
-            PyObject *ann_dict;
             if (LOCALS() == NULL) {
                 _PyFrame_SetStackPointer(frame, stack_pointer);
                 _PyErr_Format(tstate, PyExc_SystemError,
@@ -10453,21 +10469,23 @@
             }
             /* check if __annotations__ in locals()... */
             _PyFrame_SetStackPointer(frame, stack_pointer);
-            int err = PyMapping_GetOptionalItem(LOCALS(), &_Py_ID(__annotations__), &ann_dict);
+            PyObject *ann_dict = PyObject_GetItem(LOCALS(), &_Py_ID(__annotations__));
             stack_pointer = _PyFrame_GetStackPointer(frame);
-            if (err < 0) {
-                JUMP_TO_LABEL(error);
-            }
             if (ann_dict == NULL) {
+                assert(_PyErr_Occurred(tstate));
+                if (!_PyErr_ExceptionMatches(tstate, PyExc_KeyError)) {
+                    JUMP_TO_LABEL(error);
+                }
                 _PyFrame_SetStackPointer(frame, stack_pointer);
+                _PyErr_Clear(tstate);
                 ann_dict = PyDict_New();
                 stack_pointer = _PyFrame_GetStackPointer(frame);
                 if (ann_dict == NULL) {
                     JUMP_TO_LABEL(error);
                 }
                 _PyFrame_SetStackPointer(frame, stack_pointer);
-                err = PyObject_SetItem(LOCALS(), &_Py_ID(__annotations__),
-                                       ann_dict);
+                int err = PyObject_SetItem(LOCALS(), &_Py_ID(__annotations__),
+                    ann_dict);
                 Py_DECREF(ann_dict);
                 stack_pointer = _PyFrame_GetStackPointer(frame);
                 if (err) {
@@ -11856,12 +11874,18 @@
             }
             assert(PyStackRef_LongCheck(lasti));
             (void)lasti; // Shut up compiler warning if asserts are off
-            PyObject *stack[5] = {NULL, PyStackRef_AsPyObjectBorrow(exit_self), exc, val_o, tb};
-            int has_self = !PyStackRef_IsNull(exit_self);
-            _PyFrame_SetStackPointer(frame, stack_pointer);
-            PyObject *res_o = PyObject_Vectorcall(exit_func_o, stack + 2 - has_self,
-                (3 + has_self) | PY_VECTORCALL_ARGUMENTS_OFFSET, NULL);
-            stack_pointer = _PyFrame_GetStackPointer(frame);
+            PyObject *res_o;
+            if (PyStackRef_IsNull(exit_self)) {
+                _PyFrame_SetStackPointer(frame, stack_pointer);
+                res_o = PyObject_CallFunctionObjArgs(exit_func_o, exc, val_o, tb);
+                stack_pointer = _PyFrame_GetStackPointer(frame);
+            }
+            else {
+                PyObject *exit_self_o = PyStackRef_AsPyObjectBorrow(exit_self);
+                _PyFrame_SetStackPointer(frame, stack_pointer);
+                res_o = PyObject_CallFunctionObjArgs(exit_func_o, exit_self_o, exc, val_o, tb);
+                stack_pointer = _PyFrame_GetStackPointer(frame);
+            }
             if (res_o == NULL) {
                 JUMP_TO_LABEL(error);
             }
