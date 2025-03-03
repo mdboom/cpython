@@ -4439,13 +4439,13 @@
             PyObject *res_o;
             if (PyStackRef_IsNull(exit_self)) {
                 _PyFrame_SetStackPointer(frame, stack_pointer);
-                res_o = PyObject_CallFunctionObjArgs(exit_func_o, exc, val_o, tb);
+                res_o = PyObject_CallFunctionObjArgs(exit_func_o, exc, val_o, tb, NULL);
                 stack_pointer = _PyFrame_GetStackPointer(frame);
             }
             else {
                 PyObject *exit_self_o = PyStackRef_AsPyObjectBorrow(exit_self);
                 _PyFrame_SetStackPointer(frame, stack_pointer);
-                res_o = PyObject_CallFunctionObjArgs(exit_func_o, exit_self_o, exc, val_o, tb);
+                res_o = PyObject_CallFunctionObjArgs(exit_func_o, exit_self_o, exc, val_o, tb, NULL);
                 stack_pointer = _PyFrame_GetStackPointer(frame);
             }
             if (res_o == NULL) {

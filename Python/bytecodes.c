@@ -2051,7 +2051,7 @@ dummy_func(
             // handle any case whose performance we care about
             PyObject *super;
             if (oparg & 2) {
-                super = PyObject_CallFunctionObjArgs(global_super, class, self);
+                super = PyObject_CallFunctionObjArgs(global_super, class, self, NULL);
             }
             else {
                 super = PyObject_CallNoArgs(global_super);
@@ -3321,11 +3321,11 @@ dummy_func(
             (void)lasti; // Shut up compiler warning if asserts are off
             PyObject *res_o;
             if (PyStackRef_IsNull(exit_self)) {
-                res_o = PyObject_CallFunctionObjArgs(exit_func_o, exc, val_o, tb);
+                res_o = PyObject_CallFunctionObjArgs(exit_func_o, exc, val_o, tb, NULL);
             }
             else {
                 PyObject *exit_self_o = PyStackRef_AsPyObjectBorrow(exit_self);
-                res_o = PyObject_CallFunctionObjArgs(exit_func_o, exit_self_o, exc, val_o, tb);
+                res_o = PyObject_CallFunctionObjArgs(exit_func_o, exit_self_o, exc, val_o, tb, NULL);
             }
             ERROR_IF(res_o == NULL, error);
             res = PyStackRef_FromPyObjectSteal(res_o);
