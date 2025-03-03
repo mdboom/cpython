@@ -98,7 +98,7 @@
         do { \
             Py_MUSTTAIL return (_TAIL_CALL_##name)(frame, stack_pointer, tstate, this_instr, oparg); \
         } while (0)
-#    define LABEL(name) TARGET(name)
+#    define LABEL(name) Py_NO_INLINE TARGET(name)
 #elif USE_COMPUTED_GOTOS
 #  define TARGET(op) TARGET_##op:
 #  define DISPATCH_GOTO() goto *opcode_targets[opcode]

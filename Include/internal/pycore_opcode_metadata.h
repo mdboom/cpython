@@ -761,7 +761,7 @@ int _PyOpcode_num_pushed(int opcode, int oparg)  {
         case LIST_EXTEND:
             return 1 + (oparg-1);
         case LOAD_ATTR:
-            return 1 + (oparg&1);
+            return 1 + (oparg & 1);
         case LOAD_ATTR_CLASS:
             return 1 + (oparg & 1);
         case LOAD_ATTR_CLASS_WITH_METACLASS_CHECK:
@@ -1504,9 +1504,7 @@ int _PyOpcode_max_stack_effect(int opcode, int oparg, int *effect)  {
             return 0;
         }
         case LOAD_ATTR: {
-            int max_eff = Py_MAX(1, (oparg & 1));
-            max_eff = Py_MAX(max_eff, (oparg&1));
-            *effect = max_eff;
+            *effect = Py_MAX(1, (oparg & 1));
             return 0;
         }
         case LOAD_ATTR_CLASS: {

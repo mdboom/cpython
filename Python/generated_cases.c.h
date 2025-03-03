@@ -7620,61 +7620,24 @@
             {
                 self_or_null = &stack_pointer[0];
                 PyObject *name = GETITEM(FRAME_CO_NAMES, oparg >> 1);
-                PyObject *attr_o;
-                if (oparg & 1) {
-                    /* Designed to work in tandem with CALL, pushes two values. */
-                    attr_o = NULL;
-                    _PyFrame_SetStackPointer(frame, stack_pointer);
-                    int is_meth = _PyObject_GetMethod(PyStackRef_AsPyObjectBorrow(owner), name, &attr_o);
-                    stack_pointer = _PyFrame_GetStackPointer(frame);
-                    if (is_meth) {
-                        /* We can bypass temporary bound method object.
-                           meth is unbound method and obj is self.
-                           meth | self | arg1 | ... | argN
-                         */
-                        assert(attr_o != NULL);  // No errors on this branch
-                        self_or_null[0] = owner;  // Transfer ownership
-                    }
-                    else {
-                        /* meth is not an unbound method (but a regular attr, or
-                           something was returned by a descriptor protocol).  Set
-                           the second element of the stack to NULL, to signal
-                           CALL that it's not a method call.
-                           meth | NULL | arg1 | ... | argN
-                         */
-                        stack_pointer += -1;
-                        assert(WITHIN_STACK_BOUNDS());
-                        _PyFrame_SetStackPointer(frame, stack_pointer);
-                        PyStackRef_CLOSE(owner);
-                        stack_pointer = _PyFrame_GetStackPointer(frame);
-                        if (attr_o == NULL) {
-                            JUMP_TO_LABEL(error);
-                        }
-                        self_or_null[0] = PyStackRef_NULL;
-                        stack_pointer += 1;
-                        assert(WITHIN_STACK_BOUNDS());
-                    }
+                _PyFrame_SetStackPointer(frame, stack_pointer);
+                PyObject *attr_o = PyObject_GetAttr(PyStackRef_AsPyObjectBorrow(owner), name);
+                stack_pointer = _PyFrame_GetStackPointer(frame);
+                stack_pointer += -1;
+                assert(WITHIN_STACK_BOUNDS());
+                _PyFrame_SetStackPointer(frame, stack_pointer);
+                PyStackRef_CLOSE(owner);
+                stack_pointer = _PyFrame_GetStackPointer(frame);
+                if (attr_o == NULL) {
+                    JUMP_TO_LABEL(error);
                 }
-                else {
-                    /* Classic, pushes one value. */
-                    _PyFrame_SetStackPointer(frame, stack_pointer);
-                    attr_o = PyObject_GetAttr(PyStackRef_AsPyObjectBorrow(owner), name);
-                    stack_pointer = _PyFrame_GetStackPointer(frame);
-                    stack_pointer += -1;
-                    assert(WITHIN_STACK_BOUNDS());
-                    _PyFrame_SetStackPointer(frame, stack_pointer);
-                    PyStackRef_CLOSE(owner);
-                    stack_pointer = _PyFrame_GetStackPointer(frame);
-                    if (attr_o == NULL) {
-                        JUMP_TO_LABEL(error);
-                    }
-                    stack_pointer += 1;
-                    assert(WITHIN_STACK_BOUNDS());
+                if (oparg & 1) {
+                    self_or_null[0] = PyStackRef_NULL;
                 }
                 attr = PyStackRef_FromPyObjectSteal(attr_o);
             }
-            stack_pointer[-1] = attr;
-            stack_pointer += (oparg&1);
+            stack_pointer[0] = attr;
+            stack_pointer += 1 + (oparg & 1);
             assert(WITHIN_STACK_BOUNDS());
             DISPATCH();
         }
@@ -9503,28 +9466,18 @@
             STAT_INC(LOAD_SUPER_ATTR, hit);
             PyObject *name = GETITEM(FRAME_CO_NAMES, oparg >> 2);
             PyTypeObject *cls = (PyTypeObject *)class;
-            int method_found = 0;
             _PyFrame_SetStackPointer(frame, stack_pointer);
-            PyObject *attr_o = _PySuper_Lookup(cls, self, name,
-                Py_TYPE(self)->tp_getattro == PyObject_GenericGetAttr ? &method_found : NULL);
+            PyObject *attr_o = _PySuper_Lookup(cls, self, name, NULL);
             stack_pointer = _PyFrame_GetStackPointer(frame);
             if (attr_o == NULL) {
                 JUMP_TO_LABEL(error);
             }
-            if (method_found) {
-                self_or_null = self_st; // transfer ownership
-            } else {
-                stack_pointer += -1;
-                assert(WITHIN_STACK_BOUNDS());
-                _PyFrame_SetStackPointer(frame, stack_pointer);
-                PyStackRef_CLOSE(self_st);
-                stack_pointer = _PyFrame_GetStackPointer(frame);
-                self_or_null = PyStackRef_NULL;
-                stack_pointer += 1;
-                assert(WITHIN_STACK_BOUNDS());
-            }
             stack_pointer += -1;
             assert(WITHIN_STACK_BOUNDS());
+            _PyFrame_SetStackPointer(frame, stack_pointer);
+            PyStackRef_CLOSE(self_st);
+            stack_pointer = _PyFrame_GetStackPointer(frame);
+            self_or_null = PyStackRef_NULL;
             _PyFrame_SetStackPointer(frame, stack_pointer);
             _PyStackRef tmp = global_super_st;
             global_super_st = self_or_null;

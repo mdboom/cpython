@@ -1221,7 +1221,7 @@ _Py_call_instrumentation_2args(
     return call_instrumentation_vector(instr, tstate, event, frame, instr, 4, args);
 }
 
-_Py_CODEUNIT *
+Py_NO_INLINE _Py_CODEUNIT *
 _Py_call_instrumentation_jump(
     _Py_CODEUNIT *instr, PyThreadState *tstate, int event,
     _PyInterpreterFrame *frame, _Py_CODEUNIT *src, _Py_CODEUNIT *dest)

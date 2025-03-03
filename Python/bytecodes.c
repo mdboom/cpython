@@ -2113,19 +2113,12 @@ dummy_func(
             STAT_INC(LOAD_SUPER_ATTR, hit);
             PyObject *name = GETITEM(FRAME_CO_NAMES, oparg >> 2);
             PyTypeObject *cls = (PyTypeObject *)class;
-            int method_found = 0;
-            PyObject *attr_o = _PySuper_Lookup(cls, self, name,
-                                   Py_TYPE(self)->tp_getattro == PyObject_GenericGetAttr ? &method_found : NULL);
+            PyObject *attr_o = _PySuper_Lookup(cls, self, name, NULL);
             if (attr_o == NULL) {
                 ERROR_NO_POP();
             }
-            if (method_found) {
-                self_or_null = self_st; // transfer ownership
-                DEAD(self_st);
-            } else {
-                PyStackRef_CLOSE(self_st);
-                self_or_null = PyStackRef_NULL;
-            }
+            PyStackRef_CLOSE(self_st);
+            self_or_null = PyStackRef_NULL;
             DECREF_INPUTS();
 
             attr = PyStackRef_FromPyObjectSteal(attr_o);
@@ -2160,39 +2153,13 @@ dummy_func(
             #endif  /* ENABLE_SPECIALIZATION_FT */
         }
 
-        op(_LOAD_ATTR, (owner -- attr, self_or_null[oparg&1])) {
+        op(_LOAD_ATTR, (owner -- attr, self_or_null[oparg & 1])) {
             PyObject *name = GETITEM(FRAME_CO_NAMES, oparg >> 1);
-            PyObject *attr_o;
+            PyObject *attr_o = PyObject_GetAttr(PyStackRef_AsPyObjectBorrow(owner), name);
+            PyStackRef_CLOSE(owner);
+            ERROR_IF(attr_o == NULL, error);
             if (oparg & 1) {
-                /* Designed to work in tandem with CALL, pushes two values. */
-                attr_o = NULL;
-                int is_meth = _PyObject_GetMethod(PyStackRef_AsPyObjectBorrow(owner), name, &attr_o);
-                if (is_meth) {
-                    /* We can bypass temporary bound method object.
-                       meth is unbound method and obj is self.
-                       meth | self | arg1 | ... | argN
-                     */
-                    assert(attr_o != NULL);  // No errors on this branch
-                    self_or_null[0] = owner;  // Transfer ownership
-                    DEAD(owner);
-                }
-                else {
-                    /* meth is not an unbound method (but a regular attr, or
-                       something was returned by a descriptor protocol).  Set
-                       the second element of the stack to NULL, to signal
-                       CALL that it's not a method call.
-                       meth | NULL | arg1 | ... | argN
-                    */
-                    PyStackRef_CLOSE(owner);
-                    ERROR_IF(attr_o == NULL, error);
-                    self_or_null[0] = PyStackRef_NULL;
-                }
-            }
-            else {
-                /* Classic, pushes one value. */
-                attr_o = PyObject_GetAttr(PyStackRef_AsPyObjectBorrow(owner), name);
-                PyStackRef_CLOSE(owner);
-                ERROR_IF(attr_o == NULL, error);
+                self_or_null[0] = PyStackRef_NULL;
             }
             attr = PyStackRef_FromPyObjectSteal(attr_o);
         }
