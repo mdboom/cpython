@@ -60,7 +60,6 @@ enum _frameowner {
     FRAME_OWNED_BY_CSTACK = 4,
 };
 
-// Align structure to cache line boundary (typically 64 bytes)
 typedef struct _PyInterpreterFrame {
     /* Hot path fields - accessed most frequently in eval loop */
     _Py_CODEUNIT *instr_ptr;          /* Current instruction pointer */
@@ -90,14 +89,9 @@ typedef struct _PyInterpreterFrame {
     uint8_t visited;                  /* Flag for detecting recursion */
 #endif
 
-#ifdef __GNUC__
-    /* Ensure localsplus array is aligned to 16-byte boundary for SIMD operations */
-    _PyStackRef localsplus[1]; // __attribute__((aligned(16)));
-#else
     /* Flexible array for locals and stack */
     _PyStackRef localsplus[1];
-#endif
-} _PyInterpreterFrame; // __attribute__((aligned(64)));
+} _PyInterpreterFrame;
 
 #define _PyInterpreterFrame_LASTI(IF) \
     ((int)((IF)->instr_ptr - _PyFrame_GetBytecode((IF))))
