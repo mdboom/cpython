@@ -60,31 +60,44 @@ enum _frameowner {
     FRAME_OWNED_BY_CSTACK = 4,
 };
 
+// Align structure to cache line boundary (typically 64 bytes)
 typedef struct _PyInterpreterFrame {
-    _PyStackRef f_executable; /* Deferred or strong reference (code object or None) */
-    struct _PyInterpreterFrame *previous;
-    _PyStackRef f_funcobj; /* Deferred or strong reference. Only valid if not on C stack */
-    PyObject *f_globals; /* Borrowed reference. Only valid if not on C stack */
-    PyObject *f_builtins; /* Borrowed reference. Only valid if not on C stack */
-    PyObject *f_locals; /* Strong reference, may be NULL. Only valid if not on C stack */
-    PyFrameObject *frame_obj; /* Strong reference, may be NULL. Only valid if not on C stack */
-    _Py_CODEUNIT *instr_ptr; /* Instruction currently executing (or about to begin) */
-    _PyStackRef *stackpointer;
+    /* Hot path fields - accessed most frequently in eval loop */
+    _Py_CODEUNIT *instr_ptr;          /* Current instruction pointer */
+    _PyStackRef *stackpointer;        /* Stack pointer - extremely hot */
+    struct _PyInterpreterFrame *previous; /* Call chain - frequently accessed */
+
+    /* Namespace lookups - common in opcodes */
+    PyObject *f_globals;              /* Global namespace lookups */
+    PyObject *f_builtins;             /* Builtin lookups */
+    _PyStackRef f_executable;         /* Code object - accessed for metadata */
+
+    /* Less frequently accessed fields */
+    _PyStackRef f_funcobj;            /* Function object */
+    PyObject *f_locals;               /* Locals dictionary */
+    PyFrameObject *frame_obj;         /* Python-level frame object */
+
+    /* Group small fields together to reduce padding waste */
 #ifdef Py_GIL_DISABLED
-    /* Index of thread-local bytecode containing instr_ptr. */
-    int32_t tlbc_index;
+    int32_t tlbc_index;               /* Thread-local bytecode index */
 #endif
-    uint16_t return_offset;  /* Only relevant during a function call */
-    char owner;
+    uint16_t return_offset;           /* Jump target for function return */
+    uint8_t owner;                    /* Frame ownership type */
 #ifdef Py_DEBUG
-    uint8_t visited:1;
-    uint8_t lltrace:7;
+    uint8_t visited:1;                /* Flag for detecting recursion */
+    uint8_t lltrace:7;                /* Lltrace level */
 #else
-    uint8_t visited;
+    uint8_t visited;                  /* Flag for detecting recursion */
 #endif
-    /* Locals and stack */
+
+#ifdef __GNUC__
+    /* Ensure localsplus array is aligned to 16-byte boundary for SIMD operations */
+    _PyStackRef localsplus[0] __attribute__((aligned(16)));
+#else
+    /* Flexible array for locals and stack */
     _PyStackRef localsplus[1];
-} _PyInterpreterFrame;
+#endif
+} _PyInterpreterFrame __attribute__((aligned(64)));
 
 #define _PyInterpreterFrame_LASTI(IF) \
     ((int)((IF)->instr_ptr - _PyFrame_GetBytecode((IF))))
