@@ -92,12 +92,12 @@ typedef struct _PyInterpreterFrame {
 
 #ifdef __GNUC__
     /* Ensure localsplus array is aligned to 16-byte boundary for SIMD operations */
-    _PyStackRef localsplus[0] __attribute__((aligned(16)));
+    _PyStackRef localsplus[1]; // __attribute__((aligned(16)));
 #else
     /* Flexible array for locals and stack */
     _PyStackRef localsplus[1];
 #endif
-} _PyInterpreterFrame __attribute__((aligned(64)));
+} _PyInterpreterFrame; // __attribute__((aligned(64)));
 
 #define _PyInterpreterFrame_LASTI(IF) \
     ((int)((IF)->instr_ptr - _PyFrame_GetBytecode((IF))))
