@@ -320,14 +320,14 @@ tuple_hash(PyObject *op)
     PyTupleObject *v = _PyTuple_CAST(op);
     Py_ssize_t len = Py_SIZE(v);
     PyObject **item = v->ob_item;
-    Py_uhash_t acc;
+    Py_uhash_t acc, lane;
 
     switch (len) {
     case 0:
         return _PyHASH_XXPRIME_5 ^ (_PyHASH_XXPRIME_5 ^ 3527539UL);
 
     case 1:
-        Py_uhash_t lane = PyObject_Hash(item[0]);
+        lane = PyObject_Hash(item[0]);
         if (lane == (Py_uhash_t)-1) {
             return -1;
         }
@@ -342,7 +342,7 @@ tuple_hash(PyObject *op)
     default:
         acc = _PyHASH_XXPRIME_5;
         for (Py_ssize_t i = 0; i < len; i++) {
-            Py_uhash_t lane = PyObject_Hash(item[i]);
+            lane = PyObject_Hash(item[i]);
             if (lane == (Py_uhash_t)-1) {
                 return -1;
             }
