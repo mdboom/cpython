@@ -331,15 +331,16 @@ static Py_hash_t
 tuple_hash(PyObject *op)
 {
     PyTupleObject *v = _PyTuple_CAST(op);
-    Py_ssize_t len = Py_SIZE(v);
     PyObject **item = v->ob_item;
     Py_uhash_t acc;
 
     assert(sizeof(Py_uhash_t) == sizeof(PyObject *));
 
-    if (len == 0) {
+    if (op == &_Py_SINGLETON(tuple_empty)) {
         return _PyHASH_XXPRIME_5 + (_PyHASH_XXPRIME_5 ^ 3527539UL);
     }
+
+    Py_ssize_t len = Py_SIZE(v);
 
     if (op->ob_flags & _Py_TUPLE_CACHE_HASHED && item[len] != NULL) {
         return (Py_uhash_t)item[len];
