@@ -39,19 +39,30 @@ tuple_alloc(Py_ssize_t size)
         return NULL;
     }
     assert(size != 0);    // The empty tuple is statically allocated.
-    Py_ssize_t index = size - 1;
+
+    Py_ssize_t index = size;
     if (index < PyTuple_MAXSAVESIZE) {
         PyTupleObject *op = _Py_FREELIST_POP(PyTupleObject, tuples[index]);
         if (op != NULL) {
+            Py_SET_SIZE(op, size);
+            ((PyObject *)op)->ob_flags |= _Py_TUPLE_CACHE_HASHED;
             return op;
         }
     }
+
     /* Check for overflow */
     if ((size_t)size > ((size_t)PY_SSIZE_T_MAX - (sizeof(PyTupleObject) -
                 sizeof(PyObject *))) / sizeof(PyObject *)) {
         return (PyTupleObject *)PyErr_NoMemory();
     }
-    return PyObject_GC_NewVar(PyTupleObject, &PyTuple_Type, size);
+    // Allocate one extra slot for the hash.
+    PyTupleObject *result = PyObject_GC_NewVar(PyTupleObject, &PyTuple_Type, size + 1);
+
+    // Now reduce the size field by 1, since the last slot is for the hash.
+    Py_SET_SIZE(result, size);
+    ((PyObject *)result)->ob_flags |= _Py_TUPLE_CACHE_HASHED;
+
+    return result;
 }
 
 // The empty tuple singleton is not tracked by the GC.
@@ -75,7 +86,8 @@ PyTuple_New(Py_ssize_t size)
     if (op == NULL) {
         return NULL;
     }
-    for (Py_ssize_t i = 0; i < size; i++) {
+    // There is an extra element at the end to store the hash.
+    for (Py_ssize_t i = 0; i <= size; i++) {
         op->ob_item[i] = NULL;
     }
     _PyObject_GC_TRACK(op);
@@ -172,6 +184,7 @@ PyTuple_Pack(Py_ssize_t n, ...)
         o = va_arg(vargs, PyObject *);
         items[i] = Py_NewRef(o);
     }
+    items[n] = NULL;  // The last slot is for the hash.
     va_end(vargs);
     _PyObject_GC_TRACK(result);
     return (PyObject *)result;
@@ -320,24 +333,42 @@ tuple_hash(PyObject *op)
     PyTupleObject *v = _PyTuple_CAST(op);
     Py_ssize_t len = Py_SIZE(v);
     PyObject **item = v->ob_item;
+    Py_uhash_t acc;
 
-    Py_uhash_t acc = _PyHASH_XXPRIME_5;
+    assert(sizeof(Py_uhash_t) == sizeof(PyObject *));
+
+    if (len == 0) {
+        return _PyHASH_XXPRIME_5 + (_PyHASH_XXPRIME_5 ^ 3527539UL);
+    }
+
+    if (op->ob_flags & _Py_TUPLE_CACHE_HASHED && item[len] != NULL) {
+        return (Py_uhash_t)item[len];
+    }
+
+    acc = _PyHASH_XXPRIME_5;
     for (Py_ssize_t i = 0; i < len; i++) {
-        Py_uhash_t lane = PyObject_Hash(item[i]);
-        if (lane == (Py_uhash_t)-1) {
-            return -1;
+        if (item[i] != NULL) {
+            Py_uhash_t lane = PyObject_Hash(item[i]);
+            if (lane == (Py_uhash_t)-1) {
+                return -1;
+            }
+            acc += lane * _PyHASH_XXPRIME_2;
+            acc = _PyHASH_XXROTATE(acc);
+            acc *= _PyHASH_XXPRIME_1;
         }
-        acc += lane * _PyHASH_XXPRIME_2;
-        acc = _PyHASH_XXROTATE(acc);
-        acc *= _PyHASH_XXPRIME_1;
     }
 
     /* Add input length, mangled to keep the historical value of hash(()). */
     acc += len ^ (_PyHASH_XXPRIME_5 ^ 3527539UL);
 
     if (acc == (Py_uhash_t)-1) {
-        return 1546275796;
+        acc = 1546275796;
     }
+
+    if (op->ob_flags & _Py_TUPLE_CACHE_HASHED) {
+        item[len] = (PyObject *)acc;
+    }
+
     return acc;
 }
 
@@ -386,6 +417,7 @@ _PyTuple_FromArray(PyObject *const *src, Py_ssize_t n)
         PyObject *item = src[i];
         dst[i] = Py_NewRef(item);
     }
+    dst[n] = NULL;  // The last slot is for the hash.
     _PyObject_GC_TRACK(tuple);
     return (PyObject *)tuple;
 }
@@ -404,6 +436,7 @@ _PyTuple_FromStackRefStealOnSuccess(const _PyStackRef *src, Py_ssize_t n)
     for (Py_ssize_t i = 0; i < n; i++) {
         dst[i] = PyStackRef_AsPyObjectSteal(src[i]);
     }
+    dst[n] = NULL;  // The last slot is for the hash.
     _PyObject_GC_TRACK(tuple);
     return (PyObject *)tuple;
 }
@@ -426,6 +459,7 @@ _PyTuple_FromArraySteal(PyObject *const *src, Py_ssize_t n)
         PyObject *item = src[i];
         dst[i] = item;
     }
+    dst[n] = NULL;  // The last slot is for the hash.
     _PyObject_GC_TRACK(tuple);
     return (PyObject *)tuple;
 }
@@ -499,6 +533,8 @@ tuple_concat(PyObject *aa, PyObject *bb)
         dest[i] = Py_NewRef(v);
     }
 
+    np->ob_item[size] = NULL;  // The last slot is for the hash.
+
     _PyObject_GC_TRACK(np);
     return (PyObject *)np;
 }
@@ -548,6 +584,9 @@ tuple_repeat(PyObject *self, Py_ssize_t n)
         _Py_memory_repeat((char *)np->ob_item, sizeof(PyObject *)*output_size,
                           sizeof(PyObject *)*input_size);
     }
+
+    np->ob_item[output_size] = NULL;  // The last slot is for the hash.
+
     _PyObject_GC_TRACK(np);
     return (PyObject *) np;
 }
@@ -823,6 +862,8 @@ tuple_subscript(PyObject *op, PyObject* item)
                 it = Py_NewRef(src[cur]);
                 dest[i] = it;
             }
+
+            result->ob_item[slicelength] = NULL;  // The last slot is for the hash.
 
             _PyObject_GC_TRACK(result);
             return (PyObject *)result;
@@ -1164,7 +1205,11 @@ maybe_freelist_push(PyTupleObject *op)
     if (!Py_IS_TYPE(op, &PyTuple_Type)) {
         return 0;
     }
-    Py_ssize_t index = Py_SIZE(op) - 1;
+    Py_ssize_t index = Py_SIZE(op);
+    assert(index > 0);
+    if (!(((PyObject *)op)->ob_flags & _Py_TUPLE_CACHE_HASHED)) {
+        index -= 1;
+    }
     if (index < PyTuple_MAXSAVESIZE) {
         return _Py_FREELIST_PUSH(tuples[index], op, Py_tuple_MAXFREELIST);
     }

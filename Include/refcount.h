@@ -21,6 +21,7 @@ cleanup during runtime finalization.
 
 #define _Py_STATICALLY_ALLOCATED_FLAG 4
 #define _Py_IMMORTAL_FLAGS 1
+#define _Py_TUPLE_CACHE_HASHED 8
 
 #if SIZEOF_VOID_P > 4
 /*
