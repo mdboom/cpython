@@ -92,13 +92,38 @@ take_ownership(PyFrameObject *f, _PyInterpreterFrame *frame)
 void
 _PyFrame_ClearLocals(_PyInterpreterFrame *frame)
 {
+    typedef unsigned _BitInt(512) int512_t;
     assert(frame->stackpointer != NULL);
     _PyStackRef *sp = frame->stackpointer;
     _PyStackRef *locals = frame->localsplus;
     frame->stackpointer = locals;
-    while (sp > locals) {
+
+    Py_ssize_t stack_size = sp - locals;
+    Py_ssize_t stack_size_trail = (stack_size >> 3) << 3;
+
+    const int512_t bit_mask = (
+        (int512_t)Py_TAG_BITS |
+        (int512_t)Py_TAG_BITS << 64 |
+        (int512_t)Py_TAG_BITS << 128 |
+        (int512_t)Py_TAG_BITS << 192 |
+        (int512_t)Py_TAG_BITS << 256 |
+        (int512_t)Py_TAG_BITS << 320 |
+        (int512_t)Py_TAG_BITS << 384 |
+        (int512_t)Py_TAG_BITS << 448
+    );
+
+    while (sp > locals + stack_size_trail) {
         sp--;
         PyStackRef_XCLOSE(*sp);
+    }
+    while (sp > locals) {
+        sp -= 8;
+        if ((*((int512_t *)sp) & bit_mask) == (int512_t)0) {
+            for (_PyStackRef *sp2 = sp + 7; sp2 >= sp; --sp2) {
+                PyStackRef_XCLOSE(*sp2);
+            }
+        } else {
+        }
     }
     Py_CLEAR(frame->f_locals);
 }
@@ -113,6 +138,7 @@ _PyFrame_ClearExceptCode(_PyInterpreterFrame *frame)
     // GH-99729: Clearing this frame can expose the stack (via finalizers). It's
     // crucial that this frame has been unlinked, and is no longer visible:
     assert(_PyThreadState_GET()->current_frame != frame);
+
     if (frame->frame_obj) {
         PyFrameObject *f = frame->frame_obj;
         frame->frame_obj = NULL;
