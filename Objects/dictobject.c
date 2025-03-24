@@ -1006,37 +1006,75 @@ do_lookup(PyDictObject *mp, PyDictKeysObject *dk, PyObject *key, Py_hash_t hash,
     size_t perturb = hash;
     size_t i = (size_t)hash & mask;
     Py_ssize_t ix;
-    for (;;) {
-        ix = dictkeys_get_index(dk, i);
-        if (ix >= 0) {
-            int cmp = check_lookup(mp, dk, ep0, ix, key, hash);
-            if (cmp < 0) {
-                return cmp;
-            } else if (cmp) {
-                return ix;
-            }
-        }
-        else if (ix == DKIX_EMPTY) {
-            return DKIX_EMPTY;
-        }
-        perturb >>= PERTURB_SHIFT;
-        i = mask & (i*5 + perturb + 1);
 
-        // Manual loop unrolling
-        ix = dictkeys_get_index(dk, i);
-        if (ix >= 0) {
-            int cmp = check_lookup(mp, dk, ep0, ix, key, hash);
-            if (cmp < 0) {
-                return cmp;
-            } else if (cmp) {
-                return ix;
+    int log2size = DK_LOG_SIZE(dk);
+
+    if (log2size < 8) {
+        for (;;) {
+            ix = LOAD_INDEX(dk, 8, i);
+            if (ix >= 0) {
+                int cmp = check_lookup(mp, dk, ep0, ix, key, hash);
+                if (cmp < 0) {
+                    return cmp;
+                } else if (cmp) {
+                    return ix;
+                }
             }
+            else if (ix == DKIX_EMPTY) {
+                return DKIX_EMPTY;
+            }
+            perturb >>= PERTURB_SHIFT;
+            i = mask & (i*5 + perturb + 1);
+
+            // Manual loop unrolling
+            ix = LOAD_INDEX(dk, 8, i);
+            if (ix >= 0) {
+                int cmp = check_lookup(mp, dk, ep0, ix, key, hash);
+                if (cmp < 0) {
+                    return cmp;
+                } else if (cmp) {
+                    return ix;
+                }
+            }
+            else if (ix == DKIX_EMPTY) {
+                return DKIX_EMPTY;
+            }
+            perturb >>= PERTURB_SHIFT;
+            i = mask & (i*5 + perturb + 1);
         }
-        else if (ix == DKIX_EMPTY) {
-            return DKIX_EMPTY;
+    } else {
+        for (;;) {
+            ix = dictkeys_get_index(dk, i);
+            if (ix >= 0) {
+                int cmp = check_lookup(mp, dk, ep0, ix, key, hash);
+                if (cmp < 0) {
+                    return cmp;
+                } else if (cmp) {
+                    return ix;
+                }
+            }
+            else if (ix == DKIX_EMPTY) {
+                return DKIX_EMPTY;
+            }
+            perturb >>= PERTURB_SHIFT;
+            i = mask & (i*5 + perturb + 1);
+
+            // Manual loop unrolling
+            ix = dictkeys_get_index(dk, i);
+            if (ix >= 0) {
+                int cmp = check_lookup(mp, dk, ep0, ix, key, hash);
+                if (cmp < 0) {
+                    return cmp;
+                } else if (cmp) {
+                    return ix;
+                }
+            }
+            else if (ix == DKIX_EMPTY) {
+                return DKIX_EMPTY;
+            }
+            perturb >>= PERTURB_SHIFT;
+            i = mask & (i*5 + perturb + 1);
         }
-        perturb >>= PERTURB_SHIFT;
-        i = mask & (i*5 + perturb + 1);
     }
     Py_UNREACHABLE();
 }
