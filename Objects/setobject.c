@@ -161,30 +161,6 @@ set_lookkey_long_eq(PyObject *a, PyObject *b)
     return _PyLong_CompactValue((PyLongObject *)a) == _PyLong_CompactValue((PyLongObject *)b);
 }
 
-static inline int
-set_lookkey_none_check(PyObject *key)
-{
-    return Py_IsNone(key);
-}
-
-static inline int
-set_lookkey_none_eq(PyObject *a, PyObject *b)
-{
-    return Py_IsNone(b);
-}
-
-static inline int
-set_lookkey_type_check(PyObject *key)
-{
-    return PyType_CheckExact(key);
-}
-
-static inline int
-set_lookkey_type_eq(PyObject *a, PyObject *b)
-{
-    return a == b;
-}
-
 static setentry *
 set_lookkey(PySetObject *so, PyObject *key, Py_hash_t hash)
 {
@@ -192,10 +168,6 @@ set_lookkey(PySetObject *so, PyObject *key, Py_hash_t hash)
         return do_set_lookkey(so, key, hash, set_lookkey_unicode_check, set_lookkey_unicode_eq);
     } else if (set_lookkey_long_check(key)) {
         return do_set_lookkey(so, key, hash, set_lookkey_long_check, set_lookkey_long_eq);
-    } else if (set_lookkey_none_check(key)) {
-        return do_set_lookkey(so, key, hash, set_lookkey_none_check, set_lookkey_none_eq);
-    } else if (set_lookkey_type_check(key)) {
-        return do_set_lookkey(so, key, hash, set_lookkey_type_check, set_lookkey_type_eq);
     } else {
         return do_set_lookkey(so, key, hash, NULL, NULL);
     }
