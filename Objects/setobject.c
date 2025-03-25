@@ -74,16 +74,30 @@ static PyObject _dummy_struct;
 /* This must be >= 1 */
 #define PERTURB_SHIFT 5
 
-static setentry *
-set_lookkey(PySetObject *so, PyObject *key, Py_hash_t hash)
+static inline Py_ALWAYS_INLINE setentry *
+do_set_lookkey(
+    PySetObject *so,
+    PyObject *key,
+    Py_hash_t hash,
+    int (*type_check)(PyObject *),
+    int (*eq_check)(PyObject *, PyObject *)
+)
 {
     setentry *table;
     setentry *entry;
-    size_t perturb = hash;
-    size_t mask = so->mask;
-    size_t i = (size_t)hash & mask; /* Unsigned for defined overflow behavior */
+    size_t perturb;
+    size_t mask;
+    size_t i;
     int probes;
     int cmp;
+
+    assert((type_check != NULL) == (eq_check != NULL));
+
+restart:
+
+    perturb = hash;
+    mask = so->mask;
+    i = (size_t)hash & mask; /* Unsigned for defined overflow behavior */
 
     while (1) {
         entry = &so->table[i];
@@ -96,26 +110,94 @@ set_lookkey(PySetObject *so, PyObject *key, Py_hash_t hash)
                 assert(startkey != dummy);
                 if (startkey == key)
                     return entry;
-                if (PyUnicode_CheckExact(startkey)
-                    && PyUnicode_CheckExact(key)
-                    && unicode_eq(startkey, key))
-                    return entry;
-                table = so->table;
-                Py_INCREF(startkey);
-                cmp = PyObject_RichCompareBool(startkey, key, Py_EQ);
-                Py_DECREF(startkey);
-                if (cmp < 0)
-                    return NULL;
-                if (table != so->table || entry->key != startkey)
-                    return set_lookkey(so, key, hash);
-                if (cmp > 0)
-                    return entry;
-                mask = so->mask;
+                if (type_check && type_check(startkey)) {
+                    assert(type_check(key));
+                    if (eq_check(startkey, key)) {
+                        return entry;
+                    }
+                } else {
+                    table = so->table;
+                    Py_INCREF(startkey);
+                    cmp = PyObject_RichCompareBool(startkey, key, Py_EQ);
+                    Py_DECREF(startkey);
+                    if (cmp < 0)
+                        return NULL;
+                    if (table != so->table || entry->key != startkey)
+                        // Table changed during comparison, restart (but don't recurse)
+                        goto restart;
+                    if (cmp > 0)
+                        return entry;
+                    mask = so->mask;
+                }
             }
             entry++;
         } while (probes--);
         perturb >>= PERTURB_SHIFT;
         i = (i * 5 + 1 + perturb) & mask;
+    }
+}
+
+static inline int
+set_lookkey_unicode_check(PyObject *key)
+{
+    return PyUnicode_CheckExact(key);
+}
+
+static inline int
+set_lookkey_unicode_eq(PyObject *a, PyObject *b)
+{
+    return unicode_eq(a, b);
+}
+
+static inline int
+set_lookkey_long_check(PyObject *key)
+{
+    return PyLong_CheckExact(key) && _PyLong_IsCompact((PyLongObject *)key);
+}
+
+static inline int
+set_lookkey_long_eq(PyObject *a, PyObject *b)
+{
+    return _PyLong_CompactValue((PyLongObject *)a) == _PyLong_CompactValue((PyLongObject *)b);
+}
+
+static inline int
+set_lookkey_none_check(PyObject *key)
+{
+    return Py_IsNone(key);
+}
+
+static inline int
+set_lookkey_none_eq(PyObject *a, PyObject *b)
+{
+    return Py_IsNone(b);
+}
+
+static inline int
+set_lookkey_type_check(PyObject *key)
+{
+    return PyType_CheckExact(key);
+}
+
+static inline int
+set_lookkey_type_eq(PyObject *a, PyObject *b)
+{
+    return a == b;
+}
+
+static setentry *
+set_lookkey(PySetObject *so, PyObject *key, Py_hash_t hash)
+{
+    if (set_lookkey_unicode_check(key)) {
+        return do_set_lookkey(so, key, hash, set_lookkey_unicode_check, set_lookkey_unicode_eq);
+    } else if (set_lookkey_long_check(key)) {
+        return do_set_lookkey(so, key, hash, set_lookkey_long_check, set_lookkey_long_eq);
+    } else if (set_lookkey_none_check(key)) {
+        return do_set_lookkey(so, key, hash, set_lookkey_none_check, set_lookkey_none_eq);
+    } else if (set_lookkey_type_check(key)) {
+        return do_set_lookkey(so, key, hash, set_lookkey_type_check, set_lookkey_type_eq);
+    } else {
+        return do_set_lookkey(so, key, hash, NULL, NULL);
     }
 }
 
