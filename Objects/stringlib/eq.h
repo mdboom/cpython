@@ -11,6 +11,12 @@ unicode_eq(PyObject *str1, PyObject *str2)
         return 0;
     }
 
+    Py_hash_t hash1 = ((PyASCIIObject*)str1)->hash;
+    Py_hash_t hash2 = ((PyASCIIObject*)str2)->hash;
+    if (hash1 != -1 && hash2 != -1 && hash1 != hash2) {
+        return 0;
+    }
+
     int kind = PyUnicode_KIND(str1);
     if (PyUnicode_KIND(str2) != kind) {
         return 0;
