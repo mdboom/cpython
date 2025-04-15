@@ -111,18 +111,46 @@ _PyFrame_ClearExceptCode(_PyInterpreterFrame *frame)
     // GH-99729: Clearing this frame can expose the stack (via finalizers). It's
     // crucial that this frame has been unlinked, and is no longer visible:
     assert(_PyThreadState_GET()->current_frame != frame);
+
+    // Clear the frame object first
+    PyFrameObject *f = NULL;
     if (frame->frame_obj) {
-        PyFrameObject *f = frame->frame_obj;
+        f = frame->frame_obj;
         frame->frame_obj = NULL;
         if (!_PyObject_IsUniquelyReferenced((PyObject *)f)) {
             take_ownership(f, frame);
             Py_DECREF(f);
             return;
         }
+    }
+
+    // Inline _PyFrame_ClearLocals for better performance
+    if (frame->stackpointer != NULL) {
+        _PyStackRef *sp = frame->stackpointer;
+        _PyStackRef *locals = frame->localsplus;
+
+        // Fast path for empty stack
+        if (sp <= locals) {
+            frame->stackpointer = locals;
+        } else {
+            // Set stackpointer to locals first to avoid reprocessing in case of exception
+            frame->stackpointer = locals;
+            // Process all stack items at once
+            do {
+                sp--;
+                PyStackRef_XCLOSE(*sp);
+            } while (sp > locals);
+        }
+    }
+
+    // Clear locals dict and function object
+    Py_CLEAR(frame->f_locals);
+    PyStackRef_CLEAR(frame->f_funcobj);
+
+    // Now it's safe to decref the frame object
+    if (f) {
         Py_DECREF(f);
     }
-    _PyFrame_ClearLocals(frame);
-    PyStackRef_CLEAR(frame->f_funcobj);
 }
 
 /* Unstable API functions */
