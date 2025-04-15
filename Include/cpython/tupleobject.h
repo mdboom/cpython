@@ -36,7 +36,9 @@ PyTuple_SET_ITEM(PyObject *op, Py_ssize_t index, PyObject *value) {
     assert(0 <= index);
     assert(index < Py_SIZE(tuple));
     tuple->ob_item[index] = value;
-    tuple->contains_mortal |= !_Py_IsImmortal(value);
+    if (value != NULL) {
+        tuple->contains_mortal |= !_Py_IsImmortal(value);
+    }
 }
 #define PyTuple_SET_ITEM(op, index, value) \
     PyTuple_SET_ITEM(_PyObject_CAST(op), (index), _PyObject_CAST(value))
