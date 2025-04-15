@@ -44,7 +44,7 @@ typedef struct {
 static inline void
 _PyTuple_Recycle(PyObject *op)
 {
-    ((PyTupleObject *)op)->contains_mortal = 0;
+    op->ob_flags |= _Py_IMMORTAL_CHILDREN_FLAG;
     _PyTuple_RESET_HASH_CACHE(op);
     if (!_PyObject_GC_IS_TRACKED(op)) {
         _PyObject_GC_TRACK(op);

@@ -6,7 +6,6 @@ typedef struct {
     PyObject_VAR_HEAD
     /* Cached hash.  Initially set to -1. */
     Py_hash_t ob_hash;
-    int contains_mortal;
     /* ob_item contains space for 'ob_size' elements.
        Items must normally not be NULL, except during construction when
        the tuple is not yet visible outside the function that builds it. */
@@ -29,6 +28,8 @@ static inline Py_ssize_t PyTuple_GET_SIZE(PyObject *op) {
 
 #define PyTuple_GET_ITEM(op, index) (_PyTuple_CAST(op)->ob_item[(index)])
 
+#define _PyTuple_UPDATE_IMMORTAL_CHILD(tuple, item) if (!_Py_IsImmortal((item))) { ((PyObject *)tuple)->ob_flags &= ~_Py_IMMORTAL_CHILDREN_FLAG; }
+
 /* Function *only* to be used to fill in brand new tuples */
 static inline void
 PyTuple_SET_ITEM(PyObject *op, Py_ssize_t index, PyObject *value) {
@@ -37,7 +38,7 @@ PyTuple_SET_ITEM(PyObject *op, Py_ssize_t index, PyObject *value) {
     assert(index < Py_SIZE(tuple));
     tuple->ob_item[index] = value;
     if (value != NULL) {
-        tuple->contains_mortal |= !_Py_IsImmortal(value);
+        _PyTuple_UPDATE_IMMORTAL_CHILD(tuple, value);
     }
 }
 #define PyTuple_SET_ITEM(op, index, value) \
