@@ -30,10 +30,12 @@ _ssl_Certificate_public_bytes(PyObject *self, PyObject *const *args, Py_ssize_t 
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(format), },
     };
     #undef NUM_KEYWORDS
@@ -89,4 +91,4 @@ _ssl_Certificate_get_info(PyObject *self, PyObject *Py_UNUSED(ignored))
 {
     return _ssl_Certificate_get_info_impl((PySSLCertificate *)self);
 }
-/*[clinic end generated code: output=bab2dba7dbc1523c input=a9049054013a1b77]*/
+/*[clinic end generated code: output=bdfb414e3915534c input=a9049054013a1b77]*/

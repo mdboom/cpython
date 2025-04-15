@@ -43,10 +43,12 @@ sock_initobj(PyObject *self, PyObject *args, PyObject *kwargs)
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(family), &_Py_ID(type), &_Py_ID(proto), &_Py_ID(fileno), },
     };
     #undef NUM_KEYWORDS
@@ -282,4 +284,4 @@ exit:
 #ifndef _SOCKET_SOCKET_IF_NAMETOINDEX_METHODDEF
     #define _SOCKET_SOCKET_IF_NAMETOINDEX_METHODDEF
 #endif /* !defined(_SOCKET_SOCKET_IF_NAMETOINDEX_METHODDEF) */
-/*[clinic end generated code: output=27bc54006551ab0c input=a9049054013a1b77]*/
+/*[clinic end generated code: output=c4aa576ec9d57949 input=a9049054013a1b77]*/

@@ -29,10 +29,12 @@ zoneinfo_ZoneInfo(PyTypeObject *type, PyObject *args, PyObject *kwargs)
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(key), },
     };
     #undef NUM_KEYWORDS
@@ -92,10 +94,12 @@ zoneinfo_ZoneInfo_from_file(PyObject *type, PyTypeObject *cls, PyObject *const *
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(key), },
     };
     #undef NUM_KEYWORDS
@@ -158,10 +162,12 @@ zoneinfo_ZoneInfo_no_cache(PyObject *type, PyTypeObject *cls, PyObject *const *a
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(key), },
     };
     #undef NUM_KEYWORDS
@@ -217,10 +223,12 @@ zoneinfo_ZoneInfo_clear_cache(PyObject *type, PyTypeObject *cls, PyObject *const
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(only_keys), },
     };
     #undef NUM_KEYWORDS
@@ -447,4 +455,4 @@ zoneinfo_ZoneInfo__unpickle(PyObject *type, PyTypeObject *cls, PyObject *const *
 exit:
     return return_value;
 }
-/*[clinic end generated code: output=8e9e204f390261b9 input=a9049054013a1b77]*/
+/*[clinic end generated code: output=08f23218b5ed9625 input=a9049054013a1b77]*/

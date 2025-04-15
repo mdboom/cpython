@@ -32,10 +32,12 @@ _opcode_stack_effect(PyObject *module, PyObject *const *args, Py_ssize_t nargs, 
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(jump), },
     };
     #undef NUM_KEYWORDS
@@ -112,10 +114,12 @@ _opcode_is_valid(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyOb
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(opcode), },
     };
     #undef NUM_KEYWORDS
@@ -178,10 +182,12 @@ _opcode_has_arg(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObj
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(opcode), },
     };
     #undef NUM_KEYWORDS
@@ -244,10 +250,12 @@ _opcode_has_const(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyO
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(opcode), },
     };
     #undef NUM_KEYWORDS
@@ -310,10 +318,12 @@ _opcode_has_name(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyOb
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(opcode), },
     };
     #undef NUM_KEYWORDS
@@ -376,10 +386,12 @@ _opcode_has_jump(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyOb
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(opcode), },
     };
     #undef NUM_KEYWORDS
@@ -447,10 +459,12 @@ _opcode_has_free(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyOb
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(opcode), },
     };
     #undef NUM_KEYWORDS
@@ -513,10 +527,12 @@ _opcode_has_local(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyO
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(opcode), },
     };
     #undef NUM_KEYWORDS
@@ -579,10 +595,12 @@ _opcode_has_exc(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObj
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(opcode), },
     };
     #undef NUM_KEYWORDS
@@ -737,10 +755,12 @@ _opcode_get_executor(PyObject *module, PyObject *const *args, Py_ssize_t nargs, 
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(code), &_Py_ID(offset), },
     };
     #undef NUM_KEYWORDS
@@ -776,4 +796,4 @@ _opcode_get_executor(PyObject *module, PyObject *const *args, Py_ssize_t nargs, 
 exit:
     return return_value;
 }
-/*[clinic end generated code: output=a11f02989c3175d7 input=a9049054013a1b77]*/
+/*[clinic end generated code: output=56f42900b6ee273c input=a9049054013a1b77]*/

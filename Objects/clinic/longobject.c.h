@@ -23,10 +23,12 @@ long_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(base), },
     };
     #undef NUM_KEYWORDS
@@ -294,10 +296,12 @@ int_to_bytes(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(length), &_Py_ID(byteorder), &_Py_ID(signed), },
     };
     #undef NUM_KEYWORDS
@@ -408,10 +412,12 @@ int_from_bytes(PyObject *type, PyObject *const *args, Py_ssize_t nargs, PyObject
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(bytes), &_Py_ID(byteorder), &_Py_ID(signed), },
     };
     #undef NUM_KEYWORDS
@@ -485,4 +491,4 @@ int_is_integer(PyObject *self, PyObject *Py_UNUSED(ignored))
 {
     return int_is_integer_impl(self);
 }
-/*[clinic end generated code: output=d23f8ce5bdf08a30 input=a9049054013a1b77]*/
+/*[clinic end generated code: output=8de808dd1bd595e5 input=a9049054013a1b77]*/

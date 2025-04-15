@@ -131,6 +131,7 @@ PyTuple_SetItem(PyObject *op, Py_ssize_t i, PyObject *newitem)
     }
     p = ((PyTupleObject *)op) -> ob_item + i;
     Py_XSETREF(*p, newitem);
+    ((PyTupleObject *)op)->contains_mortal |= !_Py_IsImmortal(newitem);
     return 0;
 }
 
@@ -178,6 +179,7 @@ PyTuple_Pack(Py_ssize_t n, ...)
     for (i = 0; i < n; i++) {
         o = va_arg(vargs, PyObject *);
         items[i] = Py_NewRef(o);
+        result->contains_mortal |= !_Py_IsImmortal(o);
     }
     va_end(vargs);
     _PyObject_GC_TRACK(result);
@@ -209,9 +211,11 @@ tuple_dealloc(PyObject *self)
     PyObject_GC_UnTrack(op);
     Py_TRASHCAN_BEGIN(op, tuple_dealloc)
 
-    Py_ssize_t i = Py_SIZE(op);
-    while (--i >= 0) {
-        Py_XDECREF(op->ob_item[i]);
+    if (op->contains_mortal) {
+        Py_ssize_t i = Py_SIZE(op);
+        while (--i >= 0) {
+            Py_XDECREF(op->ob_item[i]);
+        }
     }
     // This will abort on the empty singleton (if there is one).
     if (!maybe_freelist_push(op)) {
@@ -383,6 +387,7 @@ _PyTuple_FromArray(PyObject *const *src, Py_ssize_t n)
     for (Py_ssize_t i = 0; i < n; i++) {
         PyObject *item = src[i];
         dst[i] = Py_NewRef(item);
+        tuple->contains_mortal |= !_Py_IsImmortal(item);
     }
     _PyObject_GC_TRACK(tuple);
     return (PyObject *)tuple;
@@ -401,6 +406,7 @@ _PyTuple_FromStackRefStealOnSuccess(const _PyStackRef *src, Py_ssize_t n)
     PyObject **dst = tuple->ob_item;
     for (Py_ssize_t i = 0; i < n; i++) {
         dst[i] = PyStackRef_AsPyObjectSteal(src[i]);
+        tuple->contains_mortal |= !_Py_IsImmortal(dst[i]);
     }
     _PyObject_GC_TRACK(tuple);
     return (PyObject *)tuple;
@@ -423,6 +429,7 @@ _PyTuple_FromArraySteal(PyObject *const *src, Py_ssize_t n)
     for (Py_ssize_t i = 0; i < n; i++) {
         PyObject *item = src[i];
         dst[i] = item;
+        tuple->contains_mortal |= !_Py_IsImmortal(item);
     }
     _PyObject_GC_TRACK(tuple);
     return (PyObject *)tuple;
@@ -497,6 +504,8 @@ tuple_concat(PyObject *aa, PyObject *bb)
         dest[i] = Py_NewRef(v);
     }
 
+    np->contains_mortal = a->contains_mortal | b->contains_mortal;
+
     _PyObject_GC_TRACK(np);
     return (PyObject *)np;
 }
@@ -546,6 +555,9 @@ tuple_repeat(PyObject *self, Py_ssize_t n)
         _Py_memory_repeat((char *)np->ob_item, sizeof(PyObject *)*output_size,
                           sizeof(PyObject *)*input_size);
     }
+
+    np->contains_mortal = a->contains_mortal;
+
     _PyObject_GC_TRACK(np);
     return (PyObject *) np;
 }

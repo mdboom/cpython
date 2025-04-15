@@ -32,10 +32,12 @@ sys_addaudithook(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyOb
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(hook), },
     };
     #undef NUM_KEYWORDS
@@ -622,10 +624,12 @@ sys_set_coroutine_origin_tracking_depth(PyObject *module, PyObject *const *args,
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(depth), },
     };
     #undef NUM_KEYWORDS
@@ -926,10 +930,12 @@ sys_set_int_max_str_digits(PyObject *module, PyObject *const *args, Py_ssize_t n
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(maxdigits), },
     };
     #undef NUM_KEYWORDS
@@ -1078,10 +1084,12 @@ sys_getunicodeinternedsize(PyObject *module, PyObject *const *args, Py_ssize_t n
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(_only_immortal), },
     };
     #undef NUM_KEYWORDS
@@ -1577,10 +1585,12 @@ sys_remote_exec(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObj
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(pid), &_Py_ID(script), },
     };
     #undef NUM_KEYWORDS
@@ -1640,10 +1650,12 @@ sys__dump_tracelets(PyObject *module, PyObject *const *args, Py_ssize_t nargs, P
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(outpath), },
     };
     #undef NUM_KEYWORDS
@@ -1704,10 +1716,12 @@ sys__getframemodulename(PyObject *module, PyObject *const *args, Py_ssize_t narg
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(depth), },
     };
     #undef NUM_KEYWORDS
@@ -1864,4 +1878,4 @@ exit:
 #ifndef SYS_GETANDROIDAPILEVEL_METHODDEF
     #define SYS_GETANDROIDAPILEVEL_METHODDEF
 #endif /* !defined(SYS_GETANDROIDAPILEVEL_METHODDEF) */
-/*[clinic end generated code: output=1aca52cefbeb800f input=a9049054013a1b77]*/
+/*[clinic end generated code: output=527a2a27a6ab677f input=a9049054013a1b77]*/

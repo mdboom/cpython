@@ -2704,10 +2704,12 @@ _curses_setupterm(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyO
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(term), &_Py_ID(fd), },
     };
     #undef NUM_KEYWORDS
@@ -4394,4 +4396,4 @@ _curses_has_extended_color_support(PyObject *module, PyObject *Py_UNUSED(ignored
 #ifndef _CURSES_USE_DEFAULT_COLORS_METHODDEF
     #define _CURSES_USE_DEFAULT_COLORS_METHODDEF
 #endif /* !defined(_CURSES_USE_DEFAULT_COLORS_METHODDEF) */
-/*[clinic end generated code: output=acae2eb9cf75e76d input=a9049054013a1b77]*/
+/*[clinic end generated code: output=1ed4e32610e55d5f input=a9049054013a1b77]*/

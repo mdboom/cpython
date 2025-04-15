@@ -571,10 +571,12 @@ select_epoll(PyTypeObject *type, PyObject *args, PyObject *kwargs)
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(sizehint), &_Py_ID(flags), },
     };
     #undef NUM_KEYWORDS
@@ -746,10 +748,12 @@ select_epoll_register(PyObject *self, PyObject *const *args, Py_ssize_t nargs, P
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(fd), &_Py_ID(eventmask), },
     };
     #undef NUM_KEYWORDS
@@ -827,10 +831,12 @@ select_epoll_modify(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyO
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(fd), &_Py_ID(eventmask), },
     };
     #undef NUM_KEYWORDS
@@ -900,10 +906,12 @@ select_epoll_unregister(PyObject *self, PyObject *const *args, Py_ssize_t nargs,
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(fd), },
     };
     #undef NUM_KEYWORDS
@@ -975,10 +983,12 @@ select_epoll_poll(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObj
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(timeout), &_Py_ID(maxevents), },
     };
     #undef NUM_KEYWORDS
@@ -1375,4 +1385,4 @@ exit:
 #ifndef SELECT_KQUEUE_CONTROL_METHODDEF
     #define SELECT_KQUEUE_CONTROL_METHODDEF
 #endif /* !defined(SELECT_KQUEUE_CONTROL_METHODDEF) */
-/*[clinic end generated code: output=6fc20d78802511d1 input=a9049054013a1b77]*/
+/*[clinic end generated code: output=fff3ffb5506aa424 input=a9049054013a1b77]*/

@@ -79,10 +79,12 @@ _testcapi_make_exception_with_doc(PyObject *module, PyObject *const *args, Py_ss
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(name), &_Py_ID(doc), &_Py_ID(base), &_Py_ID(dict), },
     };
     #undef NUM_KEYWORDS
@@ -459,4 +461,4 @@ _testcapi_unstable_exc_prep_reraise_star(PyObject *module, PyObject *const *args
 exit:
     return return_value;
 }
-/*[clinic end generated code: output=357caea020348789 input=a9049054013a1b77]*/
+/*[clinic end generated code: output=db2a88be46dab7b2 input=a9049054013a1b77]*/

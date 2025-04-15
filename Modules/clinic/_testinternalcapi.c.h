@@ -31,10 +31,12 @@ _testinternalcapi_compiler_cleandoc(PyObject *module, PyObject *const *args, Py_
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(doc), },
     };
     #undef NUM_KEYWORDS
@@ -113,10 +115,12 @@ _testinternalcapi_compiler_codegen(PyObject *module, PyObject *const *args, Py_s
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(ast), &_Py_ID(filename), &_Py_ID(optimize), &_Py_ID(compile_mode), },
     };
     #undef NUM_KEYWORDS
@@ -189,10 +193,12 @@ _testinternalcapi_optimize_cfg(PyObject *module, PyObject *const *args, Py_ssize
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(instructions), &_Py_ID(consts), &_Py_ID(nlocals), },
     };
     #undef NUM_KEYWORDS
@@ -257,10 +263,12 @@ _testinternalcapi_assemble_code_object(PyObject *module, PyObject *const *args, 
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(filename), &_Py_ID(instructions), &_Py_ID(metadata), },
     };
     #undef NUM_KEYWORDS
@@ -336,10 +344,12 @@ gh_119213_getargs(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyO
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(spam), },
     };
     #undef NUM_KEYWORDS
@@ -375,4 +385,4 @@ skip_optional_pos:
 exit:
     return return_value;
 }
-/*[clinic end generated code: output=da34166d2c147e7a input=a9049054013a1b77]*/
+/*[clinic end generated code: output=85447a822dd188eb input=a9049054013a1b77]*/

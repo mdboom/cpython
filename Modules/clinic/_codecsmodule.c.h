@@ -99,10 +99,12 @@ _codecs_encode(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObje
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(obj), &_Py_ID(encoding), &_Py_ID(errors), },
     };
     #undef NUM_KEYWORDS
@@ -202,10 +204,12 @@ _codecs_decode(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObje
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(obj), &_Py_ID(encoding), &_Py_ID(errors), },
     };
     #undef NUM_KEYWORDS
@@ -2802,4 +2806,4 @@ exit:
 #ifndef _CODECS_CODE_PAGE_ENCODE_METHODDEF
     #define _CODECS_CODE_PAGE_ENCODE_METHODDEF
 #endif /* !defined(_CODECS_CODE_PAGE_ENCODE_METHODDEF) */
-/*[clinic end generated code: output=ed13f20dfb09e306 input=a9049054013a1b77]*/
+/*[clinic end generated code: output=7f1af557e8a98513 input=a9049054013a1b77]*/

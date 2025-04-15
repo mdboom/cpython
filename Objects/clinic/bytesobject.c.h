@@ -58,10 +58,12 @@ bytes_split(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *k
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(sep), &_Py_ID(maxsplit), },
     };
     #undef NUM_KEYWORDS
@@ -227,10 +229,12 @@ bytes_rsplit(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(sep), &_Py_ID(maxsplit), },
     };
     #undef NUM_KEYWORDS
@@ -698,10 +702,12 @@ bytes_translate(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObjec
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(delete), },
     };
     #undef NUM_KEYWORDS
@@ -1062,10 +1068,12 @@ bytes_decode(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(encoding), &_Py_ID(errors), },
     };
     #undef NUM_KEYWORDS
@@ -1159,10 +1167,12 @@ bytes_splitlines(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObje
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(keepends), },
     };
     #undef NUM_KEYWORDS
@@ -1267,10 +1277,12 @@ bytes_hex(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *kwn
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(sep), &_Py_ID(bytes_per_sep), },
     };
     #undef NUM_KEYWORDS
@@ -1332,10 +1344,12 @@ bytes_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(source), &_Py_ID(encoding), &_Py_ID(errors), },
     };
     #undef NUM_KEYWORDS
@@ -1411,4 +1425,4 @@ skip_optional_pos:
 exit:
     return return_value;
 }
-/*[clinic end generated code: output=08b9507244f73638 input=a9049054013a1b77]*/
+/*[clinic end generated code: output=2f8c4630f792c6a3 input=a9049054013a1b77]*/

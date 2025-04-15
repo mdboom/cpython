@@ -39,10 +39,12 @@ zlib_compress(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObjec
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(level), &_Py_ID(wbits), },
     };
     #undef NUM_KEYWORDS
@@ -132,10 +134,12 @@ zlib_decompress(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObj
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(wbits), &_Py_ID(bufsize), },
     };
     #undef NUM_KEYWORDS
@@ -250,10 +254,12 @@ zlib_compressobj(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyOb
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(level), &_Py_ID(method), &_Py_ID(wbits), &_Py_ID(memLevel), &_Py_ID(strategy), &_Py_ID(zdict), },
     };
     #undef NUM_KEYWORDS
@@ -376,10 +382,12 @@ zlib_decompressobj(PyObject *module, PyObject *const *args, Py_ssize_t nargs, Py
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(wbits), &_Py_ID(zdict), },
     };
     #undef NUM_KEYWORDS
@@ -520,10 +528,12 @@ zlib_Decompress_decompress(PyObject *self, PyTypeObject *cls, PyObject *const *a
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(max_length), },
     };
     #undef NUM_KEYWORDS
@@ -935,10 +945,12 @@ zlib_ZlibDecompressor_decompress(PyObject *self, PyObject *const *args, Py_ssize
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(data), &_Py_ID(max_length), },
     };
     #undef NUM_KEYWORDS
@@ -1121,4 +1133,4 @@ exit:
 #ifndef ZLIB_DECOMPRESS___DEEPCOPY___METHODDEF
     #define ZLIB_DECOMPRESS___DEEPCOPY___METHODDEF
 #endif /* !defined(ZLIB_DECOMPRESS___DEEPCOPY___METHODDEF) */
-/*[clinic end generated code: output=33938c7613a8c1c7 input=a9049054013a1b77]*/
+/*[clinic end generated code: output=b1f7d1b5c6a064ce input=a9049054013a1b77]*/

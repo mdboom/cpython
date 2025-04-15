@@ -38,10 +38,12 @@ pysqlite_connection_init(PyObject *self, PyObject *args, PyObject *kwargs)
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(database), &_Py_ID(timeout), &_Py_ID(detect_types), &_Py_ID(isolation_level), &_Py_ID(check_same_thread), &_Py_ID(factory), &_Py_ID(cached_statements), &_Py_ID(uri), &_Py_ID(autocommit), },
     };
     #undef NUM_KEYWORDS
@@ -194,10 +196,12 @@ pysqlite_connection_cursor(PyObject *self, PyObject *const *args, Py_ssize_t nar
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(factory), },
     };
     #undef NUM_KEYWORDS
@@ -269,10 +273,12 @@ blobopen(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *kwna
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(readonly), &_Py_ID(name), },
     };
     #undef NUM_KEYWORDS
@@ -465,10 +471,12 @@ pysqlite_connection_create_function(PyObject *self, PyTypeObject *cls, PyObject 
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(name), &_Py_ID(narg), &_Py_ID(func), &_Py_ID(deterministic), },
     };
     #undef NUM_KEYWORDS
@@ -660,10 +668,12 @@ pysqlite_connection_create_aggregate(PyObject *self, PyTypeObject *cls, PyObject
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(name), &_Py_ID(n_arg), &_Py_ID(aggregate_class), },
     };
     #undef NUM_KEYWORDS
@@ -765,10 +775,12 @@ pysqlite_connection_set_authorizer(PyObject *self, PyTypeObject *cls, PyObject *
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(authorizer_callback), },
     };
     #undef NUM_KEYWORDS
@@ -861,10 +873,12 @@ pysqlite_connection_set_progress_handler(PyObject *self, PyTypeObject *cls, PyOb
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(progress_handler), _Py_LATIN1_CHR('n'), },
     };
     #undef NUM_KEYWORDS
@@ -952,10 +966,12 @@ pysqlite_connection_set_trace_callback(PyObject *self, PyTypeObject *cls, PyObje
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(trace_callback), },
     };
     #undef NUM_KEYWORDS
@@ -1057,10 +1073,12 @@ pysqlite_connection_load_extension(PyObject *self, PyObject *const *args, Py_ssi
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(entrypoint), },
     };
     #undef NUM_KEYWORDS
@@ -1272,10 +1290,12 @@ pysqlite_connection_iterdump(PyObject *self, PyObject *const *args, Py_ssize_t n
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(filter), },
     };
     #undef NUM_KEYWORDS
@@ -1339,10 +1359,12 @@ pysqlite_connection_backup(PyObject *self, PyObject *const *args, Py_ssize_t nar
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(target), &_Py_ID(pages), &_Py_ID(progress), &_Py_ID(name), &_Py_ID(sleep), },
     };
     #undef NUM_KEYWORDS
@@ -1524,10 +1546,12 @@ serialize(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *kwn
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(name), },
     };
     #undef NUM_KEYWORDS
@@ -1616,10 +1640,12 @@ deserialize(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *k
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(name), },
     };
     #undef NUM_KEYWORDS
@@ -1921,4 +1947,4 @@ exit:
 #ifndef DESERIALIZE_METHODDEF
     #define DESERIALIZE_METHODDEF
 #endif /* !defined(DESERIALIZE_METHODDEF) */
-/*[clinic end generated code: output=2f325c2444b4bb47 input=a9049054013a1b77]*/
+/*[clinic end generated code: output=0be2c47f527dd23d input=a9049054013a1b77]*/

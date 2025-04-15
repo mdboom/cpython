@@ -108,6 +108,7 @@ extern PyTypeObject _PyExc_MemoryError;
                 .tuple_empty = { \
                     .ob_base = _PyVarObject_HEAD_INIT(&PyTuple_Type, 0), \
                     .ob_hash = _PyTuple_HASH_EMPTY, \
+                    .contains_mortal = 0, \
                 }, \
                 .hamt_bitmap_node_empty = { \
                     .ob_base = _PyVarObject_HEAD_INIT(&_PyHamt_BitmapNode_Type, 0), \

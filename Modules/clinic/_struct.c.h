@@ -34,10 +34,12 @@ Struct___init__(PyObject *self, PyObject *args, PyObject *kwargs)
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(format), },
     };
     #undef NUM_KEYWORDS
@@ -139,10 +141,12 @@ Struct_unpack_from(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyOb
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(buffer), &_Py_ID(offset), },
     };
     #undef NUM_KEYWORDS
@@ -352,10 +356,12 @@ unpack_from(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject 
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(buffer), &_Py_ID(offset), },
     };
     #undef NUM_KEYWORDS
@@ -458,4 +464,4 @@ exit:
 
     return return_value;
 }
-/*[clinic end generated code: output=caa7f36443e91cb9 input=a9049054013a1b77]*/
+/*[clinic end generated code: output=c1c7627521020713 input=a9049054013a1b77]*/

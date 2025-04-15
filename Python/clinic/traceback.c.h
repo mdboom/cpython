@@ -30,10 +30,12 @@ tb_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(tb_next), &_Py_ID(tb_frame), &_Py_ID(tb_lasti), &_Py_ID(tb_lineno), },
     };
     #undef NUM_KEYWORDS
@@ -132,4 +134,4 @@ traceback_tb_next_set(PyObject *self, PyObject *value, void *Py_UNUSED(context))
 
     return return_value;
 }
-/*[clinic end generated code: output=5361141395da963e input=a9049054013a1b77]*/
+/*[clinic end generated code: output=a4d119b7260739c5 input=a9049054013a1b77]*/

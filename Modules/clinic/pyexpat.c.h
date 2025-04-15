@@ -433,10 +433,12 @@ pyexpat_ParserCreate(PyObject *module, PyObject *const *args, Py_ssize_t nargs, 
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(encoding), &_Py_ID(namespace_separator), &_Py_ID(intern), },
     };
     #undef NUM_KEYWORDS
@@ -552,4 +554,4 @@ exit:
 #ifndef PYEXPAT_XMLPARSER_USEFOREIGNDTD_METHODDEF
     #define PYEXPAT_XMLPARSER_USEFOREIGNDTD_METHODDEF
 #endif /* !defined(PYEXPAT_XMLPARSER_USEFOREIGNDTD_METHODDEF) */
-/*[clinic end generated code: output=4dbdc959c67dc2d5 input=a9049054013a1b77]*/
+/*[clinic end generated code: output=024c1223e7d7fbd5 input=a9049054013a1b77]*/

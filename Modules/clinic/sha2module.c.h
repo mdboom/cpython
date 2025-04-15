@@ -191,10 +191,12 @@ _sha2_sha256(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(string), &_Py_ID(usedforsecurity), },
     };
     #undef NUM_KEYWORDS
@@ -268,10 +270,12 @@ _sha2_sha224(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(string), &_Py_ID(usedforsecurity), },
     };
     #undef NUM_KEYWORDS
@@ -345,10 +349,12 @@ _sha2_sha512(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(string), &_Py_ID(usedforsecurity), },
     };
     #undef NUM_KEYWORDS
@@ -422,10 +428,12 @@ _sha2_sha384(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(string), &_Py_ID(usedforsecurity), },
     };
     #undef NUM_KEYWORDS
@@ -475,4 +483,4 @@ skip_optional_kwonly:
 exit:
     return return_value;
 }
-/*[clinic end generated code: output=af11090855b7c85a input=a9049054013a1b77]*/
+/*[clinic end generated code: output=4cbda7f9283decc1 input=a9049054013a1b77]*/

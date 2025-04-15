@@ -35,10 +35,12 @@ _multiprocessing_SemLock_acquire(PyObject *self, PyObject *const *args, Py_ssize
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(block), &_Py_ID(timeout), },
     };
     #undef NUM_KEYWORDS
@@ -143,10 +145,12 @@ _multiprocessing_SemLock_acquire(PyObject *self, PyObject *const *args, Py_ssize
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(block), &_Py_ID(timeout), },
     };
     #undef NUM_KEYWORDS
@@ -242,10 +246,12 @@ _multiprocessing_SemLock(PyTypeObject *type, PyObject *args, PyObject *kwargs)
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(kind), &_Py_ID(value), &_Py_ID(maxvalue), &_Py_ID(name), &_Py_ID(unlink), },
     };
     #undef NUM_KEYWORDS
@@ -582,4 +588,4 @@ exit:
 #ifndef _MULTIPROCESSING_SEMLOCK___EXIT___METHODDEF
     #define _MULTIPROCESSING_SEMLOCK___EXIT___METHODDEF
 #endif /* !defined(_MULTIPROCESSING_SEMLOCK___EXIT___METHODDEF) */
-/*[clinic end generated code: output=d1e349d4ee3d4bbf input=a9049054013a1b77]*/
+/*[clinic end generated code: output=cddb18923523ded1 input=a9049054013a1b77]*/

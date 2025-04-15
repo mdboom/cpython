@@ -55,10 +55,12 @@ _thread_set_name(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyOb
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(name), },
     };
     #undef NUM_KEYWORDS
@@ -103,4 +105,4 @@ exit:
 #ifndef _THREAD_SET_NAME_METHODDEF
     #define _THREAD_SET_NAME_METHODDEF
 #endif /* !defined(_THREAD_SET_NAME_METHODDEF) */
-/*[clinic end generated code: output=e978dc4615b9bc35 input=a9049054013a1b77]*/
+/*[clinic end generated code: output=01785e34ad6f3a48 input=a9049054013a1b77]*/

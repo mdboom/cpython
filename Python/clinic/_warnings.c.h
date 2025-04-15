@@ -82,10 +82,12 @@ warnings_warn(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObjec
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(message), &_Py_ID(category), &_Py_ID(stacklevel), &_Py_ID(source), &_Py_ID(skip_file_prefixes), },
     };
     #undef NUM_KEYWORDS
@@ -192,10 +194,12 @@ warnings_warn_explicit(PyObject *module, PyObject *const *args, Py_ssize_t nargs
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(message), &_Py_ID(category), &_Py_ID(filename), &_Py_ID(lineno), &_Py_ID(module), &_Py_ID(registry), &_Py_ID(module_globals), &_Py_ID(source), },
     };
     #undef NUM_KEYWORDS
@@ -284,4 +288,4 @@ warnings_filters_mutated_lock_held(PyObject *module, PyObject *Py_UNUSED(ignored
 {
     return warnings_filters_mutated_lock_held_impl(module);
 }
-/*[clinic end generated code: output=610ed5764bf40bb5 input=a9049054013a1b77]*/
+/*[clinic end generated code: output=a2e0919eef9044cb input=a9049054013a1b77]*/

@@ -1457,10 +1457,12 @@ keywords(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kw
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('a'), _Py_LATIN1_CHR('b'), },
     };
     #undef NUM_KEYWORDS
@@ -1516,10 +1518,12 @@ keywords_kwonly(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObj
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('a'), _Py_LATIN1_CHR('b'), },
     };
     #undef NUM_KEYWORDS
@@ -1575,10 +1579,12 @@ keywords_opt(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('a'), _Py_LATIN1_CHR('b'), _Py_LATIN1_CHR('c'), },
     };
     #undef NUM_KEYWORDS
@@ -1647,10 +1653,12 @@ keywords_opt_kwonly(PyObject *module, PyObject *const *args, Py_ssize_t nargs, P
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('a'), _Py_LATIN1_CHR('b'), _Py_LATIN1_CHR('c'), _Py_LATIN1_CHR('d'), },
     };
     #undef NUM_KEYWORDS
@@ -1730,10 +1738,12 @@ keywords_kwonly_opt(PyObject *module, PyObject *const *args, Py_ssize_t nargs, P
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('a'), _Py_LATIN1_CHR('b'), _Py_LATIN1_CHR('c'), },
     };
     #undef NUM_KEYWORDS
@@ -1801,10 +1811,12 @@ posonly_keywords(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyOb
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('b'), },
     };
     #undef NUM_KEYWORDS
@@ -1860,10 +1872,12 @@ posonly_kwonly(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObje
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('b'), },
     };
     #undef NUM_KEYWORDS
@@ -1920,10 +1934,12 @@ posonly_keywords_kwonly(PyObject *module, PyObject *const *args, Py_ssize_t narg
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('b'), _Py_LATIN1_CHR('c'), },
     };
     #undef NUM_KEYWORDS
@@ -1982,10 +1998,12 @@ posonly_keywords_opt(PyObject *module, PyObject *const *args, Py_ssize_t nargs, 
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('b'), _Py_LATIN1_CHR('c'), _Py_LATIN1_CHR('d'), },
     };
     #undef NUM_KEYWORDS
@@ -2056,10 +2074,12 @@ posonly_opt_keywords_opt(PyObject *module, PyObject *const *args, Py_ssize_t nar
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('c'), _Py_LATIN1_CHR('d'), },
     };
     #undef NUM_KEYWORDS
@@ -2135,10 +2155,12 @@ posonly_kwonly_opt(PyObject *module, PyObject *const *args, Py_ssize_t nargs, Py
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('b'), _Py_LATIN1_CHR('c'), _Py_LATIN1_CHR('d'), },
     };
     #undef NUM_KEYWORDS
@@ -2209,10 +2231,12 @@ posonly_opt_kwonly_opt(PyObject *module, PyObject *const *args, Py_ssize_t nargs
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('c'), _Py_LATIN1_CHR('d'), },
     };
     #undef NUM_KEYWORDS
@@ -2288,10 +2312,12 @@ posonly_keywords_kwonly_opt(PyObject *module, PyObject *const *args, Py_ssize_t 
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('b'), _Py_LATIN1_CHR('c'), _Py_LATIN1_CHR('d'), _Py_LATIN1_CHR('e'), },
     };
     #undef NUM_KEYWORDS
@@ -2366,10 +2392,12 @@ posonly_keywords_opt_kwonly_opt(PyObject *module, PyObject *const *args, Py_ssiz
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('b'), _Py_LATIN1_CHR('c'), _Py_LATIN1_CHR('d'), _Py_LATIN1_CHR('e'), },
     };
     #undef NUM_KEYWORDS
@@ -2453,10 +2481,12 @@ posonly_opt_keywords_opt_kwonly_opt(PyObject *module, PyObject *const *args, Py_
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('c'), _Py_LATIN1_CHR('d'), },
     };
     #undef NUM_KEYWORDS
@@ -2535,10 +2565,12 @@ keyword_only_parameter(PyObject *module, PyObject *const *args, Py_ssize_t nargs
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('a'), },
     };
     #undef NUM_KEYWORDS
@@ -2705,10 +2737,12 @@ posonly_poskw_varpos(PyObject *module, PyObject *const *args, Py_ssize_t nargs, 
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('b'), },
     };
     #undef NUM_KEYWORDS
@@ -2775,10 +2809,12 @@ poskw_varpos(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('a'), },
     };
     #undef NUM_KEYWORDS
@@ -2844,10 +2880,12 @@ poskw_varpos_kwonly_opt(PyObject *module, PyObject *const *args, Py_ssize_t narg
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('a'), _Py_LATIN1_CHR('b'), },
     };
     #undef NUM_KEYWORDS
@@ -2923,10 +2961,12 @@ poskw_varpos_kwonly_opt2(PyObject *module, PyObject *const *args, Py_ssize_t nar
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('a'), _Py_LATIN1_CHR('b'), _Py_LATIN1_CHR('c'), },
     };
     #undef NUM_KEYWORDS
@@ -3005,10 +3045,12 @@ varpos_kwonly_opt(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyO
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('b'), },
     };
     #undef NUM_KEYWORDS
@@ -3077,10 +3119,12 @@ varpos_kwonly_req_opt(PyObject *module, PyObject *const *args, Py_ssize_t nargs,
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('a'), _Py_LATIN1_CHR('b'), _Py_LATIN1_CHR('c'), },
     };
     #undef NUM_KEYWORDS
@@ -3258,10 +3302,12 @@ posonly_poskw_varpos_array(PyObject *module, PyObject *const *args, Py_ssize_t n
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('b'), },
     };
     #undef NUM_KEYWORDS
@@ -3324,10 +3370,12 @@ gh_32092_oob(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(pos1), &_Py_ID(pos2), &_Py_ID(kw1), &_Py_ID(kw2), },
     };
     #undef NUM_KEYWORDS
@@ -3410,10 +3458,12 @@ gh_32092_kw_pass(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyOb
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(pos), &_Py_ID(kw), },
     };
     #undef NUM_KEYWORDS
@@ -3552,10 +3602,12 @@ null_or_tuple_for_varargs(PyObject *module, PyObject *const *args, Py_ssize_t na
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(name), &_Py_ID(covariant), },
     };
     #undef NUM_KEYWORDS
@@ -3630,10 +3682,12 @@ clone_f1(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kw
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(path), },
     };
     #undef NUM_KEYWORDS
@@ -3699,10 +3753,12 @@ clone_f2(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kw
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(path), },
     };
     #undef NUM_KEYWORDS
@@ -3768,10 +3824,12 @@ clone_with_conv_f1(PyObject *module, PyObject *const *args, Py_ssize_t nargs, Py
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(path), },
     };
     #undef NUM_KEYWORDS
@@ -3834,10 +3892,12 @@ clone_with_conv_f2(PyObject *module, PyObject *const *args, Py_ssize_t nargs, Py
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(path), },
     };
     #undef NUM_KEYWORDS
@@ -3924,10 +3984,12 @@ _testclinic_TestClass_get_defining_class_arg(PyObject *self, PyTypeObject *cls, 
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { &_Py_ID(arg), },
     };
     #undef NUM_KEYWORDS
@@ -4180,10 +4242,12 @@ posonly_poskw_varpos_no_fastcall(PyTypeObject *type, PyObject *args, PyObject *k
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('b'), },
     };
     #undef NUM_KEYWORDS
@@ -4337,10 +4401,12 @@ posonly_poskw_varpos_array_no_fastcall(PyTypeObject *type, PyObject *args, PyObj
         PyGC_Head _this_is_not_used;
         PyObject_VAR_HEAD
         Py_hash_t ob_hash;
+        int contains_mortal;
         PyObject *ob_item[NUM_KEYWORDS];
     } _kwtuple = {
         .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
         .ob_hash = -1,
+        .contains_mortal = 1,  // TODO: Try 0 here
         .ob_item = { _Py_LATIN1_CHR('b'), },
     };
     #undef NUM_KEYWORDS
@@ -4379,4 +4445,4 @@ posonly_poskw_varpos_array_no_fastcall(PyTypeObject *type, PyObject *args, PyObj
 exit:
     return return_value;
 }
-/*[clinic end generated code: output=a3726ee0a94090d1 input=a9049054013a1b77]*/
+/*[clinic end generated code: output=280fc2a2ac6ced24 input=a9049054013a1b77]*/
