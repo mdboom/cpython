@@ -35,6 +35,8 @@ siftdown(PyListObject *heap, Py_ssize_t startpos, Py_ssize_t pos)
         return -1;
     }
 
+    ((PyObject *)heap)->ob_flags |= _Py_MORTAL_CHILDREN_FLAG;
+
     /* Follow the path to the root, moving parents down until finding
        a place newitem fits. */
     arr = _PyList_ITEMS(heap);
@@ -72,6 +74,8 @@ siftup(PyListObject *heap, Py_ssize_t pos)
     Py_ssize_t startpos, endpos, childpos, limit;
     PyObject *tmp1, *tmp2, **arr;
     int cmp;
+
+    ((PyObject *)heap)->ob_flags |= _Py_MORTAL_CHILDREN_FLAG;
 
     assert(PyList_Check(heap));
     endpos = PyList_GET_SIZE(heap);
@@ -400,6 +404,8 @@ siftdown_max(PyListObject *heap, Py_ssize_t startpos, Py_ssize_t pos)
         return -1;
     }
 
+    ((PyObject *)heap)->ob_flags |= _Py_MORTAL_CHILDREN_FLAG;
+
     /* Follow the path to the root, moving parents down until finding
        a place newitem fits. */
     arr = _PyList_ITEMS(heap);
@@ -444,6 +450,8 @@ siftup_max(PyListObject *heap, Py_ssize_t pos)
         PyErr_SetString(PyExc_IndexError, "index out of range");
         return -1;
     }
+
+    ((PyObject *)heap)->ob_flags |= _Py_MORTAL_CHILDREN_FLAG;
 
     /* Bubble up the smaller child until hitting a leaf. */
     arr = _PyList_ITEMS(heap);

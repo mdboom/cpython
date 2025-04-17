@@ -20,6 +20,7 @@ cleanup during runtime finalization.
 */
 
 #define _Py_STATICALLY_ALLOCATED_FLAG 4
+#define _Py_MORTAL_CHILDREN_FLAG 2
 #define _Py_IMMORTAL_FLAGS 1
 
 #if SIZEOF_VOID_P > 4

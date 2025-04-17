@@ -43,6 +43,14 @@ _PyList_AppendTakeRef(PyListObject *self, PyObject *newitem)
         PyList_SET_ITEM(self, len, newitem);
 #endif
         Py_SET_SIZE(self, len + 1);
+#ifdef Py_DEBUG
+        if (!(((PyObject *)self)->ob_flags & _Py_MORTAL_CHILDREN_FLAG)) {
+            int i = Py_SIZE(self);
+            while (--i >= 0) {
+                assert(self->ob_item[i] == NULL || _Py_IsImmortal(self->ob_item[i]));
+            }
+        }
+#endif
         return 0;
     }
     return _PyList_AppendTakeRefListResize(self, newitem);

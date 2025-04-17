@@ -55,6 +55,26 @@ list_capacity(PyObject **items)
 }
 #endif
 
+#ifdef Py_DEBUG
+static void validate(PyObject *op)
+{
+    if (op == NULL) {
+        return;
+    }
+    if (((PyListObject *)op)->ob_item == NULL) {
+        return;
+    }
+    if (!(op->ob_flags & _Py_MORTAL_CHILDREN_FLAG)) {
+        int i = Py_SIZE(op);
+        while (--i >= 0) {
+            assert(((PyListObject *)op)->ob_item[i] == NULL || _Py_IsImmortal(((PyListObject *)op)->ob_item[i]));
+        }
+    }
+}
+#else
+#define validate(op) ((void)0)
+#endif
+
 static void
 free_list_items(PyObject** items, bool use_qsbr)
 {
@@ -464,6 +484,8 @@ PyList_SetItem(PyObject *op, Py_ssize_t i,
     }
     PyObject *tmp = self->ob_item[i];
     FT_ATOMIC_STORE_PTR_RELEASE(self->ob_item[i], newitem);
+    _PyList_UPDATE_MORTAL(op, newitem);
+    validate(op);
     Py_XDECREF(tmp);
     ret = 0;
 end:;
@@ -496,6 +518,8 @@ ins1(PyListObject *self, Py_ssize_t where, PyObject *v)
     for (i = n; --i >= where; )
         FT_ATOMIC_STORE_PTR_RELAXED(items[i+1], items[i]);
     FT_ATOMIC_STORE_PTR_RELEASE(items[where], Py_NewRef(v));
+    _PyList_UPDATE_MORTAL(self, v);
+    validate((PyObject *)self);
     return 0;
 }
 
@@ -520,11 +544,16 @@ _PyList_AppendTakeRefListResize(PyListObject *self, PyObject *newitem)
 {
     Py_ssize_t len = Py_SIZE(self);
     assert(self->allocated == -1 || self->allocated == len);
+
+    validate((PyObject *)self);
+
     if (list_resize(self, len + 1) < 0) {
         Py_DECREF(newitem);
         return -1;
     }
     FT_ATOMIC_STORE_PTR_RELEASE(self->ob_item[len], newitem);
+    _PyList_UPDATE_MORTAL(self, newitem);
+    validate((PyObject *)self);
     return 0;
 }
 
@@ -556,9 +585,11 @@ list_dealloc(PyObject *self)
            There's a simple test case where somehow this reduces
            thrashing when a *very* large list is created and
            immediately deleted. */
-        i = Py_SIZE(op);
-        while (--i >= 0) {
-            Py_XDECREF(op->ob_item[i]);
+        if (!PyList_CheckExact(self) || self->ob_flags & _Py_MORTAL_CHILDREN_FLAG) {
+            i = Py_SIZE(op);
+            while (--i >= 0) {
+                Py_XDECREF(op->ob_item[i]);
+            }
         }
         free_list_items(op->ob_item, false);
         op->ob_item = NULL;
@@ -700,8 +731,10 @@ list_slice_lock_held(PyListObject *a, Py_ssize_t ilow, Py_ssize_t ihigh)
     for (i = 0; i < len; i++) {
         PyObject *v = src[i];
         dest[i] = Py_NewRef(v);
+        _PyList_UPDATE_MORTAL(np, v);
     }
     Py_SET_SIZE(np, len);
+    validate((PyObject *)np);
     return (PyObject *)np;
 }
 
@@ -752,14 +785,20 @@ list_concat_lock_held(PyListObject *a, PyListObject *b)
     for (i = 0; i < Py_SIZE(a); i++) {
         PyObject *v = src[i];
         dest[i] = Py_NewRef(v);
+        _PyList_UPDATE_MORTAL(np, v);
     }
     src = b->ob_item;
     dest = np->ob_item + Py_SIZE(a);
     for (i = 0; i < Py_SIZE(b); i++) {
         PyObject *v = src[i];
         dest[i] = Py_NewRef(v);
+        _PyList_UPDATE_MORTAL(np, v);
     }
     Py_SET_SIZE(np, size);
+
+    // TODO: Why doesn't this work?
+    // ((PyObject *)np)->ob_flags |= ((((PyObject *)a)->ob_flags | ((PyObject *)b)->ob_flags) & _Py_MORTAL_CHILDREN_FLAG);
+    validate((PyObject *)np);
     return (PyObject *)np;
 }
 
@@ -818,8 +857,10 @@ list_repeat_lock_held(PyListObject *a, Py_ssize_t n)
         _Py_memory_repeat((char *)np->ob_item, sizeof(PyObject *)*output_size,
                                         sizeof(PyObject *)*input_size);
     }
+    ((PyObject *)np)->ob_flags |= (((PyObject *)a)->ob_flags & _Py_MORTAL_CHILDREN_FLAG);
 
     Py_SET_SIZE(np, output_size);
+    validate((PyObject *)np);
     return (PyObject *) np;
 }
 
@@ -848,8 +889,11 @@ list_clear_impl(PyListObject *a, bool is_resize)
     Py_SET_SIZE(a, 0);
     FT_ATOMIC_STORE_PTR_RELEASE(a->ob_item, NULL);
     a->allocated = 0;
-    while (--i >= 0) {
-        Py_XDECREF(items[i]);
+    if (((PyObject *)a)->ob_flags & _Py_MORTAL_CHILDREN_FLAG) {
+        while (--i >= 0) {
+            Py_XDECREF(items[i]);
+        }
+        ((PyObject *)a)->ob_flags &= ~_Py_MORTAL_CHILDREN_FLAG;
     }
 #ifdef Py_GIL_DISABLED
     if (is_resize) {
@@ -958,6 +1002,8 @@ list_ass_slice_lock_held(PyListObject *a, Py_ssize_t ilow, Py_ssize_t ihigh, PyO
             goto Error;
         }
         item = a->ob_item;
+        // Technically we could check if all the remaining items are immortal,
+        // but that's an O(n) operation.
     }
     else if (d > 0) { /* Insert d items */
         k = Py_SIZE(a);
@@ -972,6 +1018,7 @@ list_ass_slice_lock_held(PyListObject *a, Py_ssize_t ilow, Py_ssize_t ihigh, PyO
     for (k = 0; k < n; k++, ilow++) {
         PyObject *w = vitem[k];
         FT_ATOMIC_STORE_PTR_RELEASE(item[ilow], Py_XNewRef(w));
+        _PyList_UPDATE_MORTAL(a, w);
     }
     for (k = norig - 1; k >= 0; --k)
         Py_XDECREF(recycle[k]);
@@ -980,6 +1027,7 @@ list_ass_slice_lock_held(PyListObject *a, Py_ssize_t ilow, Py_ssize_t ihigh, PyO
     if (recycle != recycle_on_stack)
         PyMem_Free(recycle);
     Py_XDECREF(v_as_SF);
+    validate((PyObject *)a);
     return result;
 #undef b
 }
@@ -1048,8 +1096,10 @@ list_inplace_repeat_lock_held(PyListObject *self, Py_ssize_t n)
     }
 
     PyObject **items = self->ob_item;
-    for (Py_ssize_t j = 0; j < input_size; j++) {
-        _Py_RefcntAdd(items[j], n-1);
+    if (((PyObject *)self)->ob_flags & _Py_MORTAL_CHILDREN_FLAG) {
+        for (Py_ssize_t j = 0; j < input_size; j++) {
+            _Py_RefcntAdd(items[j], n-1);
+        }
     }
     // TODO: _Py_memory_repeat calls are not safe for shared lists in
     // GIL_DISABLED builds. (See issue #129069)
@@ -1092,6 +1142,8 @@ list_ass_item_lock_held(PyListObject *a, Py_ssize_t i, PyObject *v)
     }
     else {
         FT_ATOMIC_STORE_PTR_RELEASE(a->ob_item[i], Py_NewRef(v));
+        _PyList_UPDATE_MORTAL(a, v);
+        validate((PyObject *)a);
     }
     Py_DECREF(tmp);
     return 0;
@@ -1212,7 +1264,9 @@ list_extend_fast(PyListObject *self, PyObject *iterable)
     for (Py_ssize_t i = 0; i < n; i++) {
         PyObject *o = src[i];
         FT_ATOMIC_STORE_PTR_RELEASE(dest[i], Py_NewRef(o));
+        _PyList_UPDATE_MORTAL(self, o);
     }
+    validate((PyObject *)self);
     return 0;
 }
 
@@ -1269,7 +1323,9 @@ list_extend_iter_lock_held(PyListObject *self, PyObject *iterable)
         if (Py_SIZE(self) < self->allocated) {
             Py_ssize_t len = Py_SIZE(self);
             FT_ATOMIC_STORE_PTR_RELEASE(self->ob_item[len], item);  // steals item ref
+            _PyList_UPDATE_MORTAL(self, item);
             Py_SET_SIZE(self, len + 1);
+            validate((PyObject *)self);
         }
         else {
             if (_PyList_AppendTakeRef(self, item) < 0)
@@ -1319,9 +1375,11 @@ list_extend_set(PyListObject *self, PySetObject *other)
     PyObject **dest = self->ob_item + m;
     while (_PySet_NextEntryRef((PyObject *)other, &setpos, &key, &hash)) {
         FT_ATOMIC_STORE_PTR_RELEASE(*dest, key);
+        _PyList_UPDATE_MORTAL(self, key);
         dest++;
     }
     Py_SET_SIZE(self, m + n);
+    validate((PyObject *)self);
     return 0;
 }
 
@@ -1342,10 +1400,12 @@ list_extend_dict(PyListObject *self, PyDictObject *dict, int which_item)
         PyObject *obj = keyvalue[which_item];
         Py_INCREF(obj);
         FT_ATOMIC_STORE_PTR_RELEASE(*dest, obj);
+        _PyList_UPDATE_MORTAL(self, obj);
         dest++;
     }
 
     Py_SET_SIZE(self, m + n);
+    validate((PyObject *)self);
     return 0;
 }
 
@@ -1369,11 +1429,13 @@ list_extend_dictitems(PyListObject *self, PyDictObject *dict)
             return -1;
         }
         FT_ATOMIC_STORE_PTR_RELEASE(*dest, item);
+        _PyList_UPDATE_MORTAL(self, item);
         dest++;
         i++;
     }
 
     Py_SET_SIZE(self, m + n);
+    validate((PyObject *)self);
     return 0;
 }
 
@@ -3221,6 +3283,8 @@ _PyList_AsTupleAndClear(PyListObject *self)
     Py_SET_SIZE(self, 0);
     ret = _PyTuple_FromArraySteal(items, size);
     free_list_items(items, false);
+    ((PyObject *)self)->ob_flags &= ~_Py_MORTAL_CHILDREN_FLAG;
+    validate((PyObject *)self);
     Py_END_CRITICAL_SECTION();
     return ret;
 }
@@ -3240,6 +3304,7 @@ _PyList_FromStackRefStealOnSuccess(const _PyStackRef *src, Py_ssize_t n)
     PyObject **dst = list->ob_item;
     for (Py_ssize_t i = 0; i < n; i++) {
         dst[i] = PyStackRef_AsPyObjectSteal(src[i]);
+        _PyList_UPDATE_MORTAL(list, dst[i]);
     }
 
     return (PyObject *)list;

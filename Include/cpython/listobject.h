@@ -39,12 +39,15 @@ static inline Py_ssize_t PyList_GET_SIZE(PyObject *op) {
 
 #define PyList_GET_ITEM(op, index) (_PyList_CAST(op)->ob_item[(index)])
 
+#define _PyList_UPDATE_MORTAL(op, item) ((PyObject *)(op))->ob_flags |= (!_Py_IsImmortal((item))) ? _Py_MORTAL_CHILDREN_FLAG : 0
+
 static inline void
 PyList_SET_ITEM(PyObject *op, Py_ssize_t index, PyObject *value) {
     PyListObject *list = _PyList_CAST(op);
     assert(0 <= index);
     assert(index < list->allocated);
     list->ob_item[index] = value;
+    _PyList_UPDATE_MORTAL(op, value);
 }
 #define PyList_SET_ITEM(op, index, value) \
     PyList_SET_ITEM(_PyObject_CAST(op), (index), _PyObject_CAST(value))
