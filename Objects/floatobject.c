@@ -139,7 +139,19 @@ _PyStackRef _PyFloat_FromDouble_ConsumeInputs(_PyStackRef left, _PyStackRef righ
 {
     PyStackRef_CLOSE_SPECIALIZED(left, _PyFloat_ExactDealloc);
     PyStackRef_CLOSE_SPECIALIZED(right, _PyFloat_ExactDealloc);
-    return PyStackRef_FromPyObjectSteal(PyFloat_FromDouble(value));
+
+    PyFloatObject *op = _Py_FREELIST_POP(PyFloatObject, floats);
+    if (op == NULL) {
+        op = PyObject_Malloc(sizeof(PyFloatObject));
+        if (!op) {
+            PyErr_NoMemory(); // Ensure error is set
+            return PyStackRef_FromPyObjectSteal(NULL);
+        }
+        _PyObject_Init((PyObject*)op, &PyFloat_Type);
+    }
+    op->ob_fval = value;
+
+    return PyStackRef_FromPyObjectSteal((PyObject *)op);
 }
 
 static PyObject *

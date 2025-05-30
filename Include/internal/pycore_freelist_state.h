@@ -15,7 +15,7 @@ extern "C" {
 #  define Py_tuple_iters_MAXFREELIST 10
 #  define Py_dicts_MAXFREELIST 80
 #  define Py_dictkeys_MAXFREELIST 80
-#  define Py_floats_MAXFREELIST 100
+#  define Py_floats_MAXFREELIST 500
 #  define Py_ints_MAXFREELIST 100
 #  define Py_slices_MAXFREELIST 1
 #  define Py_ranges_MAXFREELIST 6
