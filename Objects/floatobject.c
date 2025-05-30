@@ -4,6 +4,9 @@
    for any kind of float exception without losing portability. */
 
 #include "Python.h"
+
+static long long num_freelist_hits = 0;
+static long long num_freelist_misses = 0;
 #include "pycore_abstract.h"      // _PyNumber_Index()
 #include "pycore_dtoa.h"          // _Py_dg_dtoa()
 #include "pycore_floatobject.h"   // _PyFloat_FormatAdvancedWriter()
@@ -125,11 +128,14 @@ PyFloat_FromDouble(double fval)
 {
     PyFloatObject *op = _Py_FREELIST_POP(PyFloatObject, floats);
     if (op == NULL) {
+        num_freelist_misses++; // Increment miss counter
         op = PyObject_Malloc(sizeof(PyFloatObject));
         if (!op) {
             return PyErr_NoMemory();
         }
         _PyObject_Init((PyObject*)op, &PyFloat_Type);
+    } else {
+        num_freelist_hits++; // Increment hit counter
     }
     op->ob_fval = fval;
     return (PyObject *) op;
@@ -139,7 +145,28 @@ _PyStackRef _PyFloat_FromDouble_ConsumeInputs(_PyStackRef left, _PyStackRef righ
 {
     PyStackRef_CLOSE_SPECIALIZED(left, _PyFloat_ExactDealloc);
     PyStackRef_CLOSE_SPECIALIZED(right, _PyFloat_ExactDealloc);
-    return PyStackRef_FromPyObjectSteal(PyFloat_FromDouble(value));
+
+    // Inlined PyFloat_FromDouble(value)
+    // Assuming num_freelist_hits and num_freelist_misses are static globals in this file
+    PyFloatObject *op = _Py_FREELIST_POP(PyFloatObject, floats);
+    if (op == NULL) {
+        num_freelist_misses++; // Increment miss counter
+        op = PyObject_Malloc(sizeof(PyFloatObject));
+        if (!op) {
+            // PyErr_NoMemory() would have been called by original PyFloat_FromDouble.
+            // The specialized function needs to return something that indicates error.
+            // If PyErr_NoMemory() sets the error, PyStackRef_FromPyObjectSteal(NULL) is typical.
+            PyErr_NoMemory(); // Ensure error is set
+            return PyStackRef_FromPyObjectSteal(NULL);
+        }
+        _PyObject_Init((PyObject*)op, &PyFloat_Type);
+    } else {
+        num_freelist_hits++; // Increment hit counter
+    }
+    op->ob_fval = value;
+    // End Inlined PyFloat_FromDouble
+
+    return PyStackRef_FromPyObjectSteal((PyObject *)op);
 }
 
 static PyObject *
@@ -1788,6 +1815,22 @@ float___format___impl(PyObject *self, PyObject *format_spec)
     return _PyUnicodeWriter_Finish(&writer);
 }
 
+static PyObject*
+get_float_freelist_stats(PyObject *self, PyObject *args)
+{
+    return Py_BuildValue("{s:L, s:L}",
+                         "hits", num_freelist_hits,
+                         "misses", num_freelist_misses);
+}
+
+static PyObject*
+reset_float_freelist_stats(PyObject *self, PyObject *args)
+{
+    num_freelist_hits = 0;
+    num_freelist_misses = 0;
+    Py_RETURN_NONE;
+}
+
 static PyMethodDef float_methods[] = {
     FLOAT_FROM_NUMBER_METHODDEF
     FLOAT_CONJUGATE_METHODDEF
@@ -1802,6 +1845,8 @@ static PyMethodDef float_methods[] = {
     FLOAT___GETNEWARGS___METHODDEF
     FLOAT___GETFORMAT___METHODDEF
     FLOAT___FORMAT___METHODDEF
+    {"get_freelist_stats", get_float_freelist_stats, METH_NOARGS, "Get float freelist hit/miss stats."},
+    {"reset_freelist_stats", reset_float_freelist_stats, METH_NOARGS, "Reset float freelist hit/miss stats."},
     {NULL,              NULL}           /* sentinel */
 };
 
